@@ -49,3 +49,21 @@ Tài liệu này là quy tắc nền tảng dành cho Trợ lý AI (Antigravity)
 * **Lưu ý phần mềm:**
   * RAM 8GB ở mức vừa phải: Ưu tiên gợi ý các công cụ nhẹ nhàng, tối ưu trên macOS.
   * Với mô phỏng mạch điện và lập trình, ưu tiên công cụ web trực quan (Falstad Circuit Simulator, Tinkercad, Wokwi...) hoặc các phần mềm mã nguồn mở chạy native trên Mac (KiCad, VS Code, gcc/clang). Tránh ép cài các phần mềm nặng nề chỉ chạy Windows trừ khi bắt buộc.
+
+---
+
+## 6. Quy Trình Tra Cứu Thời Khóa Biểu (TKB Lilama 2)
+
+* **Nguyên tắc cốt lõi:** Mỗi khi Phát hỏi về Thời khóa biểu (TKB), AI tự động tra cứu trực tiếp qua Cổng thông tin Lilama 2:
+  * **Link tra cứu:** `https://congthongtin.lilama2.edu.vn/Pages/Sims/ScheduleOfClass.aspx?pt=4`
+  * **Công cụ thực thi:** Mở Cốc Cốc (`/Applications/CocCoc.app`) hoặc script headless CDP (`tra_tkb_coccoc.js`).
+* **Các trường thông tin bắt buộc chọn:**
+  1. Tab: **TKB tuần**
+  2. **Niên học:** `2026 - 2027`
+  3. **Học kì:** `1`
+  4. **Tuần:** Chọn tuần chứa ngày cần xem (ví dụ: `Tuần 13 (21/09 - 27/09)`)
+  5. **Khoa:** `Kỹ thuật công nghệ`
+  6. **Khoá:** `Cao đẳng K20`
+  7. **Lớp học:** `Cơ điện tử- tiêu chuẩn của Đức làm việc tại CHLB Đức 3- Cao đẳng K20` (Mã lớp: `26.02.37.03`)
+  8. Nhấn **Tìm kiếm** và trích xuất lịch học chi tiết: Môn học, Giảng viên, Phòng học, Tiết học và Giờ học tương ứng.
+

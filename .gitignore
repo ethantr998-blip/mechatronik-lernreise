@@ -1,0 +1,42 @@
+# ==============================================================================
+# .gitignore - Mechatronik Lernreise (Trần Gia Phát - Lilama 2)
+# ==============================================================================
+
+# --- Hệ điều hành macOS ---
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# --- Phần mềm mô phỏng & File chạy nhị phân (Binary & Simulator) ---
+# Tối ưu hóa dung lượng máy Mac RAM 8GB, không lưu file thực thi Windows vào Git
+*.exe
+*.dll
+*.chm
+*.sys
+CADe_SIMULATION*/
+Nettoplcsim*/
+CADe_S1
+
+# --- Thư mục đệm hứng file tạm ---
+_Zalo_Raw/
+.screenshots/
+
+# --- Giáo trình scan & Tài liệu PDF dung lượng lớn (>5MB) ---
+# Tránh phình dung lượng repository và vi phạm bản quyền phát tán giáo trình
+*.pdf
+
+# --- File tạm thời của Microsoft Office / LibreOffice ---
+~$*.docx
+~$*.pptx
+~$*.xlsx
+
+# --- Python cache & virtual environment ---
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+env/
+venv/

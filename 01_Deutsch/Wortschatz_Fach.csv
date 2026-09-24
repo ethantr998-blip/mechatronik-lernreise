@@ -1,0 +1,16 @@
+Deutsch,Englisch,Vietnamesisch,Beispiel / Anmerkung
+der Widerstand,resistor,điện trở,Der elektrische Widerstand begrenzt den Strom.
+der Kondensator,capacitor,tụ điện,Kondensatoren speichern elektrische Energie.
+die Spule,inductor,cuộn cảm,Spulen erzeugen ein Magnetfeld bei Stromfluss.
+der Stromkreis,electric circuit,mạch điện,Ein geschlossener Stromkreis ist notwendig.
+die Spannung,voltage,điện áp,Die Einheit der elektrischen Spannung ist Volt.
+der Strom,current,dòng điện,Gleichstrom (DC) und Wechselstrom (AC).
+die Steuerung,control system,hệ thống điều khiển,SPS ist die speicherprogrammierbare Steuerung.
+die Regelung,closed-loop control,điều khiển vòng kín (hồi tiếp),Regelung mit kontinuierlicher Rückkopplung.
+die Pneumatik,pneumatics,khí nén,Pneumatik nutzt komprimierte Luft.
+der Zylinder,cylinder,xi lanh khí nén,Doppeltwirkender Zylinder mit zwei Anschlüssen.
+das Ventil,valve,van khí nén/thủy lực,Ein 5/2-Wegeventil steuert den Zylinder.
+die Messtechnik,measurement technology,kỹ thuật đo lường,Genaue Messung mit dem Oszilloskop.
+das Schaltzeichen,circuit symbol,ký hiệu bản vẽ điện,Schaltzeichen nach DIN EN 60617.
+die Arbeitssicherheit,occupational safety,an toàn lao động,Schutzbrille und Sicherheitsschuhe tragen.
+die Toleranz,tolerance,dung sai cơ khí,Passungen und Toleranzen nach ISO-System.

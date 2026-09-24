@@ -38,12 +38,17 @@ async function main() {
     const ws = new WebSocket(target.webSocketDebuggerUrl);
     let msgId = 1;
     const callbacks = new Map();
+    let navigatedResolver = null;
 
     ws.onmessage = (evt) => {
       const data = JSON.parse(evt.data);
       if (data.id && callbacks.has(data.id)) {
         callbacks.get(data.id)(data.result);
         callbacks.delete(data.id);
+      }
+      if (data.method === 'Page.loadEventFired' && navigatedResolver) {
+        navigatedResolver();
+        navigatedResolver = null;
       }
     };
 
@@ -58,151 +63,102 @@ async function main() {
 
     await send('Page.enable');
     await send('Runtime.enable');
-    await wait(4000);
-
-    // Step 1: Set Year to 2026 (2026 - 2027) and trigger postback if needed
-    console.log('Setting Year to 2026...');
-    await send('Runtime.evaluate', {
-      expression: `(() => {
-        const ddlYear = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_uYearSemester1_ddlYearID");
-        for (let i = 0; i < ddlYear.options.length; i++) {
-          if (ddlYear.options[i].text.includes("2026 - 2027") || ddlYear.options[i].value === "2026") {
-            ddlYear.selectedIndex = i;
-            ddlYear.dispatchEvent(new Event("change", { bubbles: true }));
-            break;
-          }
-        }
-      })()`
-    });
     await wait(3000);
+
+    const evalExpr = async (expr) => {
+      const r = await send('Runtime.evaluate', { expression: expr, returnByValue: true });
+      return r.result?.value;
+    };
+
+    const triggerPostBackAndWait = async (code) => {
+      const p = new Promise(r => { navigatedResolver = r; });
+      await evalExpr(code);
+      await Promise.race([p, wait(6000)]);
+      await wait(800);
+    };
+
+    // Step 1: Set Year to 2026 - 2027 and trigger postback
+    console.log('Setting Year to 2026 - 2027...');
+    await triggerPostBackAndWait(`(() => {
+      const ddl = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_uYearSemester1_ddlYearID");
+      ddl.value = "2026";
+      if (ddl.onchange) ddl.onchange();
+    })()`);
 
     // Step 2: Set Khoa to Kỹ thuật công nghệ
     console.log('Setting Khoa to Kỹ thuật công nghệ...');
-    await send('Runtime.evaluate', {
-      expression: `(() => {
-        const ddlSci = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_UClass1_ddlScienceID");
-        if (ddlSci) {
-          for (let i = 0; i < ddlSci.options.length; i++) {
-            if (ddlSci.options[i].text.includes("Kỹ thuật công nghệ")) {
-              ddlSci.selectedIndex = i;
-              ddlSci.dispatchEvent(new Event("change", { bubbles: true }));
-              break;
-            }
-          }
+    await triggerPostBackAndWait(`(() => {
+      const ddl = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_UClass1_ddlScienceID");
+      for (let i = 0; i < ddl.options.length; i++) {
+        if (ddl.options[i].text.includes("Kỹ thuật công nghệ")) {
+          ddl.selectedIndex = i;
+          if (ddl.onchange) ddl.onchange();
+          break;
         }
-      })()`
-    });
-    await wait(3000);
+      }
+    })()`);
 
     // Step 3: Set Khoá to Cao đẳng K20
     console.log('Setting Khoá to Cao đẳng K20...');
-    await send('Runtime.evaluate', {
-      expression: `(() => {
-        const ddlCourse = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_UClass1_ddlCourseID");
-        if (ddlCourse) {
-          for (let i = 0; i < ddlCourse.options.length; i++) {
-            if (ddlCourse.options[i].text.includes("Cao đẳng K20")) {
-              ddlCourse.selectedIndex = i;
-              ddlCourse.dispatchEvent(new Event("change", { bubbles: true }));
-              break;
-            }
-          }
+    await triggerPostBackAndWait(`(() => {
+      const ddl = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_UClass1_ddlCourseID");
+      for (let i = 0; i < ddl.options.length; i++) {
+        if (ddl.options[i].text.includes("Cao đẳng K20")) {
+          ddl.selectedIndex = i;
+          if (ddl.onchange) ddl.onchange();
+          break;
         }
-      })()`
-    });
-    await wait(3000);
+      }
+    })()`);
 
-    // Step 4: Set Week to Tuần 13 (21/09 - 27/09)
-    console.log('Setting Week to Tuần 13 (21/09 - 27/09)...');
-    const weekInfo = await send('Runtime.evaluate', {
-      expression: `(() => {
-        const ddlWeek = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_ddlWeek");
-        const list = [];
-        if (ddlWeek) {
-          for (let i = 0; i < ddlWeek.options.length; i++) {
-            list.push({ idx: i, val: ddlWeek.options[i].value, text: ddlWeek.options[i].text });
-            if (ddlWeek.options[i].text.includes("21/09") || ddlWeek.options[i].text.includes("Tuần 13")) {
-              ddlWeek.selectedIndex = i;
-              ddlWeek.dispatchEvent(new Event("change", { bubbles: true }));
-            }
-          }
+    // Step 4: Set Week to Tuần 13 and Class to 26.02.37.03
+    console.log('Selecting Week and Class...');
+    await evalExpr(`(() => {
+      const ddlWeek = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_ddlWeek");
+      for (let i = 0; i < ddlWeek.options.length; i++) {
+        if (ddlWeek.options[i].text.includes("21/09") || ddlWeek.options[i].text.includes("Tuần 13")) {
+          ddlWeek.selectedIndex = i;
+          break;
         }
-        return list.slice(10, 16);
-      })()`,
-      returnByValue: true
-    });
-    console.log('Weeks nearby:', weekInfo.result.value);
-    await wait(1000);
-
-    // Step 5: Set Class to Cơ điện tử- tiêu chuẩn của Đức làm việc tại CHLB Đức 3- Cao đẳng K20
-    console.log('Setting Class to Đức 3 K20...');
-    await send('Runtime.evaluate', {
-      expression: `(() => {
-        const ddlClass = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_UClass1_ddlClassID");
-        if (ddlClass) {
-          for (let i = 0; i < ddlClass.options.length; i++) {
-            if (ddlClass.options[i].text.includes("CHLB Đức 3") || ddlClass.options[i].text.includes("Đức 3- Cao đẳng K20")) {
-              ddlClass.selectedIndex = i;
-              ddlClass.dispatchEvent(new Event("change", { bubbles: true }));
-              break;
-            }
-          }
+      }
+      const ddlClass = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_UClass1_ddlClassID");
+      for (let i = 0; i < ddlClass.options.length; i++) {
+        if (ddlClass.options[i].value === "26.02.37.03" || ddlClass.options[i].text.includes("CHLB Đức 3")) {
+          ddlClass.selectedIndex = i;
+          break;
         }
-      })()`
-    });
-    await wait(1000);
+      }
+    })()`);
 
-    // Step 6: Click "Tìm kiếm"
+    // Step 5: Click Tìm kiếm
     console.log('Clicking Tìm kiếm button...');
-    await send('Runtime.evaluate', {
-      expression: `(() => {
-        const btn = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_UClass1_btnSearch");
-        if (btn) btn.click();
-      })()`
-    });
-    await wait(5000);
+    await triggerPostBackAndWait(`(() => {
+      const btn = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_UClass1_btnSearch");
+      if (btn) btn.click();
+    })()`);
 
-    // Step 7: Extract table and screenshot
-    const res = await send('Runtime.evaluate', {
-      expression: `(() => {
-        const title = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_lblTitle")?.innerText || "";
-        const contentElem = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_lblContent");
-        
-        const tables = contentElem ? Array.from(contentElem.querySelectorAll("table")) : [];
-        const rowsData = [];
-        tables.forEach(tbl => {
-          const trs = Array.from(tbl.querySelectorAll("tr"));
-          trs.forEach(tr => {
-            const cells = Array.from(tr.querySelectorAll("th, td")).map(td => td.innerText.replace(/\\s+/g, ' ').trim());
-            if (cells.length > 0 && cells.some(c => c.length > 0)) {
-              rowsData.push(cells);
-            }
-          });
+    // Step 6: Extract table
+    const res = await evalExpr(`(() => {
+      const title = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_lblTitle")?.innerText || "";
+      const contentElem = document.getElementById("ctl00_cphMain_ScheduleOfClass1_uScheduleOfClass1_lblContent");
+      const tables = contentElem ? Array.from(contentElem.querySelectorAll("table")) : [];
+      const rowsData = [];
+      tables.forEach(tbl => {
+        const trs = Array.from(tbl.querySelectorAll("tr"));
+        trs.forEach(tr => {
+          const cells = Array.from(tr.querySelectorAll("th, td")).map(td => td.innerText.replace(/\\s+/g, " ").trim());
+          if (cells.length > 0 && cells.some(c => c.length > 0)) {
+            rowsData.push(cells);
+          }
         });
-
-        return {
-          title,
-          rows: rowsData,
-          html: contentElem?.innerHTML || "",
-          text: contentElem?.innerText || ""
-        };
-      })()`,
-      returnByValue: true
-    });
+      });
+      return { title, rows: rowsData };
+    })()`);
 
     console.log('=== SEARCH RESULT ===');
-    console.log('Title:', res.result.value.title);
-    console.log('Rows count:', res.result.value.rows.length);
-    console.log('Text content:', res.result.value.text);
-    if (res.result.value.rows.length > 0) {
-      console.log('Full rows:\n', JSON.stringify(res.result.value.rows, null, 2));
-    }
-
-    // Take screenshot to inspect visually
-    const shot = await send('Page.captureScreenshot', { format: 'png' });
-    const fs = require('fs');
-    fs.writeFileSync('/Users/trangiaphat/.gemini/antigravity/brain/ea06d3bd-74bf-4d6a-90ab-7120bce9a1ae/scratch/result_schedule.png', Buffer.from(shot.data, 'base64'));
-    console.log('Screenshot saved to scratch/result_schedule.png');
+    console.log('Title:', res.title);
+    console.log('Rows count:', res.rows.length);
+    console.log('Full rows:\n', JSON.stringify(res.rows, null, 2));
 
     ws.close();
   } finally {

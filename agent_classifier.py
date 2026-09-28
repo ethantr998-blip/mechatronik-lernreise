@@ -9,6 +9,7 @@ Tối ưu hóa: macOS Native (Zero-dependencies, siêu nhẹ, không tốn RAM)
 """
 
 import os
+import re
 import sys
 import time
 import shutil
@@ -19,13 +20,13 @@ import zipfile
 from pathlib import Path
 
 # Thư mục gốc chứa các môn học
-WORKSPACE_DIR = Path("/Users/trangiaphat/Documents/Inbox_HocTap")
+WORKSPACE_DIR = Path(os.environ.get("STUDY_WORKSPACE_DIR", "/Users/trangiaphat/Documents/Inbox_HocTap"))
 # Thư mục đệm hứng file từ Zalo
 BUFFER_DIR = WORKSPACE_DIR / "_Zalo_Raw"
 
 # Danh bạ môn học và các từ khóa đặc trưng (Domain Terminology)
 SUBJECT_RULES = {
-    "Kỹ thuật điện": {
+    "Kỹ thuật điện": {
         "de": "Elektrotechnik",
         "exact_titles": ["kỹ thuật điện", "ky thuat dien", "cơ sở kỹ thuật điện", "mh08", "direct current technology", "alternating current"],
         "keywords": [
@@ -35,7 +36,7 @@ SUBJECT_RULES = {
             "tụ điện", "mạch cầu", "nguồn điện", "tổng trở", "hệ số công suất", "32121cd"
         ]
     },
-    "Kỹ thuật số": {
+    "Kỹ thuật số": {
         "de": "Digitaltechnik",
         "exact_titles": ["kỹ thuật số", "ky thuat so", "kts", "digitaltechnik"],
         "keywords": [
@@ -45,7 +46,7 @@ SUBJECT_RULES = {
             "mạch tuần tự", "mạch tổ hợp", "multiplexer", "mux", "demux", "đại số boole"
         ]
     },
-    "Điện tử cơ bản": {
+    "Điện tử cơ bản": {
         "de": "Grundlagen der Elektronik",
         "exact_titles": ["điện tử cơ bản", "dien tu co ban", "dtcb", "vật liệu dẫn điện"],
         "keywords": [
@@ -55,7 +56,7 @@ SUBJECT_RULES = {
             "zenner", "led", "phân cực"
         ]
     },
-    "Cơ khí cơ bản": {
+    "Cơ khí cơ bản": {
         "de": "Grundlagen der Mechanik",
         "exact_titles": ["cơ khí cơ bản", "co khi co ban", "ckcb", "gia công nguội"],
         "keywords": [
@@ -64,7 +65,7 @@ SUBJECT_RULES = {
             "lắp ghép", "kim loại", "thép", "gang", "vật liệu cơ khí", "ren", "bulong"
         ]
     },
-    "Giao tiếp kỹ thuật": {
+    "Giao tiếp kỹ thuật": {
         "de": "Technische Kommunikation",
         "exact_titles": ["giao tiếp kỹ thuật", "giao tiep ky thuat", "gtkt", "vẽ kỹ thuật", "ve ky thuat"],
         "keywords": [
@@ -73,7 +74,7 @@ SUBJECT_RULES = {
             "tiêu chuẩn vẽ", "khổ giấy", "tỷ lệ vẽ", "autocad", "cad", "solidworks", "dung sai hình học"
         ]
     },
-    "Tin học": {
+    "Tin học": {
         "de": "Informatik",
         "exact_titles": ["tin học", "tin hoc", "tin học văn phòng", "tin học đại cương"],
         "keywords": [
@@ -82,7 +83,7 @@ SUBJECT_RULES = {
             "lập trình", "ngôn ngữ lập trình", "python", "ngôn ngữ c"
         ]
     },
-    "Nhập môn CĐT": {
+    "Nhập môn CĐT": {
         "de": "Einführung in die Mechatronik",
         "exact_titles": ["nhập môn cơ điện tử", "nhap mon cdt", "nhập môn cđt", "mechatronics"],
         "keywords": [
@@ -96,28 +97,35 @@ def normalize_text(text: str) -> str:
     """Chuẩn hóa Unicode sang dạng NFC và chữ thường để so khớp chính xác"""
     if not text:
         return ""
-    return unicodedata.normalize('NFC', text).lower()
+    return unicodedata.normalize('NFC', text).lower().replace("_", " ")
+
+def contains_term(term: str, text: str) -> bool:
+    """Khớp nguyên từ: 'hàn' không được khớp trong 'thực hành', 'led' không khớp 'called'."""
+    return re.search(rf"(?<!\w){re.escape(term)}(?!\w)", text) is not None
 
 def extract_text_from_pdf(file_path: Path) -> str:
     """Trích xuất văn bản từ 2 trang đầu của PDF dùng Apple PDFKit (macOS Native)"""
-    script = f'''
-    ObjC.import("PDFKit");
-    var url = $.NSURL.fileURLWithPath("{file_path.resolve()}");
-    var doc = $.PDFDocument.alloc.initWithURL(url);
-    var content = "";
-    if (doc) {{
-        var count = Math.min(doc.pageCount, 3);
-        for (var i = 0; i < count; i++) {{
-            var page = doc.pageAtIndex(i);
-            if (page) {{
-                content += " " + ObjC.unwrap(page.string);
-            }}
-        }}
-    }}
-    content;
+    # Đường dẫn truyền qua argv, không chèn vào mã JXA (tên file chứa " sẽ phá vỡ script)
+    script = '''
+    function run(argv) {
+        ObjC.import("PDFKit");
+        var url = $.NSURL.fileURLWithPath(argv[0]);
+        var doc = $.PDFDocument.alloc.initWithURL(url);
+        var content = "";
+        if (doc) {
+            var count = Math.min(doc.pageCount, 3);
+            for (var i = 0; i < count; i++) {
+                var page = doc.pageAtIndex(i);
+                if (page) {
+                    content += " " + ObjC.unwrap(page.string);
+                }
+            }
+        }
+        return content;
+    }
     '''
     try:
-        res = subprocess.run(["osascript", "-l", "JavaScript", "-e", script], 
+        res = subprocess.run(["osascript", "-l", "JavaScript", "-e", script, str(file_path.resolve())],
                              capture_output=True, text=True, timeout=10)
         return res.stdout
     except Exception as e:
@@ -164,52 +172,52 @@ def extract_content(file_path: Path) -> str:
             return ""
     return ""
 
-def classify_document(file_name: str, content: str) -> tuple[str, str, int]:
-    """
-    Thuật toán phân loại đa tầng (Multi-tier Scoring Engine)
-    Trả về: (Tên thư mục môn học, Thuật ngữ tiếng Đức, Điểm số khớp)
-    """
+def score_subjects(file_name: str, content: str) -> dict:
+    """Điểm khớp của từng môn học (Multi-tier Scoring Engine)"""
     norm_name = normalize_text(file_name)
-    norm_content = normalize_text(content)
-    combined = f"{norm_name} {norm_content[:4000]}" # Phân tích tên + 4000 ký tự đầu
+    norm_content = normalize_text(content)[:4000]  # Chỉ phân tích 4000 ký tự đầu
 
-    best_folder = None
-    best_score = 0
-    best_de = ""
-
+    scores = {}
     for folder_name, rule in SUBJECT_RULES.items():
         score = 0
-        norm_folder = normalize_text(folder_name)
-        
-        # 1. Trọng số cực cao nếu tên file trùng khớp thẳng với tên môn học (Weight: 20)
-        if norm_folder in norm_name:
+
+        # 1. Tên file chứa thẳng tên môn học
+        if contains_term(normalize_text(folder_name), norm_name):
             score += 20
-        
-        # 2. Trọng số cao nếu khớp tiêu đề chuẩn trong tên file hoặc nội dung (Weight: 10)
+
+        # 2. Tiêu đề chuẩn trong tên file hoặc nội dung
         for title in rule["exact_titles"]:
-            if title in norm_name:
+            if contains_term(title, norm_name):
                 score += 12
-            elif title in norm_content:
+            elif contains_term(title, norm_content):
                 score += 6
-        
-        # 3. Trọng số từ khóa chuyên môn (Weight: 2 mỗi từ khóa)
+
+        # 3. Từ khóa chuyên môn
         for kw in rule["keywords"]:
-            if kw in norm_name:
+            if contains_term(kw, norm_name):
                 score += 5
-            if kw in norm_content:
+            if contains_term(kw, norm_content):
                 score += 2
 
-        if score > best_score:
-            best_score = score
-            best_folder = folder_name
-            best_de = rule["de"]
+        scores[folder_name] = score
+    return scores
 
-    return best_folder, best_de, best_score
+def classify_document(file_name: str, content: str) -> tuple:
+    """Trả về: (Tên thư mục môn học, Thuật ngữ tiếng Đức, Điểm số khớp)"""
+    scores = score_subjects(file_name, content)
+    best_folder = max(scores, key=scores.get)
+    if scores[best_folder] == 0:
+        return None, "", 0
+    return best_folder, SUBJECT_RULES[best_folder]["de"], scores[best_folder]
 
 def send_macos_notification(title: str, message: str):
     """Gửi thông báo desktop macOS để người học biết file đã được phân loại xong"""
-    cmd = f'display notification "{message}" with title "{title}"'
-    subprocess.run(["osascript", "-e", cmd], capture_output=True)
+    # Truyền nội dung qua argv thay vì chèn vào AppleScript: tên file chứa " không thể chèn lệnh
+    subprocess.run(["osascript",
+                    "-e", "on run argv",
+                    "-e", "display notification (item 2 of argv) with title (item 1 of argv)",
+                    "-e", "end run",
+                    title, message], capture_output=True)
 
 def find_target_folder_path(target_folder_name: str) -> Path:
     """Tìm đúng đường dẫn thư mục môn học trong thư mục mẹ (bất kể chuẩn Unicode NFC/NFD)"""
@@ -217,7 +225,7 @@ def find_target_folder_path(target_folder_name: str) -> Path:
     for child in WORKSPACE_DIR.iterdir():
         if child.is_dir() and unicodedata.normalize('NFC', child.name) == norm_target:
             return child
-    target_path = WORKSPACE_DIR / target_folder_name
+    target_path = WORKSPACE_DIR / norm_target
     target_path.mkdir(exist_ok=True)
     return target_path
 

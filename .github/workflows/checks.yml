@@ -1,0 +1,20 @@
+name: checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+      - name: Fehlerlog format
+        run: python 00_DIHK/fehlerlog.py check
+      - name: Knowledge Base verification
+        run: python 03_Mechatronics_Knowledge_Base/verify_knowledge_base.py

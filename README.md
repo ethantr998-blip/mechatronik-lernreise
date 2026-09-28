@@ -61,16 +61,6 @@
 
 ---
 
-### 📌 Dự án Tự Động Hóa: Zalo Study Agent & Trích xuất dữ liệu đào tạo
-* **Mục tiêu:** Xây dựng hệ thống tự động dọn dẹp, phân loại và lưu trữ tài liệu học tập từ Zalo vào các thư mục chuyên môn tương ứng.
-* **Giải pháp kỹ thuật:**
-  * Script Python thuần native (`agent_classifier.py`): Zero-dependencies, tối ưu hóa tuyệt đối cho macOS (tiết kiệm RAM).
-  * Nhận diện văn bản tài liệu bằng giải thuật lọc từ khóa chuyên ngành (*Domain-specific Keyword Filtering*).
-  * Quy trình khởi chạy 1 chạm qua macOS Launcher (`Quet_Don_File.command`).
-* **Tài nguyên:** [`agent_classifier.py`](./agent_classifier.py) & [`Quet_Don_File.command`](./Quet_Don_File.command).
-
----
-
 ## 🗺️ 5. Lộ Trình 3 Năm 2026 – 2029 (Fahrplan)
 
 ```mermaid
@@ -88,8 +78,6 @@ flowchart TD
 mechatronik-lernreise/
 ├── README.md                      # Trang chủ giới thiệu Portfolio & Tiến độ học tập
 ├── Portfolio_Tran_Gia_Phat.md     # Hồ sơ năng lực cá nhân chi tiết (Cập nhật liên tục)
-├── agent_classifier.py            # Tool tự động hóa phân loại tài liệu học tập
-├── Quet_Don_File.command          # Launcher thực thi nhanh trên macOS
 ├── tests/                         # Unit test (python3 -m unittest discover -s tests)
 │
 ├── 00_DIHK/                       # Cấu trúc kỳ thi AP1/AP2, Fehlerlog + fehlerlog.py

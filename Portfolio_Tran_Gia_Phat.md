@@ -65,9 +65,8 @@
   * Lệnh CAD chuyên sâu: `CIRCLE (TTR)`, `FILLET`, `TRIM`, `CHAMFER`.
 * **Sản phẩm bàn giao:** File thiết kế gốc `Moc_Cau_Lastenhaken.dxf` và file vector minh họa `Moc_Cau_Minh_Hoa.svg` tại thư mục [Giao tiếp kỹ thuật](file:///Users/trangiaphat/Documents/Inbox_HocTap/Giao%20ti%E1%BA%BFp%20k%E1%BB%B9%20thu%E1%BA%ADt).
 
-### 📌 Dự án Tự động hóa: Trích xuất Dữ liệu Đào tạo & Quản lý Thư viện
+### 📌 Dự án Tự động hóa: Trích xuất Dữ liệu Đào tạo
 * **Mô tả:** Xây dựng quy trình tự động quét và bóc tách thời khóa biểu thời gian thực từ Cổng thông tin Lilama 2 thông qua giao thức Chrome DevTools Protocol (CDP) không đầu (*Headless Browser*), giải quyết triệt để lỗi hiển thị sai niên khóa trên cổng ASP.NET của nhà trường.
-* **Quản lý tài liệu:** Sử dụng bộ phân loại thông minh (`agent_classifier.py` và `Quet_Don_File.command`) để dọn dẹp và tự động điều phối tài liệu học tập từ Zalo vào đúng từng thư mục chuyên môn.
 
 ---
 

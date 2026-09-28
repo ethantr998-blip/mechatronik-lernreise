@@ -23,15 +23,22 @@
 
 ---
 
-## 📚 2. BẢNG MAPPING 14 TRƯỜNG HỌC TẬP (LERNFELDER MECHATRONIKER)
-* **LF 1:** Phân tích hệ thống kỹ thuật cơ điện tử và chức năng.
-* **LF 2:** Gia công cơ khí chi tiết máy (cưa, dũa, khoan, tiện, phay).
-* **LF 3:** Lắp ráp và đấu nối các cụm điện tử cơ bản.
-* **LF 4:** Kiểm tra và đo lường các đại lượng điện, khí nén.
-* **LF 5:** Lắp đặt hệ thống cung cấp năng lượng và an toàn.
-* **LF 6:** Lập trình hệ thống điều khiển PLC / SPS (Siemens S7-1200 / LOGO!).
-* **LF 7:** Lắp ráp hệ thống khí nén và điện khí nén.
-* **LF 8 - LF 14:** Tích hợp hệ thống robot, bảo trì công nghiệp, mạng truyền thông (Profinet/Profibus).
+## 📚 2. 13 TRƯỜNG HỌC TẬP (LERNFELDER MECHATRONIKER — KMK-RAHMENLEHRPLAN)
+* **LF 1:** Analysieren von Funktionszusammenhängen in mechatronischen Systemen.
+* **LF 2:** Herstellen mechanischer Teilsysteme.
+* **LF 3:** Installieren elektrischer Betriebsmittel unter Beachtung sicherheitstechnischer Aspekte.
+* **LF 4:** Untersuchen der Energie- und Informationsflüsse in elektrischen, pneumatischen und hydraulischen Baugruppen.
+* **LF 5:** Kommunizieren mit Hilfe von Datenverarbeitungssystemen.
+* **LF 6:** Planen und Organisieren von Arbeitsabläufen.
+* **LF 7:** Realisieren mechatronischer Teilsysteme.
+* **LF 8:** Design und Erstellen mechatronischer Systeme.
+* **LF 9:** Untersuchen des Informationsflusses in komplexen mechatronischen Systemen.
+* **LF 10:** Planen der Montage und Demontage.
+* **LF 11:** Inbetriebnahme, Fehlersuche und Instandsetzung.
+* **LF 12:** Vorbeugende Instandhaltung.
+* **LF 13:** Übergabe von mechatronischen Systemen an Kunden.
+
+👉 Bảng nghĩa tiếng Việt, nơi học trong repo và trạng thái từng LF: [`02_Lernfelder/README.md`](../02_Lernfelder/README.md).
 
 ---
 

@@ -14,3 +14,42 @@ die Messtechnik,measurement technology,kỹ thuật đo lường,Genaue Messung 
 das Schaltzeichen,circuit symbol,ký hiệu bản vẽ điện,Schaltzeichen nach DIN EN 60617.
 die Arbeitssicherheit,occupational safety,an toàn lao động,Schutzbrille und Sicherheitsschuhe tragen.
 die Toleranz,tolerance,dung sai cơ khí,Passungen und Toleranzen nach ISO-System.
+der Messschieber,vernier caliper,thước cặp,"Mit dem Messschieber misst man Außen-, Innen- und Tiefenmaße."
+die Bügelmessschraube,micrometer,panme,"Die Bügelmessschraube misst auf 0,01 mm genau."
+das Haarlineal,knife-edge straightedge,thước tóc (kiểm tra độ phẳng),Die Ebenheit prüft man mit dem Haarlineal im Lichtspaltverfahren.
+die Feile,file,cái dũa,Die Feile spant nur beim Vorwärtshub.
+die Metallsäge,hacksaw,cưa sắt,Die Zähne der Metallsäge zeigen in Stoßrichtung.
+das Anreißen,scribing / marking out,vạch dấu,Vor dem Bohren wird die Bohrungsmitte angerissen und gekörnt.
+das Gewinde,thread,ren,Innengewinde schneidet man mit dem Gewindebohrer.
+die Rauheit,surface roughness,độ nhám bề mặt,Die Rauheit wird z. B. als Ra-Wert in µm angegeben.
+die technische Zeichnung,technical drawing,bản vẽ kỹ thuật,Linienarten nach DIN EN ISO 128.
+die Ansicht,view,hình chiếu,Die Vorderansicht ist die Hauptansicht.
+der Schnitt,section view,hình cắt,Geschnittene Flächen werden schraffiert.
+die Bemaßung,dimensioning,ghi kích thước,Maße in mm werden ohne Einheit eingetragen.
+der Maßstab,scale,tỷ lệ bản vẽ,Maßstab 1:2 bedeutet eine Verkleinerung.
+der Durchmesser,diameter,đường kính,Das Zeichen ⌀ steht vor der Maßzahl.
+die Stromstärke,current (magnitude),cường độ dòng điện,Das Amperemeter wird in Reihe geschaltet.
+die Leistung,power,công suất,P = U · I; die Einheit ist Watt.
+die Reihenschaltung,series circuit,mạch nối tiếp,In der Reihenschaltung ist der Strom überall gleich.
+die Parallelschaltung,parallel circuit,mạch song song,In der Parallelschaltung liegt an allen Zweigen dieselbe Spannung.
+der Spannungsteiler,voltage divider,cầu phân áp,Zwei Widerstände in Reihe bilden einen Spannungsteiler.
+der Gleichstrom,direct current (DC),dòng điện một chiều,Eine Batterie liefert Gleichstrom.
+der Wechselstrom,alternating current (AC),dòng điện xoay chiều,Das Netz in Deutschland hat 230 V und 50 Hz.
+das Multimeter,multimeter,đồng hồ vạn năng,Vor dem Messen den richtigen Messbereich wählen.
+das Oszilloskop,oscilloscope,máy hiện sóng,Mit dem Oszilloskop sieht man den Spannungsverlauf über der Zeit.
+der Halbleiter,semiconductor,chất bán dẫn,Silizium ist der wichtigste Halbleiter.
+die Diode,diode,điốt,Die Diode leitet nur in Durchlassrichtung.
+die Durchlassrichtung,forward direction,chiều phân cực thuận,"Eine Siliziumdiode leitet ab etwa 0,7 V in Durchlassrichtung."
+die Sperrrichtung,reverse direction,chiều phân cực ngược,In Sperrrichtung fließt nur ein sehr kleiner Sperrstrom.
+der Transistor,transistor,tranzito,Der Transistor arbeitet als Schalter oder Verstärker.
+der Gleichrichter,rectifier,bộ chỉnh lưu,Der Brückengleichrichter besteht aus vier Dioden.
+das Gatter,logic gate,cổng logic,"Ein UND-Gatter liefert nur 1, wenn alle Eingänge 1 sind."
+die Wahrheitstabelle,truth table,bảng chân trị,Die Wahrheitstabelle zeigt alle Eingangskombinationen.
+das Schaltnetz,combinational circuit,mạch tổ hợp,Ein Schaltnetz hat keinen Speicher.
+das Schaltwerk,sequential circuit,mạch tuần tự,Ein Schaltwerk enthält Speicherglieder wie Flipflops.
+der Zähler,counter,bộ đếm,Ein Zähler zählt Taktimpulse.
+das Schieberegister,shift register,thanh ghi dịch,Das Schieberegister verschiebt Bits mit jedem Takt.
+der Sensor,sensor,cảm biến,Ein induktiver Sensor erkennt Metall berührungslos.
+der Aktor,actuator,cơ cấu chấp hành,Motoren und Zylinder sind Aktoren.
+der Regelkreis,control loop,vòng điều chỉnh (hồi tiếp),Im Regelkreis wird der Istwert mit dem Sollwert verglichen.
+die speicherprogrammierbare Steuerung,programmable logic controller (PLC),bộ điều khiển lập trình (SPS/PLC),"Abkürzung: SPS, z. B. Siemens S7-1200."

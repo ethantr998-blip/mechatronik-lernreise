@@ -33,6 +33,9 @@ _Zalo_Raw/
 ~$*.pptx
 ~$*.xlsx
 
+# --- File xuất Anki (tạo lại bằng: python3 01_Deutsch/wortschatz_trainer.py anki) ---
+01_Deutsch/Wortschatz_Anki.txt
+
 # --- Python cache & virtual environment ---
 __pycache__/
 *.pyc

@@ -56,8 +56,8 @@
   * Phân đoạn trục bậc tải trọng: $\varnothing 40, \varnothing 25, \varnothing 20$, vát mép lắp ghép (*Chamfer* $2 \times 45^\circ$).
   * Lệnh CAD ứng dụng: `CIRCLE (TTR)`, `FILLET`, `TRIM`, `CHAMFER`, `DIMSTYLE`.
 * **Tài nguyên dự án:**
-  * File thiết kế trao đổi: [`Giao tiếp kỹ thuật/Moc_Cau_Lastenhaken.dxf`](./Giao%20ti%C3%AA%CC%81p%20ky%CC%83%20thua%CC%A3%CC%82t/Moc_Cau_Lastenhaken.dxf)
-  * File vector kỹ thuật: [`Giao tiếp kỹ thuật/Moc_Cau_Minh_Hoa.svg`](./Giao%20ti%C3%AA%CC%81p%20ky%CC%83%20thua%CC%A3%CC%82t/Moc_Cau_Minh_Hoa.svg)
+  * File thiết kế trao đổi: [`Giao tiếp kỹ thuật/Moc_Cau_Lastenhaken.dxf`](./Giao%20ti%E1%BA%BFp%20k%E1%BB%B9%20thu%E1%BA%ADt/Moc_Cau_Lastenhaken.dxf)
+  * File vector kỹ thuật: [`Giao tiếp kỹ thuật/Moc_Cau_Minh_Hoa.svg`](./Giao%20ti%E1%BA%BFp%20k%E1%BB%B9%20thu%E1%BA%ADt/Moc_Cau_Minh_Hoa.svg)
 
 ---
 
@@ -90,6 +90,12 @@ mechatronik-lernreise/
 ├── Portfolio_Tran_Gia_Phat.md     # Hồ sơ năng lực cá nhân chi tiết (Cập nhật liên tục)
 ├── agent_classifier.py            # Tool tự động hóa phân loại tài liệu học tập
 ├── Quet_Don_File.command          # Launcher thực thi nhanh trên macOS
+├── tests/                         # Unit test (python3 -m unittest discover -s tests)
+│
+├── 00_DIHK/                       # Cấu trúc kỳ thi AP1/AP2, Fehlerlog + fehlerlog.py
+├── 01_Deutsch/                    # Từ vựng Fachdeutsch + wortschatz_trainer.py (SRS/Anki)
+├── 02_Lernfelder/                 # Bản đồ 13 Lernfelder + Pneumatik, SPS, Fehlersuche, Fachgespräch
+├── 03_Mechatronics_Knowledge_Base/# Kiến thức chuyên sâu 6 phân hệ + labs mô phỏng
 │
 ├── Cơ khí cơ bản/                 # Module M01: Gia công cơ khí & Đo lường kiểm tra
 ├── Kỹ thuật điện/                  # Module M02: Mạch điện DC/AC, Định luật Ohm & Kirchhoff
@@ -98,6 +104,25 @@ mechatronik-lernreise/
 ├── Kỹ thuật số/                   # Module M05: Cổng logic, Mạch số, Đại số Boole
 ├── Nhập môn CĐT/                  # Module M06: Tổng quan hệ thống Cơ điện tử
 └── Tin học/                       # Module M07: Lập trình & Thuật toán kỹ thuật
+```
+
+---
+
+## 🧰 7. Công Cụ Học Tập Hằng Ngày (Werkzeuge)
+
+```bash
+# Ôn từ vựng tiếng Đức theo lịch lặp ngắt quãng (SM-2) — mỗi ngày ~10 phút
+python3 01_Deutsch/wortschatz_trainer.py            # ôn thẻ đến hạn
+python3 01_Deutsch/wortschatz_trainer.py status     # thống kê, từ hay quên nhất
+python3 01_Deutsch/wortschatz_trainer.py anki       # xuất file import vào Anki
+
+# Nhật ký lỗi sai
+python3 00_DIHK/fehlerlog.py neu                    # ghi 1 lỗi mới
+python3 00_DIHK/fehlerlog.py wiederholen            # ôn tập lỗi cũ hằng tuần
+python3 00_DIHK/fehlerlog.py check                  # kiểm tra định dạng, nhắc nếu >7 ngày chưa ghi
+
+# Bật kiểm tra tự động trước mỗi commit (chạy 1 lần trên máy)
+git config core.hooksPath .githooks
 ```
 
 ---

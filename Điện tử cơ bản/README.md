@@ -18,9 +18,9 @@
 | Khái niệm | Tiếng Đức (*Deutsch*) | Tiếng Anh (*English*) | Ghi chú kỹ thuật |
 |:---|:---|:---|:---|
 | Bán dẫn | **der Halbleiter** | Semiconductor | Si, Ge, GaAs |
-| Linh kiện thụ động | **passive Bauelemente** | Passive components | , L, C$ |
-| Tụ điện | **der Kondensator** | Capacitor | Điện dung 	ext{ [F]}$ |
-| Cuộn cảm | **die Spule / Induktivität** | Inductor | Độ tự cảm 	ext{ [H]}$ |
+| Linh kiện thụ động | **passive Bauelemente** | Passive components | $R, L, C$ |
+| Tụ điện | **der Kondensator** | Capacitor | Điện dung $C \text{ [F]}$ |
+| Cuộn cảm | **die Spule / Induktivität** | Inductor | Độ tự cảm $L \text{ [H]}$ |
 | Chỉnh lưu | **der Gleichrichter** | Rectifier | Biến đổi AC sang DC |
-| Phân cực thuận | **in Durchlassrichtung** | Forward biased |  > V_{th}$ |
+| Phân cực thuận | **in Durchlassrichtung** | Forward biased | $U_F > U_{th}$ |
 | Phân cực ngược | **in Sperrrichtung** | Reverse biased | Vùng chặn dòng |

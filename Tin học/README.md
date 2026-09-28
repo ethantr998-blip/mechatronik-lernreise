@@ -13,5 +13,8 @@
 ---
 
 ## 🛠️ 2. Công Cụ Đã Xây Dựng
-* [](../agent_classifier.py): Công cụ tự động quét và phân phối tài liệu từ Zalo vào các thư mục học phần chuyên ngành.
-* [](../Quet_Don_File.command): Kịch bản thực thi một chạm tích hợp cho macOS.
+* [`agent_classifier.py`](../agent_classifier.py): Công cụ tự động quét và phân phối tài liệu từ Zalo vào các thư mục học phần chuyên ngành.
+* [`Quet_Don_File.command`](../Quet_Don_File.command): Kịch bản thực thi một chạm tích hợp cho macOS.
+* [`wortschatz_trainer.py`](../01_Deutsch/wortschatz_trainer.py): Ôn từ vựng tiếng Đức theo thuật toán lặp ngắt quãng SM-2, xuất thẻ Anki.
+* [`fehlerlog.py`](../00_DIHK/fehlerlog.py): Kiểm tra, ghi mới và ôn tập Nhật ký lỗi sai.
+* [`tests/`](../tests): Bộ unit test (`unittest`, không cần cài thư viện) — chạy tự động bằng git hook và GitHub Actions.

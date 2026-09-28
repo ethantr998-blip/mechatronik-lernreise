@@ -17,9 +17,9 @@
 ## 🛠️ 2. Dự Án Bản Vẽ Tiêu Biểu
 
 ### Bản vẽ chi tiết: Móc cẩu công nghiệp (*Lastenhaken*)
-* **File thiết kế DXF:** [](./Moc_Cau_Lastenhaken.dxf)
-* **File vector minh họa:** [](./Moc_Cau_Minh_Hoa.svg)
-* **Kỹ năng ứng dụng:** Dựng cung tròn tiếp xúc phức tạp (, R45, R40, R15, R7$), vát mép lắp ghép (*Chamfer 	imes 45^\circ), quản lý Layer chuẩn đường nét.
+* **File thiết kế DXF:** [Moc_Cau_Lastenhaken.dxf](./Moc_Cau_Lastenhaken.dxf)
+* **File vector minh họa:** [Moc_Cau_Minh_Hoa.svg](./Moc_Cau_Minh_Hoa.svg)
+* **Kỹ năng ứng dụng:** Dựng cung tròn tiếp xúc phức tạp ($R50, R45, R40, R15, R7$), vát mép lắp ghép (*Chamfer* $2 \times 45^\circ$), quản lý Layer chuẩn đường nét.
 
 ---
 
@@ -32,5 +32,5 @@
 | Hình cắt / Mặt cắt | **der Schnitt** | Section view |
 | Kích thước | **das Maß / die Bemaßung** | Dimensioning |
 | Dung sai | **die Passung / Toleranz** | Fit / Tolerance |
-| Bán kính | **der Radius ($)** | Radius |
+| Bán kính | **der Radius ($R$)** | Radius |
 | Đường kính | **der Durchmesser ($\varnothing$)** | Diameter |

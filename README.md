@@ -84,6 +84,7 @@ mechatronik-lernreise/
 ├── 01_Deutsch/                    # Từ vựng Fachdeutsch + wortschatz_trainer.py (SRS/Anki)
 ├── 02_Lernfelder/                 # Bản đồ 13 Lernfelder + Pneumatik, SPS, Fehlersuche, Fachgespräch
 ├── 03_Mechatronics_Knowledge_Base/# Kiến thức chuyên sâu 6 phân hệ + labs mô phỏng
+├── 04_Virtuelle_Werkstatt/        # Xưởng ảo: trạm phân loại, lập trình KOP, tìm lỗi AP2
 │
 ├── Cơ khí cơ bản/                 # Module M01: Gia công cơ khí & Đo lường kiểm tra
 ├── Kỹ thuật điện/                  # Module M02: Mạch điện DC/AC, Định luật Ohm & Kirchhoff

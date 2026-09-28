@@ -1,0 +1,1606 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Xưởng ảo Mechatronik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: Werkbank — Anlage als Draufsicht links, Register (KOP-Editor · Fehlersuche · Zuordnungsliste) rechts; am Handy gestapelt unter einer festen SPS-LED-Leiste */
+:root {
+  --bg: #dfe2dd;          /* RAL 7035 Lichtgrau, aufgehellt */
+  --panel: #f3f4f1;
+  --plate: #e8eae5;
+  --ink: #1b2124;
+  --muted: #566064;
+  --line: #b5bab4;
+  --accent: #1f5a96;      /* Signalblau */
+  --accent-ink: #ffffff;
+  --flow: #1c9a49;        /* Signalfluss (online) */
+  --idle: #4d7fb8;        /* kein Signal: blau gestrichelt */
+  --warn: #e0a400;        /* Signalgelb */
+  --danger: #c0302a;      /* Signalrot */
+  --start: #2c8a47;
+  --cap-stop: #1d2022;
+  --metal: #aab2b7;
+  --metal-hi: #e1e6e9;
+  --plastic: #b3362e;
+  --belt: #2b3033;
+  --belt-stripe: #454c50;
+  --led-off: #9aa19d;
+  --lamp-on: #fff4c2;
+  --lcd-bg: #c7d1bb;
+  --lcd-ink: #1a2215;
+  --shadow: rgba(20, 28, 32, .16);
+  --f-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --f-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --row-h: 58px;
+  --wire-y: 30px;
+  --chip-ink: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121618; --panel: #1b2124; --plate: #1f2629; --ink: #e2e7e4; --muted: #97a2a1;
+    --line: #36423f; --accent: #70a8e6; --accent-ink: #0c1826; --flow: #44d27d; --idle: #6f9ad0;
+    --warn: #f0c232; --danger: #ef5f58; --start: #3fae63; --cap-stop: #0b0d0e; --metal: #8e979c;
+    --metal-hi: #cbd2d6; --plastic: #d4544a; --belt: #0c0f10; --belt-stripe: #2a3134; --led-off: #3c4543;
+    --lamp-on: #fff0a8; --lcd-bg: #1d2a1d; --lcd-ink: #b9eca0; --shadow: rgba(0, 0, 0, .45); --chip-ink: #0c1410;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121618; --panel: #1b2124; --plate: #1f2629; --ink: #e2e7e4; --muted: #97a2a1;
+  --line: #36423f; --accent: #70a8e6; --accent-ink: #0c1826; --flow: #44d27d; --idle: #6f9ad0;
+  --warn: #f0c232; --danger: #ef5f58; --start: #3fae63; --cap-stop: #0b0d0e; --metal: #8e979c;
+  --metal-hi: #cbd2d6; --plastic: #d4544a; --belt: #0c0f10; --belt-stripe: #2a3134; --led-off: #3c4543;
+  --lamp-on: #fff0a8; --lcd-bg: #1d2a1d; --lcd-ink: #b9eca0; --shadow: rgba(0, 0, 0, .45); --chip-ink: #0c1410;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 400 15px/1.55 var(--f-body); }
+button, select, input { font: inherit; color: inherit; }
+table { font: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.app { max-width: 1320px; margin: 0 auto; padding-inline: 16px; padding-block: 14px 48px; display: grid; gap: 12px; }
+
+/* ── Kopf ─────────────────────────────── */
+.masthead { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 8px 16px; }
+.eyebrow { margin: 0; font: 500 12px/1.2 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { margin: 2px 0 0; font: 700 clamp(28px, 6vw, 42px)/1 var(--f-display); letter-spacing: .01em; text-transform: uppercase; text-wrap: balance; }
+.mode { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); font: 600 13px/1 var(--f-body); }
+.mode i { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.mode.fault i { background: var(--danger); }
+
+/* ── SPS-LED-Leiste ───────────────────── */
+.iobar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px;
+  padding: 8px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 4px 14px -10px var(--shadow); }
+.plc-id { display: grid; gap: 2px; }
+.plc-id b { font: 700 15px/1 var(--f-display); letter-spacing: .06em; text-transform: uppercase; }
+.runsw { border: 1px solid var(--line); background: var(--bg); border-radius: 4px; padding: 3px 8px; font: 600 12px/1.2 var(--f-mono); cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+.runsw i { width: 8px; height: 8px; border-radius: 50%; background: var(--led-off); }
+.runsw.run i { background: var(--flow); box-shadow: 0 0 6px var(--flow); }
+.runsw.stop i { background: var(--warn); }
+.runsw.off i { background: var(--led-off); box-shadow: none; }
+.ledgroup { display: flex; align-items: end; gap: 4px; }
+.lg-label { font: 700 14px/1 var(--f-display); color: var(--muted); padding-right: 2px; align-self: center; }
+.led { display: grid; justify-items: center; gap: 2px; width: 30px; font: 500 10px/1.1 var(--f-mono); color: var(--muted); }
+.led i { width: 12px; height: 12px; border-radius: 50%; background: var(--led-off); box-shadow: inset 0 1px 2px var(--shadow); }
+.led.on i { background: var(--flow); box-shadow: 0 0 7px var(--flow); }
+.led .sym { color: var(--ink); font-weight: 600; }
+@media (max-width: 560px) {
+  .iobar { gap: 6px 8px; padding: 6px 10px; }
+  .plc-id { display: flex; align-items: center; gap: 8px; flex-basis: 100%; }
+  .ledgroup { gap: 1px; }
+  .led { width: 23px; font-size: 9px; }
+  .led i { width: 10px; height: 10px; }
+  .lg-label { font-size: 13px; }
+}
+
+/* ── Register ─────────────────────────── */
+.tabs { display: flex; gap: 2px; overflow-x: auto; border-bottom: 1px solid var(--line); scrollbar-width: none; }
+.tab { flex: none; border: 0; background: none; padding: 10px 12px 8px; cursor: pointer; font: 600 16px/1 var(--f-display); letter-spacing: .05em; text-transform: uppercase;
+  color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -1px; }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+
+.bench { display: grid; gap: 16px; align-items: start; }
+@media (min-width: 980px) {
+  .bench { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+  .tab.only-narrow { display: none; }
+  .pane-anlage { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 72px); }
+}
+.pane { display: grid; gap: 14px; min-width: 0; }
+
+h2, h3 { font-family: var(--f-display); font-weight: 700; letter-spacing: .04em; text-transform: uppercase; text-wrap: balance; margin: 0; }
+h2 { font-size: 20px; line-height: 1.1; }
+h3 { font-size: 16px; line-height: 1.15; }
+.grp-title { margin: 0 0 8px; font: 600 12px/1.2 var(--f-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.de { font-style: italic; }
+.small { font-size: 13px; color: var(--muted); }
+p { margin: 0; }
+code, .mono { font-family: var(--f-mono); font-size: .92em; }
+
+.box { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 14px; display: grid; gap: 10px; min-width: 0; }
+
+/* ── Anlage ───────────────────────────── */
+.plant { background: var(--plate); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.plant canvas { display: block; width: 100%; height: auto; aspect-ratio: 640 / 300; max-width: 100%; }
+.binstats { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 8px 12px; border-top: 1px solid var(--line); font: 500 13px/1.3 var(--f-mono); font-variant-numeric: tabular-nums; }
+.binstats b { font-weight: 600; }
+.ok-t { color: var(--flow); }
+.bad-t { color: var(--danger); }
+
+.console { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.op-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.opmsg { min-height: 1.4em; font-size: 13px; color: var(--muted); }
+
+.pb, .estop, .mainsw { -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; touch-action: manipulation; cursor: pointer; }
+.pb { border: 0; background: none; padding: 0; display: grid; justify-items: center; gap: 4px; font: 600 11px/1.1 var(--f-mono); }
+.pb .bezel { width: 54px; height: 54px; border-radius: 50%; background: linear-gradient(145deg, #c9cdcf, #7d8488); display: grid; place-items: center; box-shadow: 0 2px 4px var(--shadow); }
+.pb .cap { width: 40px; height: 40px; border-radius: 50%; box-shadow: inset 0 -3px 6px rgba(0,0,0,.35), inset 0 2px 3px rgba(255,255,255,.35); transition: transform .06s; }
+.pb-start .cap { background: var(--start); }
+.pb-stop .cap { background: var(--cap-stop); }
+.pb.down .cap { transform: scale(.9); box-shadow: inset 0 2px 6px rgba(0,0,0,.5); }
+
+.estop { border: 0; background: none; padding: 0; display: grid; justify-items: center; gap: 4px; font: 600 11px/1.1 var(--f-mono); }
+.estop .ring { width: 70px; height: 70px; border-radius: 50%; background: var(--warn); display: grid; place-items: center; box-shadow: 0 2px 4px var(--shadow); }
+.estop .mush { width: 50px; height: 50px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ef6a5f, #b3231c 60%, #7d1712); box-shadow: 0 5px 0 #6c140f, 0 7px 8px rgba(0,0,0,.35); transition: transform .08s, box-shadow .08s; }
+.estop[aria-pressed="true"] .mush { transform: translateY(4px) scale(.94); box-shadow: 0 1px 0 #6c140f, 0 2px 3px rgba(0,0,0,.35); }
+.estop .state { font-weight: 500; color: var(--muted); }
+.estop[aria-pressed="true"] .state { color: var(--danger); }
+
+.lamp { display: grid; justify-items: center; gap: 4px; font: 600 11px/1.1 var(--f-mono); }
+.lamp .bulb { width: 34px; height: 34px; border-radius: 50%; border: 4px solid #8b9296; background: var(--led-off); }
+.lamp.on .bulb { background: var(--lamp-on); box-shadow: 0 0 14px var(--lamp-on), 0 0 3px #fff inset; }
+
+.mainsw { border: 0; background: none; padding: 0; display: grid; justify-items: center; gap: 4px; font: 600 11px/1.1 var(--f-mono); }
+.mainsw .dial { position: relative; width: 60px; height: 60px; border-radius: 50%; background: radial-gradient(circle, #9aa1a5, #5f666a); box-shadow: 0 2px 5px var(--shadow); }
+.mainsw .dial::before { content: "0"; position: absolute; left: -2px; top: 50%; transform: translate(-100%, -50%); font: 700 13px/1 var(--f-mono); color: var(--muted); }
+.mainsw .dial::after { content: "I"; position: absolute; top: -3px; left: 50%; transform: translate(-50%, -100%); font: 700 13px/1 var(--f-mono); color: var(--muted); }
+.mainsw .handle { position: absolute; left: 50%; top: 50%; width: 14px; height: 52px; margin: -26px 0 0 -7px; border-radius: 6px; background: linear-gradient(90deg, #2a2e30, #474d50); transition: transform .15s; }
+.mainsw[aria-pressed="false"] .handle { transform: rotate(-90deg); }
+.lockbtn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; background: var(--bg); cursor: pointer; font: 500 13px/1.1 var(--f-body); }
+.lockbtn svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2; }
+.lockbtn[aria-pressed="true"] { border-color: var(--danger); color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, var(--panel)); }
+
+.btn { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 8px 12px; cursor: pointer; font: 500 14px/1.2 var(--f-body); }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.btn.danger { border-color: var(--danger); color: var(--danger); }
+.btn[aria-pressed="true"] { background: color-mix(in srgb, var(--accent) 16%, var(--panel)); border-color: var(--accent); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg button { border: 0; border-right: 1px solid var(--line); background: var(--panel); padding: 7px 11px; cursor: pointer; font: 600 13px/1 var(--f-mono); }
+.seg button:last-child { border-right: 0; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ── Aufgabe / Hinweise ───────────────── */
+details.task, details.howto { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
+details.task > summary, details.howto > summary { cursor: pointer; padding: 12px 14px; font: 700 16px/1.2 var(--f-display); letter-spacing: .04em; text-transform: uppercase; }
+.task-body { padding: 0 14px 14px; display: grid; gap: 10px; }
+.task-body ol { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.task-body li p + p { margin-top: 2px; }
+.notice { border: 1px solid var(--line); border-left: 4px solid var(--accent); background: var(--panel); border-radius: 6px; padding: 12px 14px; display: grid; gap: 6px; }
+.notice.warn { border-left-color: var(--warn); }
+.hints { display: grid; gap: 8px; }
+.hint { border: 1px dashed var(--line); border-radius: 6px; padding: 10px 12px; background: var(--panel); }
+.hint b { font-family: var(--f-display); letter-spacing: .04em; text-transform: uppercase; }
+.confirm { border: 1px solid var(--warn); background: color-mix(in srgb, var(--warn) 12%, var(--panel)); border-radius: 6px; padding: 12px; display: grid; gap: 10px; }
+
+.results { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.results li { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; align-items: start; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
+.chip { display: inline-grid; place-items: center; min-width: 26px; height: 22px; padding: 0 6px; border-radius: 4px; font: 700 12px/1 var(--f-mono); color: var(--chip-ink); }
+.chip.ok { background: var(--flow); }
+.chip.bad { background: var(--danger); }
+.chip.idle { background: var(--led-off); }
+.results .vi { grid-column: 2; font-size: 13px; color: var(--muted); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend .sw { width: 26px; height: 0; border-top: 3px solid var(--flow); }
+.legend .sw.idle { border-top: 2px dashed var(--idle); }
+
+/* ── KOP-Editor ───────────────────────── */
+.ladder { display: grid; gap: 10px; }
+.rung { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px 10px; display: grid; gap: 6px; min-width: 0; }
+.rung-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.nw { font: 700 15px/1 var(--f-display); letter-spacing: .06em; text-transform: uppercase; }
+.nw-desc { font: 500 12px/1.2 var(--f-mono); color: var(--muted); flex: 1 1 auto; min-width: 0; }
+.rung-tools { display: flex; gap: 4px; }
+.icon-btn { border: 1px solid var(--line); background: var(--bg); border-radius: 4px; min-width: 30px; height: 28px; padding: 0 6px; cursor: pointer; font: 600 12px/1 var(--f-mono); }
+.icon-btn:disabled { opacity: .35; cursor: not-allowed; }
+.rung-scroll { overflow-x: auto; }
+.rung-grid { display: grid; grid-template-columns: 8px repeat(4, minmax(40px, 1fr) 22px) 74px; grid-auto-rows: var(--row-h); }
+.rail { grid-column: 1; border-left: 3px solid var(--ink); }
+.cell { position: relative; border: 0; background: none; padding: 0; cursor: pointer; display: grid; grid-template-rows: 15px 26px 13px; align-content: start; padding-top: 2px; color: var(--ink); border-radius: 4px; }
+.cell .gl { display: block; height: 26px; }
+.cell:hover, .coil:hover { background: color-mix(in srgb, var(--accent) 9%, transparent); }
+.cell .addr, .coil .addr { font: 600 11px/15px var(--f-mono); text-align: center; white-space: nowrap; }
+.cell .sym, .coil .sym { font: 500 10px/13px var(--f-mono); color: var(--muted); text-align: center; white-space: nowrap; overflow: hidden; }
+.cell svg { width: 100%; height: 26px; overflow: visible; }
+.cell svg path, .cell svg line { stroke: currentColor; stroke-width: 2; fill: none; vector-effect: non-scaling-stroke; }
+.cell.t-empty { color: var(--line); }
+.cell.t-empty .addr, .cell.t-empty .sym { visibility: hidden; }
+.link { position: relative; border: 0; background: none; padding: 0; color: var(--ink); }
+button.link { cursor: pointer; }
+button.link:hover .v.off { opacity: .6; }
+.link .hl, .link .hr { position: absolute; top: calc(var(--wire-y) - 1px); height: 2px; background: currentColor; }
+.link .hl { left: 0; width: 50%; }
+.link .hr { left: 50%; width: 50%; }
+.link .v { position: absolute; left: calc(50% - 1px); top: calc(var(--wire-y) - 1px); width: 2px; height: calc(var(--row-h) + 2px); background: currentColor; }
+.link .v.off { background: none; border-left: 2px dotted var(--line); opacity: .45; }
+.coil { position: relative; border: 0; background: none; padding: 2px 0 0 10px; cursor: pointer; display: grid; grid-template-rows: 15px 26px 13px; align-content: start; color: var(--ink); border-radius: 4px; }
+.coil::before { content: ""; position: absolute; left: 0; width: 12px; top: calc(var(--wire-y) - 1px); height: 2px; background: currentColor; }
+.coil .glyph { font: 700 17px/26px var(--f-mono); text-align: center; white-space: nowrap; }
+.coil .glyph.box { font-size: 11px; line-height: 20px; border: 2px solid currentColor; border-radius: 3px; margin: 3px 4px; }
+
+.ladder.live .cell:not(.t-empty), .ladder.live .link, .ladder.live .coil { color: var(--idle); }
+.ladder.live .cell:not(.t-empty) svg path, .ladder.live .cell:not(.t-empty) svg line { stroke-dasharray: 4 3; }
+.ladder.live .link .hl, .ladder.live .link .hr, .ladder.live .link .v:not(.off) { background: repeating-linear-gradient(90deg, currentColor 0 4px, transparent 4px 7px); }
+.ladder.live .link .v:not(.off) { background: repeating-linear-gradient(180deg, currentColor 0 4px, transparent 4px 7px); }
+.ladder.live .cell.on, .ladder.live .coil.on { color: var(--flow); }
+.ladder.live .cell.on svg path, .ladder.live .cell.on svg line { stroke-dasharray: none; stroke-width: 3; }
+.ladder.live .link .on { background: var(--flow) !important; }
+
+/* ── Fehlersuche ──────────────────────── */
+.report { border-left: 4px solid var(--danger); }
+.quote { font: 400 16px/1.5 var(--f-body); }
+.quote .de { font-style: italic; }
+.timer { font: 600 13px/1 var(--f-mono); font-variant-numeric: tabular-nums; color: var(--muted); }
+.dmm { display: grid; gap: 10px; }
+.lcd { background: var(--lcd-bg); color: var(--lcd-ink); border-radius: 6px; padding: 10px 14px; display: grid; gap: 2px; border: 1px solid var(--line); }
+.lcd .val { font: 600 34px/1.1 var(--f-mono); font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.lcd .where { font: 500 12px/1.3 var(--f-mono); opacity: .8; }
+.field { display: grid; gap: 4px; }
+.field label { font: 600 12px/1.2 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+select, input[type="number"] { width: 100%; min-width: 0; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: end; }
+.row > .field { flex: 1 1 220px; }
+.rules { display: flex; flex-wrap: wrap; gap: 6px; }
+.rule { display: inline-flex; align-items: center; gap: 6px; padding: 5px 9px; border-radius: 999px; border: 1px solid var(--line); font: 500 12px/1.2 var(--f-body); background: var(--bg); }
+.rule i { width: 8px; height: 8px; border-radius: 50%; background: var(--led-off); }
+.rule.ok { border-color: var(--flow); }
+.rule.ok i { background: var(--flow); }
+.log { margin: 0; padding: 0; list-style: none; max-height: 240px; overflow: auto; display: grid; gap: 4px; font: 400 12.5px/1.4 var(--f-mono); }
+.log li { display: grid; grid-template-columns: 44px 1fr; gap: 8px; padding: 4px 0; border-bottom: 1px dotted var(--line); }
+.log time { color: var(--muted); font-variant-numeric: tabular-nums; }
+.log .stop { color: var(--danger); }
+
+.talk { display: grid; gap: 12px; }
+.examiner { display: grid; gap: 4px; }
+.examiner .who { font: 600 12px/1.2 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.examiner .q { font: 600 18px/1.4 var(--f-body); }
+.answers { display: grid; gap: 8px; }
+.answers button { text-align: left; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); padding: 10px 12px; cursor: pointer; font: 400 15px/1.45 var(--f-body); }
+.answers button:hover:not(:disabled) { border-color: var(--accent); }
+.answers button.right { border-color: var(--flow); background: color-mix(in srgb, var(--flow) 12%, var(--panel)); }
+.answers button.wrong { border-color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, var(--panel)); }
+.answers button:disabled { cursor: default; }
+.explain { border-left: 3px solid var(--accent); padding: 6px 12px; background: var(--panel); }
+
+.score { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: end; }
+.note { font: 700 64px/.9 var(--f-display); }
+.note small { display: block; font: 600 14px/1.2 var(--f-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.pts { font: 600 22px/1.1 var(--f-mono); font-variant-numeric: tabular-nums; }
+.deduct { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; }
+
+/* ── Tabellen ─────────────────────────── */
+.tablewrap { overflow-x: auto; }
+table.io { border-collapse: collapse; width: 100%; min-width: 520px; font-size: 13.5px; }
+table.io th, table.io td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.io th { font: 600 12px/1.2 var(--f-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); }
+table.io td:first-child, table.io td:nth-child(2) { font-family: var(--f-mono); white-space: nowrap; }
+.prose { display: grid; gap: 10px; max-width: 68ch; }
+.prose ul, .prose ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
+
+/* ── Dialoge ──────────────────────────── */
+dialog.sheet { border: 1px solid var(--line); border-radius: 10px; padding: 0; width: min(440px, calc(100vw - 32px)); background: var(--panel); color: var(--ink); box-shadow: 0 20px 50px -20px var(--shadow); }
+dialog.sheet::backdrop { background: rgba(10, 14, 16, .45); }
+.sheet-body { padding: 16px; display: grid; gap: 12px; }
+.typegrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.typegrid label { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; cursor: pointer; font-size: 14px; background: var(--bg); }
+.typegrid label:has(input:checked) { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg)); }
+.typegrid .g { font: 700 14px/1 var(--f-mono); min-width: 38px; }
+.sheet-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pb .cap, .estop .mush, .mainsw .handle { transition: none; }
+}
+</style>
+
+<div class="app">
+  <header class="masthead">
+    <div>
+      <p class="eyebrow">Sortierstation · LF 7 / LF 11 · AP1 &amp; AP2</p>
+      <h1>Xưởng ảo Mechatronik</h1>
+    </div>
+    <div class="mode" id="modePill"><i></i><span>Chế độ: Lập trình</span></div>
+  </header>
+
+  <div class="iobar" id="iobar" aria-label="SPS −A1 Ein- und Ausgänge">
+    <div class="plc-id"><b>−A1 SPS</b><button class="runsw run" id="runSwitch" type="button" title="Betriebsartenschalter RUN / STOP"><i></i><span>RUN</span></button></div>
+    <div class="ledgroup" id="ledsI"><span class="lg-label">I</span></div>
+    <div class="ledgroup" id="ledsQ"><span class="lg-label">Q</span></div>
+  </div>
+
+  <nav class="tabs" role="tablist" aria-label="Bereiche">
+    <button class="tab only-narrow" role="tab" data-tab="anlage" type="button">Trạm</button>
+    <button class="tab" role="tab" data-tab="programm" type="button">Chương trình KOP</button>
+    <button class="tab" role="tab" data-tab="fehler" type="button">Tìm lỗi AP2</button>
+    <button class="tab" role="tab" data-tab="hilfe" type="button">Hướng dẫn</button>
+  </nav>
+
+  <main class="bench">
+    <!-- ════════ ANLAGE ════════ -->
+    <section class="pane pane-anlage" id="pane-anlage" aria-label="Anlage">
+      <div class="plant">
+        <canvas id="plant" width="640" height="300" aria-label="Draufsicht der Sortierstation: Förderband, Sensoren B1 bis B3, Zylinder 1A1, Behälter"></canvas>
+        <div class="binstats" id="binStats"></div>
+      </div>
+      <div class="console">
+        <div class="box">
+          <p class="grp-title">Bedienpult · Bảng điều khiển</p>
+          <div class="op-row">
+            <button class="pb pb-start" id="btnS1" type="button" aria-label="Taster START S1 (gedrückt halten)"><span class="bezel"><span class="cap"></span></span>−S1 START</button>
+            <button class="pb pb-stop" id="btnS0" type="button" aria-label="Taster STOPP S0"><span class="bezel"><span class="cap"></span></span>−S0 STOPP</button>
+            <button class="estop" id="btnNH" type="button" aria-pressed="false" aria-label="NOT-HALT"><span class="ring"><span class="mush"></span></span><span>NOT-HALT</span><span class="state" id="nhState">entriegelt</span></button>
+            <div class="lamp" id="lampH1" title="Meldeleuchte H1 – Anlage EIN"><span class="bulb"></span><span>−H1</span></div>
+          </div>
+        </div>
+        <div class="box">
+          <p class="grp-title">Hauptschalter · Công tắc chính</p>
+          <div class="op-row">
+            <button class="mainsw" id="btnQ1" type="button" aria-pressed="true" aria-label="Hauptschalter Q1"><span class="dial"><span class="handle"></span></span><span id="q1State">−Q1 · I</span></button>
+            <button class="lockbtn" id="btnLock" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><span id="lockState">Schloss offen</span></button>
+          </div>
+          <p class="small">Nur in Stellung 0 abschließbar (Regel 2: gegen Wiedereinschalten sichern).</p>
+        </div>
+        <div class="box">
+          <p class="grp-title">Magazin · Cấp phôi</p>
+          <div class="op-row">
+            <button class="btn" id="feedMetal" type="button">+ Metall</button>
+            <button class="btn" id="feedPlastic" type="button">+ Kunststoff</button>
+            <button class="btn" id="feedAuto" type="button" aria-pressed="true">Tự động</button>
+          </div>
+        </div>
+        <div class="box">
+          <p class="grp-title">Mô phỏng</p>
+          <div class="op-row">
+            <div class="seg" id="speedSeg" role="group" aria-label="Tốc độ mô phỏng">
+              <button type="button" data-speed="1" aria-pressed="true">×1</button>
+              <button type="button" data-speed="2" aria-pressed="false">×2</button>
+              <button type="button" data-speed="4" aria-pressed="false">×4</button>
+            </div>
+            <button class="btn" id="btnClearPlant" type="button">Dọn băng tải</button>
+          </div>
+        </div>
+      </div>
+      <p class="opmsg" id="opMsg" aria-live="polite"></p>
+    </section>
+
+    <!-- ════════ PROGRAMM ════════ -->
+    <section class="pane" id="pane-programm" aria-label="Programm" hidden>
+      <div class="notice warn" id="progLocked" hidden>
+        <h3>Know-how-Schutz</h3>
+        <p>Trong bài tìm lỗi, trạm chạy chương trình chuẩn đã được nghiệm thu và bị khóa. Hãy chẩn đoán bằng đèn LED I/O của SPS, đồng hồ vạn năng và quan sát trạm, giống kỳ thi AP2.</p>
+      </div>
+      <div class="pane" id="progArea">
+        <details class="task" open>
+          <summary>Aufgabe · Bài tập lập trình</summary>
+          <div class="task-body">
+            <p class="de">Programmieren Sie die Sortierstation in KOP (Kontaktplan).</p>
+            <ol>
+              <li><p class="de">−S1 (Schließer) schaltet die Anlage ein, −S0 (Öffner) schaltet sie aus. Merker M0.1 = „Anlage EIN“ (Selbsthaltung).</p><p class="small">S1 bật trạm, S0 tắt trạm, dùng mạch tự giữ với Merker M0.1.</p></li>
+              <li><p class="de">NOT-HALT (I0.7, Öffner) schaltet die Anlage aus. Nach dem Entriegeln darf sie nicht selbstständig wieder anlaufen.</p><p class="small">Nhấn Not-Halt phải tắt trạm; nhả ra thì trạm không được tự chạy lại.</p></li>
+              <li><p class="de">−H1 leuchtet, solange die Anlage eingeschaltet ist.</p><p class="small">Đèn H1 sáng khi trạm đang bật.</p></li>
+              <li><p class="de">Metallteile (erkannt von −B2) werden an −B3 angehalten und vom Zylinder 1A1 in den Metallbehälter geschoben: ausfahren bis −1B2, dann zurück. Kunststoffteile laufen durch.</p><p class="small">Chi tiết kim loại dừng tại B3, xi lanh đẩy vào thùng kim loại (ra tới 1B2 rồi lùi). Chi tiết nhựa chạy thẳng tới thùng cuối băng.</p></li>
+            </ol>
+            <p class="small">NW 1–2 là ví dụ khởi đầu, chưa đủ yêu cầu. Bảng gán địa chỉ (<span class="de">Zuordnungsliste</span>) nằm ở thẻ Hướng dẫn.</p>
+          </div>
+        </details>
+
+        <div class="toolbar">
+          <button class="btn primary" id="btnGrade" type="button">Chấm bài tự động</button>
+          <button class="btn" id="btnHint" type="button">Gợi ý (0/3)</button>
+          <button class="btn" id="btnSample" type="button">Nạp lời giải mẫu</button>
+          <button class="btn" id="btnClearProg" type="button">Xóa chương trình</button>
+        </div>
+        <div class="confirm" id="confirmBox" hidden>
+          <p id="confirmText"></p>
+          <div class="toolbar"><button class="btn primary" id="confirmYes" type="button"></button><button class="btn" id="confirmNo" type="button">Để tôi tự làm tiếp</button></div>
+        </div>
+        <div class="hints" id="hintBox"></div>
+        <div class="box" id="gradeBox" hidden></div>
+
+        <div class="legend">
+          <span><i class="sw"></i>Signalfluss (có dòng)</span>
+          <span><i class="sw idle"></i>kein Signal (không có dòng) — như TIA Portal online</span>
+        </div>
+        <div class="ladder" id="ladder"></div>
+        <div class="toolbar"><button class="btn" id="btnAddRung" type="button">+ Netzwerk</button></div>
+        <p class="small">Chạm vào một ô để chọn tiếp điểm, chạm vào khe nhỏ giữa hai ô để nối nhánh song song (dây dọc). Thay đổi được nạp ngay vào SPS.</p>
+      </div>
+    </section>
+
+    <!-- ════════ FEHLERSUCHE ════════ -->
+    <section class="pane" id="pane-fehler" aria-label="Fehlersuche" hidden>
+      <div class="box" id="exIntro">
+        <h2>Fehlersuche wie in der AP2</h2>
+        <p>Trạm sẽ bị cài ngẫu nhiên <b>một</b> lỗi thật (cảm biến hỏng, đứt dây, cuộn van đứt, mất khí nén, aptomat nhảy…). Bạn nhận báo lỗi từ người vận hành, quan sát đèn LED, đo bằng đồng hồ vạn năng, sửa đúng chỗ, chạy thử rồi bàn giao cho giám khảo.</p>
+        <p>Giám khảo chấm <b>quy trình</b>: có đo để chứng minh không, có làm đúng thứ tự quy tắc an toàn trước khi sửa dây/linh kiện không, có thay linh kiện theo phỏng đoán không, có chạy thử không. Sau đó là <span class="de">Fachgespräch</span> bằng tiếng Đức. Điểm theo thang IHK 100 điểm.</p>
+        <div class="toolbar"><button class="btn primary" id="btnStartEx" type="button">Bắt đầu bài tìm lỗi</button></div>
+      </div>
+
+      <div class="pane" id="exWork" hidden>
+        <div class="box report">
+          <div class="row" style="justify-content:space-between;align-items:center"><h2>Störungsmeldung</h2><span class="timer" id="exTimer">00:00</span></div>
+          <p class="quote"><span class="de" id="exSymDe"></span></p>
+          <p class="small" id="exSymVi"></p>
+        </div>
+
+        <details class="howto">
+          <summary>Quy trình tìm lỗi</summary>
+          <div class="task-body">
+            <ol>
+              <li>Quan sát triệu chứng: nhấn −S1, xem trạm chạy tới đâu thì kẹt.</li>
+              <li>Đọc đèn LED I/O của SPS: tín hiệu vào có tới SPS không? SPS có xuất lệnh ra không?</li>
+              <li>Khoanh vùng: cảm biến → dây → cọc SPS → chương trình → cọc ra → dây → cơ cấu chấp hành.</li>
+              <li>Đo từ nguồn tín hiệu tới đích để chứng minh chỗ hỏng. Đo điện trở chỉ khi đã cắt điện.</li>
+              <li>Trước khi thay dây/linh kiện: Freischalten → gegen Wiedereinschalten sichern → Spannungsfreiheit feststellen.</li>
+              <li>Sửa xong: dọn chi tiết còn nằm trên băng (đưa trạm về trạng thái ban đầu), mở khóa, đóng điện, nhấn −S1 và chạy thử cả kim loại lẫn nhựa. Rồi mới bàn giao.</li>
+            </ol>
+          </div>
+        </details>
+
+        <div class="box dmm">
+          <h3>Multimeter · Đồng hồ vạn năng</h3>
+          <div class="lcd" aria-live="polite"><span class="val" id="dmmVal">– – –</span><span class="where" id="dmmWhere">Chọn điểm đo rồi nhấn Messen</span></div>
+          <div class="row">
+            <div class="field"><label for="dmmPoint">Messpunkt · Điểm đo</label><select id="dmmPoint"></select></div>
+            <button class="btn primary" id="btnMeasure" type="button">Messen</button>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Sicherheit · An toàn trước khi sửa</h3>
+          <div class="rules">
+            <span class="rule" id="rule1"><i></i>1 · Freigeschaltet</span>
+            <span class="rule" id="rule2"><i></i>2 · Gesichert</span>
+            <span class="rule" id="rule3"><i></i>3 · Spannungsfrei festgestellt</span>
+          </div>
+          <div class="toolbar"><button class="btn" id="btnDeadCheck" type="button">Spannungsfreiheit feststellen (allpolig)</button></div>
+          <p class="small">Công tắc chính −Q1 và ổ khóa nằm trên bảng điều khiển của trạm. Với lưới hạ áp trong trạm này, quy tắc 4 và 5 (nối đất, che chắn) không bắt buộc.</p>
+        </div>
+
+        <div class="box">
+          <h3>Instandsetzung · Sửa chữa</h3>
+          <div class="row">
+            <div class="field"><label for="repairSel">Maßnahme · Biện pháp</label><select id="repairSel"></select></div>
+            <button class="btn primary" id="btnRepair" type="button">Durchführen</button>
+          </div>
+          <div class="rules">
+            <span class="rule" id="ftMetal"><i></i>Funktionsprüfung Metall</span>
+            <span class="rule" id="ftPlastic"><i></i>Funktionsprüfung Kunststoff</span>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <button class="btn primary" id="btnHandover" type="button">Übergabe an den Prüfer</button>
+          <button class="btn" id="btnAbort" type="button">Hủy bài</button>
+        </div>
+        <div class="confirm" id="handoverBox" hidden>
+          <p>Bạn chắc chắn đã sửa xong, đã đóng điện lại và đã chạy thử? Sau khi bàn giao sẽ không sửa được nữa.</p>
+          <div class="toolbar"><button class="btn primary" id="handoverYes" type="button">Abgeben · Bàn giao</button><button class="btn" id="handoverNo" type="button">Quay lại</button></div>
+        </div>
+
+        <div class="box">
+          <h3>Protokoll</h3>
+          <ol class="log" id="exLog"></ol>
+        </div>
+      </div>
+
+      <div class="box talk" id="exTalk" hidden></div>
+      <div class="pane" id="exResult" hidden></div>
+    </section>
+
+    <!-- ════════ HILFE ════════ -->
+    <section class="pane" id="pane-hilfe" aria-label="Hướng dẫn" hidden>
+      <div class="box">
+        <h2>Zuordnungsliste · Bảng gán địa chỉ</h2>
+        <div class="tablewrap"><table class="io" id="ioTable"><thead><tr><th>Operand</th><th>Symbol</th><th>Betriebsmittel</th><th>Ý nghĩa</th></tr></thead><tbody></tbody></table></div>
+        <p class="small">Tên thiết bị theo DIN EN 81346 (−B cảm biến, −M động cơ, −Q công tắc, −F bảo vệ, −K rơ-le). Cảm biến 3 dây: BN = +24 V, BK = tín hiệu, BU = 0 V.</p>
+      </div>
+      <div class="box prose">
+        <h2>Cách dùng</h2>
+        <ul>
+          <li><b>Trạm:</b> giữ −S1 để khởi động. −S0 là nút thường đóng (<span class="de">Öffner</span>): khi không nhấn, I0.6 = 1. Not-Halt chạm một lần để nhấn, chạm lần nữa để nhả (<span class="de">entriegeln</span>).</li>
+          <li><b>Not-Halt</b> cắt nguồn cơ cấu chấp hành bằng phần cứng qua rơ-le an toàn −K1, không phụ thuộc chương trình. Tín hiệu I0.7 chỉ để chương trình biết.</li>
+          <li><b>KOP:</b> ô trống làm đứt mạch. Dùng ô <span class="mono">─</span> (Leitung) để nối tới cuộn dây. Nhánh song song: đặt tiếp điểm ở hàng dưới rồi chạm khe giữa các ô để nối dây dọc.</li>
+          <li><b>Theo dõi online:</b> khi SPS ở RUN, đường xanh lá liền là có dòng tín hiệu, xanh dương nét đứt là không có.</li>
+          <li><b>Chuyển RUN → STOP → RUN</b> là khởi động lại (<span class="de">Neustart</span>): Merker, Timer và đầu ra bị xóa.</li>
+        </ul>
+      </div>
+      <div class="box prose">
+        <h2>Die fünf Sicherheitsregeln</h2>
+        <ol>
+          <li><span class="de">Freischalten</span> — cắt điện hoàn toàn.</li>
+          <li><span class="de">Gegen Wiedereinschalten sichern</span> — khóa công tắc, treo biển.</li>
+          <li><span class="de">Spannungsfreiheit feststellen (allpolig)</span> — đo xác nhận không còn điện.</li>
+          <li><span class="de">Erden und kurzschließen</span> — nối đất và ngắn mạch.</li>
+          <li><span class="de">Benachbarte, unter Spannung stehende Teile abdecken oder abschranken</span> — che chắn phần mang điện bên cạnh.</li>
+        </ol>
+      </div>
+    </section>
+  </main>
+</div>
+
+<dialog class="sheet" id="dlgCell">
+  <form method="dialog" class="sheet-body">
+    <h3>Kontakt · Tiếp điểm</h3>
+    <div class="typegrid" role="radiogroup" aria-label="Elementtyp">
+      <label><input type="radio" name="cellType" value="empty"><span class="g">·</span>Leer</label>
+      <label><input type="radio" name="cellType" value="wire"><span class="g">──</span>Leitung</label>
+      <label><input type="radio" name="cellType" value="no"><span class="g">┤ ├</span>Schließer</label>
+      <label><input type="radio" name="cellType" value="nc"><span class="g">┤/├</span>Öffner</label>
+    </div>
+    <div class="field"><label for="cellAddr">Operand</label><select id="cellAddr"></select></div>
+    <p class="small">Schließer (NO) dẫn khi bit = 1. Öffner (NC) dẫn khi bit = 0.</p>
+    <div class="sheet-actions"><button class="btn" value="cancel" type="submit">Hủy</button><button class="btn primary" value="ok" type="submit">Übernehmen</button></div>
+  </form>
+</dialog>
+
+<dialog class="sheet" id="dlgCoil">
+  <form method="dialog" class="sheet-body">
+    <h3>Spule · Cuộn dây</h3>
+    <div class="typegrid" role="radiogroup" aria-label="Spulentyp">
+      <label><input type="radio" name="coilType" value="coil"><span class="g">( )</span>Zuweisung</label>
+      <label><input type="radio" name="coilType" value="set"><span class="g">(S)</span>Setzen</label>
+      <label><input type="radio" name="coilType" value="reset"><span class="g">(R)</span>Rücksetzen</label>
+      <label><input type="radio" name="coilType" value="ton"><span class="g">TON</span>Einschaltverz.</label>
+    </div>
+    <div class="field"><label for="coilAddr">Operand</label><select id="coilAddr"></select></div>
+    <div class="field" id="ptField"><label for="coilPt">Zeitwert PT (s)</label><input type="number" id="coilPt" min="0.1" max="60" step="0.1" value="2"></div>
+    <div class="sheet-actions"><button class="btn" value="cancel" type="submit">Hủy</button><button class="btn primary" value="ok" type="submit">Übernehmen</button></div>
+  </form>
+</dialog>
+
+<script>
+(() => {
+'use strict';
+
+/* ═══════════ Grunddaten ═══════════ */
+const COLS = 4, MAX_ROWS = 3, DT = 0.01;
+const BELT = 540, PW = 40, B1X = 50, B2X = 220, B3X = 390, PUSH_L = B3X - 46, PUSH_R = B3X + 6, SPEED = 80, CYL_T = 0.8;
+
+const IO = {
+  I: [
+    ['B1', 'Optischer Sensor Einlauf', 'Cảm biến quang đầu băng'],
+    ['B2', 'Induktiver Sensor (Metall)', 'Cảm biến cảm ứng – phát hiện kim loại'],
+    ['B3', 'Optischer Sensor Auswerfer', 'Cảm biến quang tại vị trí đẩy'],
+    ['1B1', 'Zylinder 1A1 eingefahren', 'Xi lanh ở vị trí lùi'],
+    ['1B2', 'Zylinder 1A1 ausgefahren', 'Xi lanh đã đẩy ra hết'],
+    ['S1', 'Taster START (Schließer)', 'Nút Start – thường mở'],
+    ['S0', 'Taster STOPP (Öffner)', 'Nút Stop – thường đóng'],
+    ['NH', 'NOT-HALT (Öffner)', 'Dừng khẩn cấp – thường đóng'],
+  ],
+  Q: [
+    ['M1', 'Motor Förderband', 'Động cơ băng tải'],
+    ['1M1', 'Magnetspule 1V1 (Zylinder aus)', 'Cuộn van điện từ – xi lanh ra'],
+    ['H1', 'Meldeleuchte „Anlage EIN“', 'Đèn báo trạm đang bật'],
+    ['—', 'Reserve', 'Dự phòng'],
+  ],
+};
+const ADDR = {
+  I: [...Array(8)].map((_, i) => 'I0.' + i),
+  Q: [...Array(4)].map((_, i) => 'Q0.' + i),
+  M: [...Array(8)].map((_, i) => 'M0.' + i),
+  T: [...Array(4)].map((_, i) => 'T' + i),
+};
+const parse = a => a[0] === 'T' ? { area: 'T', idx: +a.slice(1) } : { area: a[0], idx: +a.split('.')[1] };
+const rd = (img, a) => { const p = parse(a); return !!img[p.area][p.idx]; };
+const wr = (img, a, v) => { const p = parse(a); if (p.area === 'Q' || p.area === 'M') img[p.area][p.idx] = !!v; };
+function symOf(a) {
+  const p = parse(a);
+  if (p.area === 'I') return IO.I[p.idx][0];
+  if (p.area === 'Q') return IO.Q[p.idx][0] === '—' ? '' : IO.Q[p.idx][0];
+  if (p.area === 'T') return 'Timer';
+  return '';
+}
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const overlap = (a0, a1, b0, b1) => Math.max(0, Math.min(a1, b1) - Math.max(a0, b0));
+
+/* ═══════════ KOP-Programm ═══════════ */
+const emptyRow = () => Array.from({ length: COLS }, () => ({ t: 'empty', a: 'I0.0' }));
+const emptyLinks = () => new Array(COLS + 1).fill(false);
+function newRung() { return { rows: 1, cells: [emptyRow()], links: [], coil: { t: 'coil', a: 'Q0.0', pt: 2 } }; }
+
+// Kurzschreibweise: 'I0.5' Schließer, '/I0.6' Öffner, '-' Leitung, '.' leer; Spule '= Q0.0', 'S Q0.1', 'R M0.0', 'TON T0 2'
+function mkRung(rows, links, coil) {
+  const cells = rows.map(r => r.map(s => s === '-' ? { t: 'wire', a: 'I0.0' } : s === '.' ? { t: 'empty', a: 'I0.0' }
+    : s[0] === '/' ? { t: 'nc', a: s.slice(1) } : { t: 'no', a: s }));
+  const L = rows.slice(1).map(() => emptyLinks());
+  for (const [r, b] of links) L[r][b] = true;
+  const [k, a, pt] = coil.split(' ');
+  return { rows: rows.length, cells, links: L, coil: { t: { '=': 'coil', S: 'set', R: 'reset', TON: 'ton' }[k], a, pt: pt ? +pt : 2 } };
+}
+const SAMPLE = () => [
+  mkRung([['I0.5', 'I0.6', 'I0.7', '-'], ['M0.1', '.', '.', '.']], [[0, 1]], '= M0.1'),
+  mkRung([['I0.1', '-', '-', '-']], [], 'S M0.0'),
+  mkRung([['M0.1', 'I0.3', '/I0.2', '-'], ['.', '.', '/M0.0', '.']], [[0, 2], [0, 3]], '= Q0.0'),
+  mkRung([['M0.1', 'I0.2', 'M0.0', '-']], [], 'S Q0.1'),
+  mkRung([['I0.4', '-', '-', '-']], [], 'R Q0.1'),
+  mkRung([['I0.4', '-', '-', '-']], [], 'R M0.0'),
+  mkRung([['M0.1', '-', '-', '-']], [], '= Q0.2'),
+];
+const STARTER = () => [
+  mkRung([['I0.5', 'I0.6', '-', '-'], ['M0.1', '.', '.', '.']], [[0, 1]], '= M0.1'),
+  mkRung([['M0.1', '-', '-', '-']], [], '= Q0.2'),
+];
+
+function execProgram(prog, img, timers, dt, wantFlow) {
+  const flows = wantFlow ? [] : null;
+  for (const rung of prog) {
+    const R = rung.rows;
+    let node = new Array(R).fill(true);
+    const cf = wantFlow ? [] : null, bf = wantFlow ? [] : null;
+    for (let c = 0; c < COLS; c++) {
+      const out = new Array(R);
+      for (let r = 0; r < R; r++) {
+        const cell = rung.cells[r][c];
+        let cond = false;
+        if (cell.t === 'wire') cond = true;
+        else if (cell.t === 'no') cond = rd(img, cell.a);
+        else if (cell.t === 'nc') cond = !rd(img, cell.a);
+        out[r] = node[r] && cond;
+      }
+      const b = c + 1, merged = out.slice();
+      for (let r = 0; r < R;) {
+        let e = r, v = out[r];
+        while (e < R - 1 && rung.links[e] && rung.links[e][b]) { e++; v = v || out[e]; }
+        for (let k = r; k <= e; k++) merged[k] = v;
+        r = e + 1;
+      }
+      if (cf) { cf.push(out); bf.push(merged); }
+      node = merged;
+    }
+    const power = node[0], coil = rung.coil;
+    if (coil.t === 'coil') wr(img, coil.a, power);
+    else if (coil.t === 'set') { if (power) wr(img, coil.a, true); }
+    else if (coil.t === 'reset') { if (power) wr(img, coil.a, false); }
+    else if (coil.t === 'ton') {
+      const i = parse(coil.a).idx, tm = timers[i];
+      tm.et = power ? Math.min(tm.et + dt, coil.pt) : 0;
+      img.T[i] = power && tm.et >= coil.pt - 1e-9;
+    }
+    if (flows) flows.push({ cf, bf, power });
+  }
+  return flows;
+}
+
+/* ═══════════ Anlagenmodell ═══════════ */
+class Sim {
+  constructor(program, opt = {}) {
+    this.prog = program;
+    this.t = 0; this.parts = []; this.pid = 1; this.cyl = 0; this.beltPos = 0;
+    this.mainOn = true; this.locked = false; this.notHalt = false; this.runSw = true; this.wasRunning = false;
+    this.btn = { S1: false, S0: false }; this.hold = { S1: 0, S0: 0 }; this.relReq = { S1: false, S0: false };
+    this.faults = new Set(); this.s0Break = false;
+    this.img = { I: new Array(8).fill(false), Q: new Array(4).fill(false), M: new Array(8).fill(false), T: new Array(4).fill(false) };
+    this.timers = [0, 1, 2, 3].map(() => ({ et: 0 }));
+    this.autoFeed = !!opt.autoFeed; this.queue = opt.queue ? opt.queue.slice() : null; this.feedT = 0;
+    this.bins = { metal: [], plastic: [] }; this.onBin = null;
+    this.flows = null; this.wantFlow = false;
+    this.compute();
+  }
+  has(f) { return this.faults.has(f); }
+  get pressure() { return this.has('AIR') ? 0 : 6; }
+  get plcRunning() { return this.mainOn && this.runSw; }
+  line() { return this.parts.filter(p => p.y < 0.4); }
+  sensorRaw() {
+    const line = this.line(), at = (p, x) => p.x - PW < x && p.x > x;
+    return {
+      B1: line.some(p => at(p, B1X)), B2: line.some(p => p.type === 'metal' && at(p, B2X)), B3: line.some(p => at(p, B3X)),
+      S1B1: this.cyl <= 0.02, S1B2: this.cyl >= 0.98,
+    };
+  }
+  compute() {
+    const on = this.mainOn, sup = on && !this.has('FUSE'), raw = this.sensorRaw();
+    const out = {
+      B1: sup && raw.B1, B2: sup && !this.has('B2DEAD') && raw.B2, B3: sup && (this.has('B3STUCK') || raw.B3),
+      S1B1: sup && raw.S1B1, S1B2: sup && !this.has('S1B2') && raw.S1B2,
+    };
+    const inT = [out.B1, out.B2 && !this.has('WIREB2'), out.B3, out.S1B1, out.S1B2,
+      on && this.btn.S1, on && !this.btn.S0 && !this.s0Break, on && !this.notHalt];
+    const actPow = on && !this.notHalt, run = this.plcRunning, Q = this.img.Q;
+    const qT = [run && Q[0] && actPow, run && Q[1] && actPow, run && Q[2], run && Q[3]];
+    this.st = { on, sup, raw, out, inT, actPow, qT, motor: qT[0] && !this.has('WIREM1'), valve: qT[1] && !this.has('COIL'), lamp: qT[2] };
+  }
+  press(n) { this.btn[n] = true; this.hold[n] = 0; this.relReq[n] = false; }
+  release(n) { this.relReq[n] = true; }
+  step(dt) {
+    for (const n of ['S1', 'S0']) {
+      if (!this.btn[n]) continue;
+      this.hold[n] += dt;
+      if (this.relReq[n] && this.hold[n] >= 0.06) { this.btn[n] = false; this.relReq[n] = false; }
+    }
+    this.compute();
+    const run = this.plcRunning;
+    if (run && !this.wasRunning) {
+      this.img.M.fill(false); this.img.Q.fill(false); this.img.T.fill(false); this.timers.forEach(t => { t.et = 0; });
+    }
+    this.wasRunning = run;
+    for (let i = 0; i < 8; i++) this.img.I[i] = this.mainOn && this.st.inT[i];
+    if (run) this.flows = execProgram(this.prog, this.img, this.timers, dt, this.wantFlow);
+    else {
+      this.img.Q.fill(false); this.flows = null;
+      if (!this.mainOn) { this.img.M.fill(false); this.img.T.fill(false); }
+    }
+    this.compute();
+    this.physics(dt);
+    this.t += dt;
+  }
+  physics(dt) {
+    if (this.pressure > 0) this.cyl = clamp(this.cyl + (this.st.valve ? 1 : -1) * dt / CYL_T, 0, 1);
+    for (const p of this.parts) {
+      if (overlap(p.x - PW, p.x, PUSH_L, PUSH_R) >= 0.6 * PW && this.cyl > p.y) p.y = this.cyl;
+    }
+    for (const p of this.parts.slice()) if (p.y >= 0.9) this.toBin('metal', p);
+    if (this.st.motor) {
+      this.beltPos += SPEED * dt;
+      const line = this.line().sort((a, b) => b.x - a.x);
+      let limit = Infinity;
+      for (const p of line) {
+        let nx = Math.min(p.x + SPEED * dt, limit);
+        if (this.cyl > 0.3 && p.y < 0.05) {
+          if (overlap(p.x - PW, p.x, PUSH_L, PUSH_R) > 0) nx = p.x;
+          else if (p.x <= PUSH_L + 0.5 && nx > PUSH_L) nx = PUSH_L;
+        }
+        p.x = Math.max(p.x, nx);
+        limit = p.x - PW;
+      }
+      for (const p of line) if (p.x - PW / 2 > BELT) this.toBin('plastic', p);
+    }
+    if (this.autoFeed) {
+      const busy = this.parts.some(p => p.y < 0.4 && p.x < B3X + 12);
+      if (!busy) { this.feedT += dt; if (this.feedT >= 1.2) { const ty = this.nextType(); if (ty) this.spawn(ty); this.feedT = 0; } }
+      else this.feedT = 0;
+    }
+  }
+  toBin(bin, p) {
+    this.parts.splice(this.parts.indexOf(p), 1);
+    this.bins[bin].push(p.type);
+    if (this.onBin) this.onBin(bin, p.type);
+  }
+  spawn(type) {
+    if (this.parts.some(p => p.y < 0.4 && p.x - PW < PW + 6)) return false;
+    this.parts.push({ id: this.pid++, type, x: PW, y: 0 });
+    return true;
+  }
+  nextType() {
+    if (this.queue) return this.queue.length ? this.queue.shift() : null;
+    return Math.random() < 0.5 ? 'metal' : 'plastic';
+  }
+}
+
+/* ═══════════ Automatische Bewertung ═══════════ */
+function runFor(sim, sec) { const n = Math.round(sec / DT); for (let i = 0; i < n; i++) sim.step(DT); }
+function tap(sim, n, sec = 0.2) { sim.press(n); runFor(sim, sec); sim.release(n); runFor(sim, 0.1); }
+function gradeProgram(prog) {
+  const res = [];
+  let s = new Sim(prog); runFor(s, 0.3); tap(s, 'S1'); runFor(s, 0.5);
+  const started = s.st.motor, lampOn = s.st.lamp;
+  res.push({ ok: started, de: 'START: −S1 schaltet das Förderband ein', vi: 'Nhấn S1 → băng tải chạy' });
+  res.push({ ok: lampOn, de: '−H1 leuchtet bei „Anlage EIN“', vi: 'Đèn H1 sáng khi trạm đang bật' });
+  tap(s, 'S0'); runFor(s, 1.5);
+  res.push({ ok: (started || lampOn) && !s.st.motor && !s.st.lamp, de: 'STOPP: −S0 schaltet ab, kein Wiederanlauf', vi: 'Nhấn S0 → trạm tắt và không tự chạy lại' });
+
+  s = new Sim(prog, { autoFeed: true, queue: ['metal', 'plastic', 'metal', 'plastic'] }); runFor(s, 0.3); tap(s, 'S1');
+  for (let tt = 0; s.bins.metal.length + s.bins.plastic.length < 4 && tt < 120; tt += 0.5) runFor(s, 0.5);
+  const mOk = s.bins.metal.filter(x => x === 'metal').length, pOk = s.bins.plastic.filter(x => x === 'plastic').length;
+  const wrong = s.bins.metal.length - mOk + s.bins.plastic.length - pOk, stuck = 4 - s.bins.metal.length - s.bins.plastic.length;
+  res.push({ ok: mOk === 2 && pOk === 2 && wrong === 0, de: 'Sortierung: Metall → Metallbehälter, Kunststoff läuft durch',
+    vi: `Phân loại 2 kim loại + 2 nhựa: KL đúng ${mOk}/2 · nhựa đúng ${pOk}/2 · sai thùng ${wrong}` + (stuck ? ` · kẹt lại ${stuck}` : '') });
+
+  s = new Sim(prog); runFor(s, 0.3); tap(s, 'S1'); runFor(s, 0.5);
+  const ran = s.st.motor; s.notHalt = true; runFor(s, 1); s.notHalt = false; runFor(s, 2);
+  res.push({ ok: ran && !s.st.motor && !s.img.Q[0], de: 'NOT-HALT: kein selbstständiger Wiederanlauf nach dem Entriegeln', vi: 'Nhả Not-Halt ra, trạm không được tự chạy lại' });
+
+  s = new Sim(prog); runFor(s, 0.3); tap(s, 'S1'); runFor(s, 0.5);
+  const ran2 = s.st.motor; s.s0Break = true; runFor(s, 1);
+  res.push({ ok: ran2 && !s.st.motor, de: 'Drahtbruchsicherheit: Leitungsbruch an −S0 stoppt die Anlage', vi: 'Đứt dây nút S0 → trạm phải dừng' });
+  return res;
+}
+
+/* ═══════════ Fehler, Messpunkte, Maßnahmen ═══════════ */
+const FAULTS = {
+  B2DEAD: {
+    de: 'Metallteile landen im Kunststoffbehälter.', vi: 'Người vận hành báo: chi tiết kim loại bị rơi vào thùng nhựa.',
+    name: 'Induktiver Sensor −B2 defekt', repair: 'rep_B2', proof: m => m.has('V_B2_BK'),
+    why: 'LED trên −B2 không sáng khi có kim loại, dây BN có 24 V nhưng dây BK 0 V → bản thân cảm biến hỏng. Thay −B2 sau khi làm đủ 3 quy tắc an toàn.',
+    q: { q: 'Woran haben Sie erkannt, dass der Sensor −B2 selbst defekt ist und nicht die Leitung?',
+      a: ['Bei Metall lagen an BN 24 V, am Signalausgang BK aber 0 V an.', 'Das Förderband ist stehen geblieben.', 'Die Kunststoffteile wurden falsch sortiert.'],
+      vi: 'Có nguồn (BN = 24 V) mà không có tín hiệu ra (BK = 0 V) khi có kim loại trước mặt → lỗi nằm trong cảm biến, không phải ở dây.' },
+  },
+  WIREB2: {
+    de: 'Metallteile landen im Kunststoffbehälter.', vi: 'Người vận hành báo: chi tiết kim loại bị rơi vào thùng nhựa.',
+    name: 'Drahtbruch −B2:BK → −A1:I0.1', repair: 'rep_wB2', proof: m => m.has('R_WB2') || (m.has('V_B2_BK') && m.has('V_I01')),
+    why: 'LED trên −B2 sáng, dây BK có 24 V, nhưng cọc I0.1 của SPS chỉ 0 V (LED I0.1 tắt) → đứt dây giữa hai điểm. Đo điện trở dây khi đã cắt điện sẽ thấy OL.',
+    q: { q: 'Wie haben Sie den Drahtbruch nachgewiesen?',
+      a: ['Am Sensorausgang BK lagen 24 V an, an der Eingangsklemme I0.1 aber 0 V.', 'Die LED I0.1 war aus, also ist der Sensor defekt.', 'Ich habe die Spannung am Motor −M1 gemessen.'],
+      vi: 'Tín hiệu có ở đầu dây phía cảm biến nhưng mất ở đầu dây phía SPS → dây ở giữa bị đứt. Chỉ nhìn LED I0.1 tắt thì chưa phân biệt được cảm biến hỏng hay dây đứt.' },
+  },
+  B3STUCK: {
+    de: 'Sobald ein Metallteil am Sensor −B2 ankommt, bleibt das Band stehen. Der Zylinder fährt ins Leere aus und bleibt vorne.',
+    vi: 'Cứ có chi tiết kim loại tới cảm biến B2 là băng tải dừng. Xi lanh đẩy ra vào khoảng trống rồi kẹt ở phía trước.',
+    name: 'Optischer Sensor −B3 verschmutzt / verstellt (Dauersignal)', repair: 'rep_B3', proof: m => m.has('V_B3_BK') || m.has('V_I02'),
+    why: '−B3 báo tín hiệu liên tục (LED I0.2 luôn sáng dù trước nó không có chi tiết). Kim loại vừa tới B2 thì M0.0 được set, chương trình tưởng chi tiết đã ở B3 → băng tải dừng, xi lanh đẩy vào khoảng trống. Chi tiết vẫn nằm trước B2 nên M0.0 liền bị set lại → xi lanh bị đẩy ra lại liên tục, trạm kẹt.',
+    q: { q: 'Warum ist die Anlage mit dem Dauersignal von −B3 stehen geblieben?',
+      a: ['Die SPS vermutete das Metallteil schon an −B3, stoppte das Band an −B2 und ließ den Zylinder ins Leere ausfahren.', 'Die Magnetspule −1M1 war unterbrochen.', 'Die Sicherung −F2 hat ausgelöst.'],
+      vi: 'Chương trình tin vào tín hiệu B3. Khi B3 luôn = 1, điều kiện “chi tiết kim loại đang ở vị trí đẩy” đúng ngay khi M0.0 vừa được set ở B2, nên trình tự chạy sai thời điểm.' },
+  },
+  COIL: {
+    de: 'Sobald ein Metallteil ankommt, bleibt das Band stehen.', vi: 'Cứ có chi tiết kim loại tới là băng tải đứng yên luôn.',
+    name: 'Magnetspule −1M1 unterbrochen', repair: 'rep_coil', proof: m => m.has('R_1M1'),
+    why: 'LED Q0.1 sáng, có 24 V tại đầu cuộn −1M1 nhưng xi lanh không ra. Đo điện trở cuộn (khi đã cắt điện) → OL = cuộn dây bị đứt. Áp suất 6 bar vẫn bình thường.',
+    q: { q: 'Warum haben Sie den Widerstand der Magnetspule gemessen, und worauf mussten Sie dabei achten?',
+      a: ['An der Spule lagen 24 V an, der Zylinder fuhr aber nicht aus. Widerstände misst man nur im spannungsfreien Zustand.', 'Um den Luftdruck zu prüfen; die Messung erfolgt unter Spannung.', 'Weil die LED Q0.1 aus war.'],
+      vi: 'Có điện áp tại cuộn mà cơ cấu không tác động → nghi cuộn đứt. Đo điện trở khi còn điện sẽ cho kết quả sai và có thể hỏng đồng hồ.' },
+  },
+  AIR: {
+    de: 'Sobald ein Metallteil ankommt, bleibt das Band stehen.', vi: 'Cứ có chi tiết kim loại tới là băng tải đứng yên luôn.',
+    name: 'Druckluft an der Wartungseinheit −0Z1 abgesperrt', repair: 'rep_air', proof: m => m.has('P_0Z1'),
+    why: 'LED Q0.1 sáng, cuộn −1M1 có 24 V và điện trở bình thường (~190 Ω), nhưng đồng hồ áp suất ở bộ xử lý khí −0Z1 chỉ 0 bar → van khóa khí bị đóng.',
+    q: { q: 'Wie haben Sie den pneumatischen Fehler von einem elektrischen Fehler unterschieden?',
+      a: ['Die Spule hatte Spannung und einen plausiblen Widerstand, aber das Manometer zeigte 0 bar.', 'Die LED Q0.1 war aus.', 'Der Motor −M1 lief nicht.'],
+      vi: 'Phần điện đã được chứng minh là đúng (có áp, cuộn còn tốt) → lỗi nằm ở phía khí nén. Đồng hồ áp suất 0 bar xác nhận.' },
+  },
+  S1B2: {
+    de: 'Der Zylinder bleibt ausgefahren, die Anlage steht.', vi: 'Xi lanh đẩy ra rồi đứng yên ở đó, cả trạm dừng.',
+    name: 'Endlagensensor −1B2 verstellt', repair: 'rep_1B2', proof: m => m.has('V_1B2_BK') || m.has('V_I04'),
+    why: 'Xi lanh đã ra hết nhưng LED I0.4 (−1B2) không sáng → Q0.1 không bao giờ bị reset, băng tải chờ 1B1 mãi. Cảm biến vị trí bị lệch → chỉnh lại.',
+    q: { q: 'Warum blieb der Zylinder dauerhaft ausgefahren?',
+      a: ['−1B2 meldete die vordere Endlage nicht, deshalb wurde Q0.1 nie zurückgesetzt.', 'Die Magnetspule −1M1 war defekt.', 'Der Betriebsdruck war zu hoch.'],
+      vi: 'Chương trình chỉ cho xi lanh lùi khi nhận tín hiệu 1B2. Thiếu tín hiệu này thì bước tiếp theo không bao giờ đến.' },
+  },
+  FUSE: {
+    de: 'Die Anlage lässt sich einschalten (−H1 leuchtet), aber das Band läuft nicht.', vi: 'Bật được trạm (đèn H1 sáng) nhưng băng tải không chạy.',
+    name: 'Sicherungsautomat −F2 (Sensorversorgung) ausgelöst', repair: 'rep_F2',
+    proof: m => m.has('V_F2') || m.has('R_F2') || ['B1', 'B2', 'B3', '1B1', '1B2'].some(n => m.has(`V_${n}_BN`)),
+    why: 'Tất cả LED cảm biến và I0.0–I0.4 đều tắt, kể cả 1B1 dù xi lanh đang lùi → mất nguồn cảm biến. Đầu ra −F2 = 0 V → aptomat F2 đã nhảy. Trước khi đóng lại phải tìm nguyên nhân (ngắn mạch/quá tải).',
+    q: { q: 'Was müssen Sie prüfen, bevor Sie einen ausgelösten Sicherungsautomaten wieder einschalten?',
+      a: ['Die Ursache der Auslösung, z. B. Kurzschluss oder Überlast im Sensorstromkreis.', 'Nichts – man schaltet ihn einfach wieder ein.', 'Ob das Förderband sauber ist.'],
+      vi: 'Aptomat nhảy là có lý do. Đóng lại mà không tìm nguyên nhân thì nó sẽ nhảy tiếp, hoặc tệ hơn là gây cháy.' },
+  },
+  WIREM1: {
+    de: 'Die Anlage lässt sich einschalten (−H1 leuchtet), aber das Band läuft nicht.', vi: 'Bật được trạm (đèn H1 sáng) nhưng băng tải không chạy.',
+    name: 'Drahtbruch −A1:Q0.0 → −M1', repair: 'rep_wM1', proof: m => m.has('R_WM1') || (m.has('V_Q00') && m.has('V_M1')),
+    why: 'LED Q0.0 sáng, cọc Q0.0 có 24 V nhưng tại đầu động cơ −M1 chỉ 0 V → đứt dây giữa SPS và động cơ.',
+    q: { q: 'Wie sind Sie beim Eingrenzen des Fehlers am Motor vorgegangen?',
+      a: ['Ich habe an der Ausgangsklemme Q0.0 24 V und an der Motorklemme 0 V gemessen – der Fehler liegt in der Leitung.', 'Ich habe sofort den Motor getauscht.', 'Ich habe das SPS-Programm neu geladen.'],
+      vi: 'Đo dọc đường tín hiệu từ SPS tới động cơ: điểm cuối còn điện và điểm tiếp theo mất điện chính là nơi hỏng.' },
+  },
+};
+const GENERAL = [
+  { id: 'G_S0', q: 'Warum ist der Taster −S0 (STOPP) als Öffner ausgeführt?',
+    a: ['Bei einem Drahtbruch wird die Anlage sicher abgeschaltet (Drahtbruchsicherheit).', 'Öffner sind günstiger als Schließer.', 'Damit die Eingangs-LED I0.6 immer leuchtet.'],
+    vi: 'Nút Stop dùng tiếp điểm thường đóng: nếu dây đứt, SPS nhận 0 giống như khi nhấn Stop → trạm dừng an toàn. Nếu dùng thường mở, dây đứt thì nút Stop mất tác dụng mà không ai biết.' },
+  { id: 'G_NH', q: 'Warum darf der NOT-HALT nicht nur über das SPS-Programm wirken?',
+    a: ['Die Sicherheitsfunktion muss auch bei einem Fehler in SPS oder Software sicher wirken.', 'Weil die SPS für den Not-Halt zu langsam ist.', 'Das gilt nur für Anlagen mit 400 V.'],
+    vi: 'SPS thường không phải thiết bị an toàn: lỗi phần mềm hay đầu ra bị kẹt có thể làm mất chức năng dừng khẩn. Vì vậy Not-Halt cắt nguồn cơ cấu chấp hành bằng phần cứng (rơ-le an toàn −K1).' },
+  { id: 'G_RULES', q: 'Nennen Sie die ersten drei der fünf Sicherheitsregeln in der richtigen Reihenfolge.',
+    a: ['Freischalten – gegen Wiedereinschalten sichern – Spannungsfreiheit feststellen', 'Spannungsfreiheit feststellen – freischalten – erden', 'Abdecken – freischalten – kurzschließen'],
+    vi: 'Thứ tự bắt buộc: 1 cắt điện, 2 khóa chống đóng lại, 3 xác nhận không còn điện trên tất cả các cực. Sau đó mới đến 4 nối đất & ngắn mạch, 5 che chắn.' },
+  { id: 'G_VALVE', q: 'Was bedeutet die Bezeichnung 5/2-Wegeventil?',
+    a: ['Das Ventil hat 5 Anschlüsse und 2 Schaltstellungen.', 'Das Ventil schaltet 5 bar auf 2 Zylinder.', 'Das Ventil hat 2 Anschlüsse und 5 Schaltstellungen.'],
+    vi: 'Số thứ nhất = số cổng (1 cấp khí, 2 và 4 làm việc, 3 và 5 xả), số thứ hai = số vị trí chuyển mạch.' },
+  { id: 'G_RESTART', q: 'Warum darf die Anlage nach dem Entriegeln des NOT-HALTs nicht selbstständig wieder anlaufen?',
+    a: ['Es könnten sich Personen im Gefahrenbereich befinden; der Wiederanlauf braucht einen neuen Startbefehl.', 'Weil sonst die Sicherung −F2 auslöst.', 'Weil der Zylinder zuerst ausfahren muss.'],
+    vi: 'Nhả Not-Halt chỉ là mở khóa. Người vận hành phải nhấn Start lần nữa sau khi chắc chắn vùng nguy hiểm không có người.' },
+  { id: 'G_SWAP', q: 'Was versteht man unter „Teiletausch auf Verdacht“, und warum vermeidet man ihn?',
+    a: ['Bauteile ohne Messnachweis tauschen – das kostet Zeit und Geld, und die Ursache bleibt oft unentdeckt.', 'Verschleißteile nach Wartungsplan tauschen.', 'Defekte Teile zur Reparatur einschicken.'],
+    vi: 'Thay linh kiện theo phỏng đoán mà không có kết quả đo chứng minh. Tốn tiền, tốn thời gian, và thường không tìm ra nguyên nhân gốc.' },
+  { id: 'G_IND', q: 'Welche Aufgabe hat der induktive Sensor −B2?',
+    a: ['Er erkennt metallische Werkstücke berührungslos.', 'Er erkennt jedes Werkstück mit einem Lichtstrahl.', 'Er misst den Druck in der Wartungseinheit.'],
+    vi: 'Cảm biến cảm ứng tạo từ trường xoay chiều ở đầu dò; chỉ vật kim loại làm thay đổi trường này nên nó phân biệt được kim loại với nhựa.' },
+  { id: 'G_TEST', q: 'Warum führen Sie nach der Instandsetzung eine Funktionsprüfung durch?',
+    a: ['Um nachzuweisen, dass der Fehler behoben ist und keine neuen Fehler entstanden sind.', 'Weil der Prüfer die Anlage laufen sehen möchte.', 'Um die Sicherung −F2 zu testen.'],
+    vi: 'Sửa xong phải chạy thử toàn bộ chức năng (cả kim loại lẫn nhựa) để chứng minh lỗi đã hết và không phát sinh lỗi mới, rồi mới bàn giao.' },
+];
+
+const V24 = b => b ? 24 : 0;
+const SENS = [['B1', 'B1'], ['B2', 'B2'], ['B3', 'B3'], ['1B1', 'S1B1'], ['1B2', 'S1B2']];
+const POINTS = [
+  { g: 'Einspeisung · Nguồn', id: 'V_Q1', de: '−Q1 Abgang L1–N', unit: 'V~', f: s => s.mainOn ? 230 : 0 },
+  { g: 'Einspeisung · Nguồn', id: 'V_G1', de: '−G1 Netzteil Ausgang L+ / M', unit: 'V', f: s => V24(s.mainOn) },
+  { g: 'Einspeisung · Nguồn', id: 'V_F2', de: '−F2 Abgang (Sensorversorgung)', unit: 'V', f: s => V24(s.st.sup) },
+  { g: 'Einspeisung · Nguồn', id: 'V_K1', de: '−K1 Sicherheitsrelais Ausgang (Aktoren)', unit: 'V', f: s => V24(s.st.actPow) },
+  ...SENS.flatMap(([n, k]) => [
+    { g: 'Sensoren · Cảm biến', id: `V_${n}_BN`, de: `−${n} Ader BN (+24 V)`, unit: 'V', f: s => V24(s.st.sup) },
+    { g: 'Sensoren · Cảm biến', id: `V_${n}_BK`, de: `−${n} Ader BK (Signal)`, unit: 'V', f: s => V24(s.st.out[k]) },
+  ]),
+  ...ADDR.I.map((a, i) => ({ g: 'SPS-Eingänge · Cọc vào', id: `V_I0${i}`, de: `−A1 Klemme ${a} (${IO.I[i][0]})`, unit: 'V', f: s => V24(s.st.inT[i]) })),
+  ...[0, 1, 2].map(i => ({ g: 'SPS-Ausgänge · Cọc ra', id: `V_Q0${i}`, de: `−A1 Klemme Q0.${i} (${IO.Q[i][0]})`, unit: 'V', f: s => V24(s.st.qT[i]) })),
+  { g: 'Aktoren · Cơ cấu chấp hành', id: 'V_M1', de: '−M1 Motorklemme', unit: 'V', f: s => V24(s.st.qT[0] && !s.has('WIREM1')) },
+  { g: 'Aktoren · Cơ cấu chấp hành', id: 'V_1M1', de: '−1M1 Magnetspule (Gerätestecker)', unit: 'V', f: s => V24(s.st.qT[1]) },
+  { g: 'Widerstand · Điện trở (chỉ khi cắt điện)', id: 'R_1M1', de: 'Ω −1M1 Spule', unit: 'Ω', ohm: s => s.has('COIL') ? null : 190 },
+  { g: 'Widerstand · Điện trở (chỉ khi cắt điện)', id: 'R_M1', de: 'Ω −M1 Wicklung', unit: 'Ω', ohm: () => 12.4 },
+  { g: 'Widerstand · Điện trở (chỉ khi cắt điện)', id: 'R_WB2', de: 'Ω Leitung −B2:BK → −A1:I0.1', unit: 'Ω', ohm: s => s.has('WIREB2') ? null : 0.3 },
+  { g: 'Widerstand · Điện trở (chỉ khi cắt điện)', id: 'R_WM1', de: 'Ω Leitung −A1:Q0.0 → −M1', unit: 'Ω', ohm: s => s.has('WIREM1') ? null : 0.3 },
+  { g: 'Widerstand · Điện trở (chỉ khi cắt điện)', id: 'R_F2', de: 'Ω −F2 Kontakt 1–2', unit: 'Ω', ohm: s => s.has('FUSE') ? null : 0.0 },
+  { g: 'Pneumatik · Khí nén', id: 'P_0Z1', de: 'Manometer −0Z1 Wartungseinheit', unit: 'bar', f: s => s.pressure },
+];
+const PT = Object.fromEntries(POINTS.map(p => [p.id, p]));
+
+const REPAIRS = [
+  { id: 'rep_B2', de: '−B2 (induktiver Sensor) tauschen', loto: true },
+  { id: 'rep_wB2', de: 'Leitung −B2:BK → I0.1 instand setzen', loto: true },
+  { id: 'rep_B3', de: '−B3 reinigen und neu justieren', loto: false },
+  { id: 'rep_1B2', de: 'Endlagensensor −1B2 neu justieren', loto: false },
+  { id: 'rep_coil', de: 'Magnetspule −1M1 tauschen', loto: true },
+  { id: 'rep_air', de: 'Absperrventil an −0Z1 öffnen', loto: false },
+  { id: 'rep_F2', de: 'Sicherungsautomat −F2 wieder einschalten', loto: false },
+  { id: 'rep_wM1', de: 'Leitung −A1:Q0.0 → −M1 instand setzen', loto: true },
+  { id: 'rep_B1', de: '−B1 (optischer Sensor) tauschen', loto: true },
+  { id: 'rep_B3x', de: '−B3 (optischer Sensor) tauschen', loto: true },
+  { id: 'rep_cyl', de: 'Zylinder −1A1 tauschen', loto: true },
+  { id: 'rep_M1', de: 'Motor −M1 tauschen', loto: true },
+  { id: 'rep_G1', de: 'Netzteil −G1 tauschen', loto: true },
+  { id: 'rep_plc', de: 'SPS −A1 tauschen', loto: true },
+  { id: 'rep_prog', de: 'SPS-Programm neu laden', loto: false },
+];
+
+const HINTS = [
+  'Mạch tự giữ (<span class="de">Selbsthaltung</span>) cho M0.1: (S1 HOẶC M0.1) VÀ S0 VÀ Not-Halt. S0 và Not-Halt là nút thường đóng: khi không nhấn thì I0.6 = I0.7 = 1, nên trong chương trình dùng tiếp điểm thường mở ┤ ├. Nhánh song song: đặt M0.1 ở hàng 2 rồi nối dây dọc ngay sau ô đầu tiên.',
+  'Nhớ chi tiết kim loại bằng Merker: I0.1 (B2) → (S) M0.0. Xi lanh: M0.1 VÀ I0.2 (B3) VÀ M0.0 → (S) Q0.1. Khi xi lanh ra hết I0.4 (1B2) → (R) Q0.1 và (R) M0.0.',
+  'Băng tải Q0.0 chạy khi: M0.1 VÀ I0.3 (1B1, xi lanh đã lùi) VÀ KHÔNG (B3 VÀ M0.0). Theo De Morgan: KHÔNG(a VÀ b) = (KHÔNG a) HOẶC (KHÔNG b) → hai tiếp điểm thường đóng ┤/├ I0.2 và M0.0 mắc song song.',
+];
+
+/* ═══════════ Zustand ═══════════ */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+function h(tag, attrs = {}, ...kids) {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (v == null || v === false) continue;
+    if (k === 'class') e.className = v;
+    else if (k === 'text') e.textContent = v;
+    else if (k === 'html') e.innerHTML = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v === true ? '' : v);
+  }
+  for (const k of kids) if (k != null) e.append(k);
+  return e;
+}
+const K_PROG = 'xuong-ao.kop.v1', K_TAB = 'xuong-ao.tab.v1';
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch { /* không lưu được thì thôi */ } },
+};
+function validProgram(p) {
+  const okAddr = a => typeof a === 'string' && Object.values(ADDR).some(l => l.includes(a));
+  return Array.isArray(p) && p.every(r => r && Number.isInteger(r.rows) && r.rows >= 1 && r.rows <= MAX_ROWS
+    && Array.isArray(r.cells) && r.cells.length === r.rows && r.cells.every(row => Array.isArray(row) && row.length === COLS
+      && row.every(c => ['empty', 'wire', 'no', 'nc'].includes(c.t) && okAddr(c.a)))
+    && Array.isArray(r.links) && r.links.length === r.rows - 1 && r.links.every(l => Array.isArray(l) && l.length === COLS + 1)
+    && r.coil && ['coil', 'set', 'reset', 'ton'].includes(r.coil.t) && okAddr(r.coil.a) && typeof r.coil.pt === 'number');
+}
+let program = (() => { try { const p = JSON.parse(store.get(K_PROG)); if (validProgram(p)) return p; } catch { /* dùng chương trình khởi đầu */ } return STARTER(); })();
+const saveProgram = () => store.set(K_PROG, JSON.stringify(program));
+
+let mode = 'program';
+let sim = new Sim(program, { autoFeed: true });
+let speed = 1, hintsShown = 0, ex = null, lastFault = null;
+
+/* ═══════════ Farben für Canvas ═══════════ */
+const COL = {};
+function readColors() {
+  const cs = getComputedStyle(document.documentElement);
+  for (const k of ['plate', 'ink', 'muted', 'line', 'panel', 'flow', 'idle', 'warn', 'danger', 'metal', 'metal-hi', 'plastic', 'belt', 'belt-stripe', 'led-off', 'accent', 'bg'])
+    COL[k] = cs.getPropertyValue('--' + k).trim();
+}
+readColors();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readColors);
+new MutationObserver(readColors).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+/* ═══════════ Canvas ═══════════ */
+const cv = $('#plant'), ctx = cv.getContext('2d');
+let cvW = 0;
+function sizeCanvas() {
+  const w = cv.clientWidth; if (!w) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+  cv.width = Math.round(w * dpr); cv.height = Math.round(w * 300 / 640 * dpr); cvW = w;
+}
+new ResizeObserver(sizeCanvas).observe(cv);
+
+function rrect(x, y, w, hh, r) { ctx.beginPath(); ctx.roundRect ? ctx.roundRect(x, y, w, hh, r) : ctx.rect(x, y, w, hh); }
+function label(t, x, y, opt = {}) {
+  const size = (opt.s || 10) * (opt.fixed || cvW >= 520 ? 1 : 1.35);
+  ctx.font = `${opt.w || 600} ${size}px "IBM Plex Mono", ui-monospace, monospace`;
+  ctx.fillStyle = opt.c || COL.muted; ctx.textAlign = opt.a || 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(t, x, y);
+}
+function ledDot(x, y, on, r = 4) {
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.fillStyle = on ? COL.flow : COL['led-off']; ctx.fill();
+  if (on) { ctx.shadowColor = COL.flow; ctx.shadowBlur = 8; ctx.fill(); ctx.shadowBlur = 0; }
+}
+function drawPart(type, x, y, s = PW) {
+  rrect(x, y, s, s, 4);
+  if (type === 'metal') {
+    const g = ctx.createLinearGradient(x, y, x + s, y + s); g.addColorStop(0, COL['metal-hi']); g.addColorStop(1, COL.metal);
+    ctx.fillStyle = g; ctx.fill();
+  } else { ctx.fillStyle = COL.plastic; ctx.fill(); }
+  ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.stroke();
+  if (s >= 30) label(type === 'metal' ? 'St' : 'PA', x + s / 2, y + s / 2, { c: type === 'metal' ? '#2b3033' : '#fff', s: 11 });
+}
+function draw() {
+  if (!cvW) sizeCanvas();
+  if (!cvW) return;
+  const k = cv.width / 640;
+  ctx.setTransform(k, 0, 0, k, 0, 0);
+  ctx.fillStyle = COL.plate; ctx.fillRect(0, 0, 640, 300);
+  const s = sim, st = s.st, X = x => 20 + x;
+
+  // Metallbehälter
+  rrect(X(PUSH_L) - 14, 8, PUSH_R - PUSH_L + 28, 56, 4);
+  ctx.fillStyle = COL.panel; ctx.fill(); ctx.strokeStyle = COL.line; ctx.lineWidth = 1.5; ctx.stroke();
+  label('Metall', X(PUSH_L) - 20, 20, { a: 'right', c: COL.ink, s: 11 });
+  label(String(s.bins.metal.length), X(PUSH_L) - 20, 34, { a: 'right', s: 11 });
+  s.bins.metal.slice(-6).forEach((ty, i) => drawPart(ty, X(PUSH_L) - 8 + i * 13, 44, 12));
+
+  // Kunststoffbehälter
+  rrect(568, 150, 64, 110, 4);
+  ctx.fillStyle = COL.panel; ctx.fill(); ctx.strokeStyle = COL.line; ctx.stroke();
+  label('Kunststoff', 600, 272, { c: COL.ink, fixed: true });
+  label(String(s.bins.plastic.length), 600, 286);
+  s.bins.plastic.slice(-12).forEach((ty, i) => drawPart(ty, 574 + (i % 4) * 14, 238 - Math.floor(i / 4) * 14, 12));
+
+  // Band
+  const by0 = 128, by1 = 172;
+  rrect(X(0) - 8, by0, BELT + 16, by1 - by0, 22); ctx.fillStyle = COL.belt; ctx.fill();
+  ctx.save(); rrect(X(0) - 8, by0, BELT + 16, by1 - by0, 22); ctx.clip();
+  ctx.strokeStyle = COL['belt-stripe']; ctx.lineWidth = 2;
+  for (let x = -(s.beltPos % 24); x < BELT + 24; x += 24) { ctx.beginPath(); ctx.moveTo(X(x), by0); ctx.lineTo(X(x) - 10, by1); ctx.stroke(); }
+  ctx.restore();
+
+  // Motor −M1
+  ctx.strokeStyle = COL.muted; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(X(0), by1); ctx.lineTo(X(0), 196); ctx.stroke();
+  ctx.beginPath(); ctx.arc(X(0), 212, 16, 0, Math.PI * 2); ctx.fillStyle = COL.panel; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = st.motor ? COL.flow : COL.muted; ctx.stroke();
+  label('M', X(0), 212, { c: COL.ink, s: 13, w: 700 });
+  const ang = s.beltPos / 12;
+  ctx.beginPath(); ctx.moveTo(X(0) + Math.cos(ang) * 10, 212 + Math.sin(ang) * 10); ctx.lineTo(X(0) + Math.cos(ang) * 15, 212 + Math.sin(ang) * 15); ctx.stroke();
+  label('−M1', X(0), 238);
+
+  // Sensoren über dem Band
+  for (const [x, name, key, ind] of [[B1X, '−B1', 'B1', false], [B2X, '−B2 ind.', 'B2', true], [B3X, '−B3', 'B3', false]]) {
+    rrect(X(x) - 10, 96, 20, 24, 3); ctx.fillStyle = COL.panel; ctx.fill(); ctx.strokeStyle = COL.muted; ctx.lineWidth = 1.5; ctx.stroke();
+    ledDot(X(x) + 5, 102, st.out[key], 3.2);
+    label(name, X(x), 88, { c: COL.ink });
+    if (ind) { rrect(X(x) - 6, 120, 12, 8, 2); ctx.fillStyle = COL.muted; ctx.fill(); }
+    else {
+      ctx.setLineDash([3, 4]); ctx.strokeStyle = COL.warn; ctx.globalAlpha = .7; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(X(x), 120); ctx.lineTo(X(x), 184); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+      ctx.fillStyle = COL.muted; ctx.fillRect(X(x) - 5, 184, 10, 4);
+    }
+  }
+
+  // Zylinder −1A1 mit Schieber
+  const cx = X((PUSH_L + PUSH_R) / 2), plateY = 176 - s.cyl * 112;
+  ctx.fillStyle = COL.muted; ctx.fillRect(cx - 3, plateY + 6, 6, 222 - (plateY + 6));
+  rrect(X(PUSH_L), plateY, PUSH_R - PUSH_L, 7, 2); ctx.fillStyle = COL.ink; ctx.fill();
+  rrect(cx - 17, 222, 34, 60, 5); ctx.fillStyle = COL.panel; ctx.fill(); ctx.strokeStyle = COL.muted; ctx.lineWidth = 1.5; ctx.stroke();
+  label('1A1', cx, 252, { c: COL.ink });
+  ledDot(cx - 24, 230, st.out.S1B2, 3.2); label('1B2', cx - 30, 230, { a: 'right', s: 9 });
+  ledDot(cx - 24, 274, st.out.S1B1, 3.2); label('1B1', cx - 30, 274, { a: 'right', s: 9 });
+
+  // Ventil −1V1 mit Spule −1M1
+  rrect(cx + 30, 240, 58, 26, 3); ctx.fillStyle = COL.panel; ctx.fill(); ctx.strokeStyle = COL.muted; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(cx + 59, 240); ctx.lineTo(cx + 59, 266); ctx.stroke();
+  ledDot(cx + 36, 234, st.qT[1], 3.2);
+  label('1M1', cx + 44, 253, { s: 9, c: COL.ink }); label('5/2', cx + 73, 253, { s: 9 });
+  label('−1V1', cx + 59, 278);
+
+  // Werkstücke
+  for (const p of s.parts) drawPart(p.type, X(p.x - PW), 130 - p.y * 112);
+
+  // Zustandsbanner
+  let banner = null;
+  if (!s.mainOn) banner = [s.locked ? 'SPANNUNGSLOS · GESICHERT' : 'SPANNUNGSLOS', COL.muted];
+  else if (s.notHalt) banner = ['NOT-HALT BETÄTIGT', COL.danger];
+  else if (!s.runSw) banner = ['SPS IN STOP', COL.warn];
+  if (banner) {
+    ctx.fillStyle = COL.plate; ctx.globalAlpha = .82; ctx.fillRect(160, 10, 150, 26); ctx.globalAlpha = 1;
+    ctx.strokeStyle = banner[1]; ctx.lineWidth = 2; ctx.strokeRect(160, 10, 150, 26);
+    label(banner[0], 235, 23, { c: banner[1], s: 11, w: 700 });
+  }
+}
+
+/* ═══════════ LED-Leiste & Bedienpult ═══════════ */
+const ledEls = { I: [], Q: [] };
+ADDR.I.forEach((a, i) => { const e = h('span', { class: 'led', title: `${a} – ${IO.I[i][1]}` }, h('i'), h('span', { text: a.slice(1) }), h('span', { class: 'sym', text: IO.I[i][0] })); ledEls.I.push(e); $('#ledsI').append(e); });
+ADDR.Q.forEach((a, i) => { const e = h('span', { class: 'led', title: `${a} – ${IO.Q[i][1]}` }, h('i'), h('span', { text: a.slice(1) }), h('span', { class: 'sym', text: IO.Q[i][0] })); ledEls.Q.push(e); $('#ledsQ').append(e); });
+
+const ioBody = $('#ioTable tbody');
+ADDR.I.forEach((a, i) => ioBody.append(h('tr', {}, h('td', { text: a }), h('td', { text: IO.I[i][0] }), h('td', { class: 'de', text: IO.I[i][1] }), h('td', { text: IO.I[i][2] }))));
+ADDR.Q.forEach((a, i) => ioBody.append(h('tr', {}, h('td', { text: a }), h('td', { text: IO.Q[i][0] }), h('td', { class: 'de', text: IO.Q[i][1] }), h('td', { text: IO.Q[i][2] }))));
+ioBody.append(h('tr', {}, h('td', { text: 'M0.0–M0.7' }), h('td', { text: '—' }), h('td', { class: 'de', text: 'Merker' }), h('td', { text: 'Bit nhớ trung gian' })));
+ioBody.append(h('tr', {}, h('td', { text: 'T0–T3' }), h('td', { text: '—' }), h('td', { class: 'de', text: 'Timer TON' }), h('td', { text: 'Bộ định thời trễ đóng' })));
+
+let msgTimer = 0;
+function say(t) { $('#opMsg').textContent = t; clearTimeout(msgTimer); msgTimer = setTimeout(() => { $('#opMsg').textContent = ''; }, 5000); }
+
+function bindMomentary(btn, name) {
+  const down = e => { e.preventDefault(); sim.press(name); btn.classList.add('down'); try { btn.setPointerCapture(e.pointerId); } catch { /* không hỗ trợ */ } };
+  const up = () => { sim.release(name); btn.classList.remove('down'); };
+  btn.addEventListener('pointerdown', down);
+  btn.addEventListener('pointerup', up);
+  btn.addEventListener('pointercancel', up);
+  btn.addEventListener('contextmenu', e => e.preventDefault());
+  btn.addEventListener('keydown', e => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); sim.press(name); btn.classList.add('down'); } });
+  btn.addEventListener('keyup', e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); up(); } });
+}
+bindMomentary($('#btnS1'), 'S1');
+bindMomentary($('#btnS0'), 'S0');
+
+$('#btnNH').addEventListener('click', () => {
+  sim.notHalt = !sim.notHalt;
+  exLog(sim.notHalt ? 'NOT-HALT betätigt' : 'NOT-HALT entriegelt');
+});
+$('#btnQ1').addEventListener('click', () => {
+  if (!sim.mainOn && sim.locked) { say('Công tắc đang bị khóa. Mở khóa trước khi đóng điện.'); return; }
+  sim.mainOn = !sim.mainOn;
+  if (sim.mainOn && ex) ex.deadOK = false;
+  exLog(sim.mainOn ? 'Hauptschalter −Q1 eingeschaltet' : 'Hauptschalter −Q1 ausgeschaltet (freigeschaltet)');
+});
+$('#btnLock').addEventListener('click', () => {
+  if (sim.mainOn) { say('Chỉ khóa được khi công tắc chính ở vị trí 0.'); return; }
+  sim.locked = !sim.locked;
+  if (!sim.locked && ex) ex.deadOK = false;
+  exLog(sim.locked ? 'Hauptschalter mit Schloss gegen Wiedereinschalten gesichert' : 'Schloss entfernt');
+});
+$('#runSwitch').addEventListener('click', () => { sim.runSw = !sim.runSw; exLog(sim.runSw ? 'SPS auf RUN' : 'SPS auf STOP'); });
+$('#feedMetal').addEventListener('click', () => { if (!sim.spawn('metal')) say('Đầu băng đang có chi tiết.'); });
+$('#feedPlastic').addEventListener('click', () => { if (!sim.spawn('plastic')) say('Đầu băng đang có chi tiết.'); });
+$('#feedAuto').addEventListener('click', e => { sim.autoFeed = !sim.autoFeed; e.currentTarget.setAttribute('aria-pressed', sim.autoFeed); });
+$$('#speedSeg button').forEach(b => b.addEventListener('click', () => {
+  speed = +b.dataset.speed; $$('#speedSeg button').forEach(x => x.setAttribute('aria-pressed', x === b));
+}));
+$('#btnClearPlant').addEventListener('click', () => { sim.parts = []; sim.bins = { metal: [], plastic: [] }; say('Đã dọn băng tải và các thùng.'); });
+
+/* ═══════════ Register ═══════════ */
+const mqWide = matchMedia('(min-width: 980px)');
+let tab = 'anlage';
+function setTab(t) {
+  if (!['anlage', 'programm', 'fehler', 'hilfe'].includes(t)) t = 'anlage';
+  if (mqWide.matches && t === 'anlage') t = 'programm';
+  tab = t;
+  $$('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  $('#pane-anlage').hidden = !(mqWide.matches || t === 'anlage');
+  for (const id of ['programm', 'fehler', 'hilfe']) $('#pane-' + id).hidden = t !== id;
+  store.set(K_TAB, t);
+}
+$$('.tab').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+mqWide.addEventListener('change', () => setTab(tab));
+
+/* ═══════════ KOP-Editor ═══════════ */
+const GLYPH = {
+  empty: '<svg viewBox="0 0 60 26" preserveAspectRatio="none" aria-hidden="true"><path d="M26 13H34M30 9V17"/></svg>',
+  wire: '<svg viewBox="0 0 60 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 13H60"/></svg>',
+  no: '<svg viewBox="0 0 60 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 13H24M24 3V23M36 3V23M36 13H60"/></svg>',
+  nc: '<svg viewBox="0 0 60 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 13H24M24 3V23M36 3V23M36 13H60M21 24L39 2"/></svg>',
+};
+const COIL_GLYPH = { coil: '( )', set: '(S)', reset: '(R)' };
+let refs = [];
+
+function rungSummary(r) {
+  const c = r.coil, g = c.t === 'ton' ? `TON ${c.a} ${String(c.pt).replace('.', ',')} s` : `${COIL_GLYPH[c.t]} ${c.a}`;
+  const sym = symOf(c.a);
+  return `→ ${g}${sym && c.t !== 'ton' ? ' · ' + sym : ''}`;
+}
+function renderLadder() {
+  const host = $('#ladder'); host.textContent = ''; refs = [];
+  program.forEach((rung, i) => {
+    const R = rung.rows;
+    const tools = h('div', { class: 'rung-tools' },
+      h('button', { class: 'icon-btn', type: 'button', title: 'Thêm nhánh (hàng)', 'aria-label': 'Thêm nhánh', disabled: R >= MAX_ROWS, onclick: () => { rung.rows++; rung.cells.push(emptyRow()); rung.links.push(emptyLinks()); changed(); } }, '+ nhánh'),
+      h('button', { class: 'icon-btn', type: 'button', title: 'Bỏ nhánh cuối', 'aria-label': 'Bỏ nhánh cuối', disabled: R <= 1, onclick: () => { rung.rows--; rung.cells.pop(); rung.links.pop(); changed(); } }, '− nhánh'),
+      h('button', { class: 'icon-btn', type: 'button', title: 'Lên', 'aria-label': 'Chuyển lên', disabled: i === 0, onclick: () => { program.splice(i - 1, 0, program.splice(i, 1)[0]); changed(); } }, '↑'),
+      h('button', { class: 'icon-btn', type: 'button', title: 'Xuống', 'aria-label': 'Chuyển xuống', disabled: i === program.length - 1, onclick: () => { program.splice(i + 1, 0, program.splice(i, 1)[0]); changed(); } }, '↓'),
+      h('button', { class: 'icon-btn', type: 'button', title: 'Xóa Netzwerk', 'aria-label': 'Xóa Netzwerk', onclick: () => { program.splice(i, 1); changed(); } }, '✕'));
+    const grid = h('div', { class: 'rung-grid' });
+    grid.append(h('div', { class: 'rail', style: `grid-row: 1 / span ${R}` }));
+    const rr = { cells: [], links: [], coil: null };
+    for (let r = 0; r < R; r++) {
+      rr.cells[r] = []; rr.links[r] = [];
+      for (let c = 0; c < COLS; c++) {
+        const cell = rung.cells[r][c];
+        const btn = h('button', { class: 'cell t-' + cell.t, type: 'button', style: `grid-row:${r + 1};grid-column:${2 + c * 2}`,
+          'aria-label': `Netzwerk ${i + 1}, Zeile ${r + 1}, Spalte ${c + 1}: ${cell.t === 'empty' ? 'leer' : cell.t === 'wire' ? 'Leitung' : (cell.t === 'no' ? 'Schließer ' : 'Öffner ') + cell.a}`,
+          onclick: () => openCell(i, r, c) },
+          h('span', { class: 'addr', text: cell.t === 'no' || cell.t === 'nc' ? cell.a : '' }),
+          h('span', { class: 'gl', html: GLYPH[cell.t] }),
+          h('span', { class: 'sym', text: cell.t === 'no' || cell.t === 'nc' ? symOf(cell.a) : '' }));
+        grid.append(btn); rr.cells[r][c] = btn;
+      }
+      for (let b = 1; b <= COLS; b++) {
+        const leftOn = rung.cells[r][b - 1].t !== 'empty';
+        const rightOn = b < COLS ? rung.cells[r][b].t !== 'empty' : r === 0;
+        const hasLink = r < R - 1 && rung.links[r][b];
+        const hl = leftOn ? h('span', { class: 'hl' }) : null, hr = rightOn ? h('span', { class: 'hr' }) : null;
+        const v = r < R - 1 ? h('span', { class: 'v' + (hasLink ? '' : ' off') }) : null;
+        const props = { class: 'link', style: `grid-row:${r + 1};grid-column:${1 + 2 * b}` };
+        const node = r < R - 1
+          ? h('button', { ...props, type: 'button', title: hasLink ? 'Bỏ dây nối dọc' : 'Nối dây dọc xuống hàng dưới', 'aria-pressed': String(!!hasLink),
+            'aria-label': `Senkrechte Verbindung Zeile ${r + 1}–${r + 2} nach Spalte ${b}`, onclick: () => { rung.links[r][b] = !rung.links[r][b]; changed(); } }, hl, hr, v)
+          : h('div', props, hl, hr);
+        grid.append(node); rr.links[r][b] = { hl, hr, v: hasLink ? v : null };
+      }
+      if (r === 0) {
+        const c = rung.coil;
+        const coil = h('button', { class: 'coil', type: 'button', style: `grid-row:1;grid-column:${2 + COLS * 2}`, 'aria-label': `Spule Netzwerk ${i + 1}: ${rungSummary(rung)}`, onclick: () => openCoil(i) },
+          h('span', { class: 'addr', text: c.a }),
+          c.t === 'ton' ? h('span', { class: 'glyph box', text: `TON ${String(c.pt).replace('.', ',')}s` }) : h('span', { class: 'glyph', text: COIL_GLYPH[c.t] }),
+          h('span', { class: 'sym', text: c.t === 'ton' ? 'Timer' : symOf(c.a) }));
+        grid.append(coil); rr.coil = coil;
+      } else grid.append(h('div', { style: `grid-row:${r + 1};grid-column:${2 + COLS * 2}` }));
+    }
+    refs.push(rr);
+    host.append(h('div', { class: 'rung' },
+      h('div', { class: 'rung-head' }, h('span', { class: 'nw', text: 'NW ' + (i + 1) }), h('span', { class: 'nw-desc', text: rungSummary(rung) }), tools),
+      h('div', { class: 'rung-scroll' }, grid)));
+  });
+  if (!program.length) host.append(h('p', { class: 'small', text: 'Chương trình trống. Nhấn “+ Netzwerk” để thêm mạch đầu tiên.' }));
+}
+function changed() { saveProgram(); if (mode === 'program') sim.prog = program; renderLadder(); $('#gradeBox').hidden = true; }
+
+function updateFlow() {
+  const live = mode === 'program' && tab === 'programm' && sim.plcRunning && !!sim.flows;
+  sim.wantFlow = mode === 'program' && tab === 'programm';
+  $('#ladder').classList.toggle('live', live);
+  if (!live) return;
+  sim.flows.forEach((f, i) => {
+    const rr = refs[i]; if (!rr) return;
+    for (let r = 0; r < rr.cells.length; r++) {
+      for (let c = 0; c < COLS; c++) rr.cells[r][c].classList.toggle('on', !!f.cf[c][r]);
+      for (let b = 1; b <= COLS; b++) {
+        const L = rr.links[r][b];
+        if (L.hl) L.hl.classList.toggle('on', !!f.cf[b - 1][r]);
+        if (L.hr) L.hr.classList.toggle('on', !!f.bf[b - 1][r]);
+        if (L.v) L.v.classList.toggle('on', !!f.bf[b - 1][r]);
+      }
+    }
+    rr.coil.classList.toggle('on', f.power);
+  });
+}
+
+function fillAddrSelect(sel, areas, value) {
+  sel.textContent = '';
+  const names = { I: 'Eingänge · Đầu vào', Q: 'Ausgänge · Đầu ra', M: 'Merker', T: 'Timer' };
+  for (const ar of areas) {
+    const og = h('optgroup', { label: names[ar] });
+    ADDR[ar].forEach((a, i) => {
+      const desc = ar === 'I' ? `${IO.I[i][0]} – ${IO.I[i][1]}` : ar === 'Q' ? `${IO.Q[i][0]} – ${IO.Q[i][1]}` : ar === 'M' ? 'Merker' : 'Timer (TON)';
+      og.append(h('option', { value: a, text: `${a}  ${desc}` }));
+    });
+    sel.append(og);
+  }
+  sel.value = [...sel.options].some(o => o.value === value) ? value : sel.options[0].value;
+}
+let editing = null;
+function openCell(i, r, c) {
+  editing = { i, r, c };
+  const cell = program[i].cells[r][c];
+  $$('#dlgCell input[name=cellType]').forEach(x => { x.checked = x.value === cell.t; });
+  fillAddrSelect($('#cellAddr'), ['I', 'Q', 'M', 'T'], cell.a);
+  $('#dlgCell').returnValue = '';
+  $('#dlgCell').showModal();
+}
+$('#dlgCell').addEventListener('close', () => {
+  if ($('#dlgCell').returnValue !== 'ok' || !editing) return;
+  const t = $('#dlgCell input[name=cellType]:checked')?.value || 'empty';
+  program[editing.i].cells[editing.r][editing.c] = { t, a: $('#cellAddr').value };
+  changed();
+});
+function coilAreas(t) { return t === 'ton' ? ['T'] : ['Q', 'M']; }
+function openCoil(i) {
+  editing = { i };
+  const c = program[i].coil;
+  $$('#dlgCoil input[name=coilType]').forEach(x => { x.checked = x.value === c.t; });
+  fillAddrSelect($('#coilAddr'), coilAreas(c.t), c.a);
+  $('#coilPt').value = c.pt; $('#ptField').hidden = c.t !== 'ton';
+  $('#dlgCoil').returnValue = '';
+  $('#dlgCoil').showModal();
+}
+$$('#dlgCoil input[name=coilType]').forEach(x => x.addEventListener('change', () => {
+  fillAddrSelect($('#coilAddr'), coilAreas(x.value), $('#coilAddr').value);
+  $('#ptField').hidden = x.value !== 'ton';
+}));
+$('#dlgCoil').addEventListener('close', () => {
+  if ($('#dlgCoil').returnValue !== 'ok' || !editing) return;
+  const t = $('#dlgCoil input[name=coilType]:checked')?.value || 'coil';
+  const pt = clamp(Math.round((parseFloat($('#coilPt').value) || 2) * 10) / 10, 0.1, 60);
+  program[editing.i].coil = { t, a: $('#coilAddr').value, pt };
+  changed();
+});
+$('#btnAddRung').addEventListener('click', () => { program.push(newRung()); changed(); });
+
+let confirmAction = null;
+function askConfirm(text, yes, action) {
+  $('#confirmText').textContent = text; $('#confirmYes').textContent = yes; confirmAction = action; $('#confirmBox').hidden = false;
+}
+$('#confirmYes').addEventListener('click', () => { $('#confirmBox').hidden = true; if (confirmAction) confirmAction(); confirmAction = null; });
+$('#confirmNo').addEventListener('click', () => { $('#confirmBox').hidden = true; confirmAction = null; });
+$('#btnSample').addEventListener('click', () => askConfirm('Lời giải mẫu sẽ thay thế chương trình hiện tại của bạn. Nên tự thử trước, dùng gợi ý, rồi mới xem lời giải.', 'Nạp lời giải mẫu', () => { program = SAMPLE(); changed(); }));
+$('#btnClearProg').addEventListener('click', () => askConfirm('Xóa toàn bộ chương trình và bắt đầu lại từ ví dụ khởi đầu?', 'Xóa và bắt đầu lại', () => { program = STARTER(); changed(); }));
+$('#btnHint').addEventListener('click', () => {
+  if (hintsShown >= HINTS.length) return;
+  hintsShown++;
+  $('#hintBox').append(h('div', { class: 'hint', html: `<b>Gợi ý ${hintsShown}</b> · ${HINTS[hintsShown - 1]}` }));
+  $('#btnHint').textContent = `Gợi ý (${hintsShown}/${HINTS.length})`;
+  $('#btnHint').disabled = hintsShown >= HINTS.length;
+});
+$('#btnGrade').addEventListener('click', () => {
+  const res = gradeProgram(JSON.parse(JSON.stringify(program)));
+  const n = res.filter(r => r.ok).length, box = $('#gradeBox');
+  box.textContent = '';
+  box.append(h('h3', { text: `Kết quả chấm: ${n}/${res.length} tiêu chí đạt` }));
+  box.append(h('ul', { class: 'results' }, ...res.map(r => h('li', {},
+    h('span', { class: 'chip ' + (r.ok ? 'ok' : 'bad'), text: r.ok ? '✓' : '✗' }), h('span', { class: 'de', text: r.de }), h('span', { class: 'vi', text: r.vi })))));
+  box.append(h('p', { class: 'small', text: n === res.length
+    ? 'Chương trình đạt tất cả yêu cầu. Thử tiếp chế độ Tìm lỗi AP2.'
+    : 'Máy chấm chạy chương trình của bạn trên một trạm ảo riêng: khởi động, dừng, phân loại 2 kim loại + 2 nhựa, Not-Halt, và đứt dây nút S0.' }));
+  box.hidden = false;
+});
+
+/* ═══════════ Fehlersuche ═══════════ */
+function fmtT(sec) { sec = Math.max(0, Math.floor(sec)); return `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`; }
+function exLog(text, cls) {
+  if (!ex || !ex.active) return;
+  ex.log.push({ t: sim.t - ex.t0, text, cls });
+  const li = h('li', {}, h('time', { text: fmtT(sim.t - ex.t0) }), h('span', { class: cls || '', text }));
+  $('#exLog').prepend(li);
+}
+function penalty(pts, de, vi) { ex.pens.push({ pts, de, vi }); }
+
+(function buildFaultUI() {
+  const sel = $('#dmmPoint'); let og = null, g = null;
+  for (const p of POINTS) {
+    if (p.g !== g) { g = p.g; og = h('optgroup', { label: g }); sel.append(og); }
+    og.append(h('option', { value: p.id, text: p.de }));
+  }
+})();
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function fillRepairs() {
+  const sel = $('#repairSel'); sel.textContent = '';
+  sel.append(h('option', { value: '', text: '— Maßnahme wählen —' }));
+  for (const r of REPAIRS.slice().sort((a, b) => a.de.localeCompare(b.de, 'de'))) sel.append(h('option', { value: r.id, text: r.de }));
+}
+fillRepairs();
+
+function onBinEx(bin, type) {
+  if (!ex || !ex.active || !ex.fixed) return;
+  if (bin === 'metal' && type === 'metal') ex.ftM++;
+  else if (bin === 'plastic' && type === 'plastic') ex.ftP++;
+  else { ex.ftM = 0; ex.ftP = 0; }
+}
+function startExercise() {
+  const keys = Object.keys(FAULTS).filter(k => k !== lastFault);
+  const f = keys[Math.floor(Math.random() * keys.length)]; lastFault = f;
+  sim = new Sim(SAMPLE(), { autoFeed: true }); sim.faults.add(f); sim.onBin = onBinEx;
+  ex = { active: true, fault: f, t0: 0, measured: new Set(), pens: [], log: [], deadOK: false, fixed: false, ftM: 0, ftP: 0, safety: false };
+  prev = {};
+  mode = 'fault';
+  $('#exLog').textContent = '';
+  $('#exSymDe').textContent = `„Guten Tag. Der Bediener meldet: ${FAULTS[f].de} Bitte suchen Sie den Fehler und setzen Sie die Anlage instand.“`;
+  $('#exSymVi').textContent = `Giám khảo: “${FAULTS[f].vi} Hãy tìm lỗi và sửa trạm.”`;
+  $('#dmmVal').textContent = '– – –'; $('#dmmWhere').textContent = 'Chọn điểm đo rồi nhấn Messen'; dmm = null;
+  $('#repairSel').value = '';
+  $('#exIntro').hidden = true; $('#exWork').hidden = false; $('#exTalk').hidden = true; $('#exResult').hidden = true; $('#handoverBox').hidden = true;
+  syncMode();
+  exLog('Auftrag übernommen. Anlage ist eingeschaltet, SPS in RUN.');
+  $('#feedAuto').setAttribute('aria-pressed', 'true');
+}
+function exitExercise() {
+  ex = null; mode = 'program'; prev = {};
+  sim = new Sim(program, { autoFeed: true });
+  $('#feedAuto').setAttribute('aria-pressed', 'true');
+  $('#exIntro').hidden = false; $('#exWork').hidden = true; $('#exTalk').hidden = true; $('#exResult').hidden = true;
+  syncMode();
+}
+function syncMode() {
+  const f = mode === 'fault';
+  $('#modePill').classList.toggle('fault', f);
+  $('#modePill span').textContent = f ? 'Chế độ: Tìm lỗi AP2' : 'Chế độ: Lập trình';
+  $('#progLocked').hidden = !f; $('#progArea').hidden = f;
+}
+$('#btnStartEx').addEventListener('click', startExercise);
+$('#btnAbort').addEventListener('click', exitExercise);
+
+let dmm = null;
+function reading(id) {
+  const p = PT[id];
+  if (p.ohm) return null;
+  const v = p.f(sim);
+  if (p.unit === 'bar') return `${v.toFixed(1).replace('.', ',')} bar`;
+  const jitter = v > 0 ? Math.sin(sim.t * 3.1 + id.length) * (v > 100 ? 0.8 : 0.08) : 0;
+  return `${(v + jitter).toFixed(v > 100 ? 0 : 1).replace('.', ',')} ${p.unit}`;
+}
+$('#btnMeasure').addEventListener('click', () => {
+  if (!ex || !ex.active) return;
+  const id = $('#dmmPoint').value, p = PT[id];
+  ex.measured.add(id);
+  if (p.ohm) {
+    if (sim.mainOn) {
+      penalty(10, 'Widerstandsmessung unter Spannung', 'Đo điện trở khi còn điện');
+      dmm = { id, fixed: 'Err · Fremdspannung' };
+      exLog(`Ω-Messung ${p.de}: Fremdspannung! Messung unter Spannung ist unzulässig.`, 'stop');
+    } else {
+      const r = p.ohm(sim), txt = r == null ? 'OL  Ω' : `${r.toFixed(1).replace('.', ',')} Ω`;
+      dmm = { id, fixed: txt };
+      exLog(`Messung ${p.de} → ${txt}`);
+    }
+  } else {
+    dmm = { id };
+    exLog(`Messung ${p.de} → ${reading(id)}`);
+  }
+  $('#dmmWhere').textContent = p.de;
+  $('#dmmVal').textContent = dmm.fixed || reading(id);
+});
+$('#btnDeadCheck').addEventListener('click', () => {
+  if (!ex || !ex.active) return;
+  if (sim.mainOn) { exLog('Spannungsprüfer: 230 V an −Q1 Abgang. Anlage ist NICHT spannungsfrei.', 'stop'); return; }
+  if (!sim.locked) { exLog('Spannungsprüfer: 0 V – aber Regel 2 fehlt: Hauptschalter ist noch nicht gegen Wiedereinschalten gesichert.', 'stop'); return; }
+  ex.deadOK = true;
+  exLog('Spannungsfreiheit allpolig festgestellt (L1–N, L1–PE, N–PE: 0 V).');
+});
+$('#btnRepair').addEventListener('click', () => {
+  if (!ex || !ex.active) return;
+  const id = $('#repairSel').value; if (!id) { say('Chọn một biện pháp trước.'); return; }
+  const rep = REPAIRS.find(r => r.id === id);
+  if (rep.loto) {
+    const miss = [];
+    if (sim.mainOn) miss.push('1 Freischalten');
+    if (!sim.locked) miss.push('2 Gegen Wiedereinschalten sichern');
+    if (!ex.deadOK) miss.push('3 Spannungsfreiheit feststellen');
+    if (miss.length) {
+      penalty(30, `Sicherheitsverstoß vor „${rep.de}“ (fehlt: ${miss.join(', ')})`, 'Vi phạm quy tắc an toàn trước khi sửa');
+      ex.safety = true;
+      exLog(`⛔ Prüfer unterbricht: Arbeiten an der Anlage ohne ${miss.join(' / ')}!`, 'stop');
+      return;
+    }
+  }
+  const f = FAULTS[ex.fault];
+  if (f.repair === id && !ex.fixed) {
+    if (!f.proof(ex.measured)) penalty(10, 'Fehler vor der Instandsetzung nicht messtechnisch nachgewiesen', 'Sửa mà chưa đo chứng minh chỗ hỏng');
+    sim.faults.delete(ex.fault); ex.fixed = true; ex.ftM = ex.ftP = 0;
+  } else {
+    penalty(15, `Maßnahme ohne Befund: „${rep.de}“ (Teiletausch auf Verdacht)`, 'Thay/sửa theo phỏng đoán, không đúng chỗ hỏng');
+  }
+  exLog(`Maßnahme durchgeführt: ${rep.de}`);
+  $('#repairSel').value = '';
+});
+$('#btnHandover').addEventListener('click', () => { $('#handoverBox').hidden = false; });
+$('#handoverNo').addEventListener('click', () => { $('#handoverBox').hidden = true; });
+$('#handoverYes').addEventListener('click', () => {
+  $('#handoverBox').hidden = true;
+  const ft = ex.ftM > 0 && ex.ftP > 0;
+  if (ex.fixed && !ft) penalty(10, 'Keine vollständige Funktionsprüfung (Metall und Kunststoff) nach der Instandsetzung', 'Không chạy thử đủ cả kim loại và nhựa sau khi sửa');
+  if (!sim.mainOn || sim.locked) penalty(5, 'Anlage nicht wieder in Betrieb genommen', 'Không đóng điện lại trạm trước khi bàn giao');
+  exLog('Anlage an den Prüfer übergeben.');
+  ex.active = false; ex.endT = sim.t - ex.t0;
+  const pool = GENERAL.filter(g => !(ex.safety && g.id === 'G_RULES'));
+  const qs = [FAULTS[ex.fault].q, ...(ex.safety ? [GENERAL.find(g => g.id === 'G_RULES')] : []), ...shuffle(pool)].slice(0, 3);
+  ex.talk = { qs, i: 0, right: 0 };
+  $('#exWork').hidden = true; $('#exTalk').hidden = false;
+  renderQuestion();
+});
+
+function renderQuestion() {
+  const box = $('#exTalk'), T = ex.talk, q = T.qs[T.i];
+  box.textContent = '';
+  box.append(h('div', { class: 'row', style: 'justify-content:space-between;align-items:center' },
+    h('h2', { text: 'Fachgespräch' }), h('span', { class: 'timer', text: `Frage ${T.i + 1} / ${T.qs.length}` })));
+  box.append(h('div', { class: 'examiner' }, h('span', { class: 'who', text: 'Prüfer · Giám khảo' }), h('p', { class: 'q', text: q.q })));
+  const order = shuffle(q.a.map((t, k) => ({ t, k })));
+  const answers = h('div', { class: 'answers' });
+  const after = h('div', { class: 'pane' });
+  for (const o of order) {
+    answers.append(h('button', { type: 'button', text: o.t, onclick: e => {
+      const right = o.k === 0;
+      if (right) T.right++;
+      $$('button', answers).forEach(b => { b.disabled = true; });
+      e.currentTarget.classList.add(right ? 'right' : 'wrong');
+      if (!right) { const idx = order.findIndex(x => x.k === 0); answers.children[idx].classList.add('right'); }
+      after.append(h('div', { class: 'explain' }, h('p', { html: `<b>${right ? 'Richtig.' : 'Leider falsch.'}</b> ` }), h('p', { text: q.vi })));
+      after.append(h('div', { class: 'toolbar' }, h('button', { class: 'btn primary', type: 'button', text: T.i + 1 < T.qs.length ? 'Nächste Frage' : 'Ergebnis anzeigen', onclick: () => {
+        T.i++; if (T.i < T.qs.length) renderQuestion(); else renderResult();
+      } })));
+    } }));
+  }
+  box.append(answers, after);
+}
+function ihk(p) {
+  if (p >= 92) return [1, 'sehr gut']; if (p >= 81) return [2, 'gut']; if (p >= 67) return [3, 'befriedigend'];
+  if (p >= 50) return [4, 'ausreichend']; if (p >= 30) return [5, 'mangelhaft']; return [6, 'ungenügend'];
+}
+function renderResult() {
+  const lost = ex.pens.reduce((a, p) => a + p.pts, 0);
+  const proc = ex.fixed ? Math.max(0, 70 - lost) : 0;
+  const talk = ex.talk.right * 10, total = proc + talk, [note, word] = ihk(total), f = FAULTS[ex.fault];
+  const box = $('#exResult'); box.textContent = '';
+  box.append(h('div', { class: 'box' },
+    h('h2', { text: 'Ergebnis · Kết quả' }),
+    h('div', { class: 'score' },
+      h('div', { class: 'note', html: `${note}<small>${word}</small>` }),
+      h('div', {}, h('div', { class: 'pts', text: `${total} / 100 Punkte` }), h('p', { class: 'small', text: `Durchführung ${proc}/70 · Fachgespräch ${talk}/30 · Zeit ${fmtT(ex.endT)}` }))),
+    ex.fixed ? null : h('p', { class: 'bad-t', text: 'Fehler nicht behoben – Durchführung mit 0 Punkten bewertet. Lỗi chưa được sửa nên phần thực hành 0 điểm.' }),
+    ex.pens.length ? h('div', {}, h('p', { class: 'grp-title', text: 'Abzüge · Bị trừ điểm' }),
+      h('ul', { class: 'deduct' }, ...ex.pens.map(p => h('li', {}, h('span', { class: 'de', text: `−${p.pts} ${p.de}` }), h('br'), h('span', { class: 'small', text: p.vi })))))
+      : h('p', { class: 'ok-t', text: 'Keine Abzüge in der Durchführung. Quy trình không bị trừ điểm.' })));
+  box.append(h('div', { class: 'box' },
+    h('p', { class: 'grp-title', text: 'Eingebauter Fehler · Lỗi đã cài' }),
+    h('h3', { text: f.name }),
+    h('p', { text: f.why })));
+  box.append(h('div', { class: 'toolbar' },
+    h('button', { class: 'btn primary', type: 'button', text: 'Bài tìm lỗi mới', onclick: startExercise }),
+    h('button', { class: 'btn', type: 'button', text: 'Về chế độ lập trình', onclick: exitExercise })));
+  $('#exTalk').hidden = true; box.hidden = false;
+}
+
+/* ═══════════ Anzeige-Aktualisierung ═══════════ */
+let prev = {};
+function setOnce(key, val, fn) { if (prev[key] !== val) { prev[key] = val; fn(val); } }
+function updateUI() {
+  const s = sim, st = s.st;
+  ADDR.I.forEach((_, i) => setOnce('I' + i, s.mainOn && st.inT[i], v => ledEls.I[i].classList.toggle('on', v)));
+  ADDR.Q.forEach((_, i) => setOnce('Q' + i, s.plcRunning && s.img.Q[i], v => ledEls.Q[i].classList.toggle('on', v)));
+  const rs = !s.mainOn ? 'off' : s.runSw ? 'run' : 'stop';
+  setOnce('rs', rs, v => { const b = $('#runSwitch'); b.className = 'runsw ' + v; b.lastChild.textContent = v === 'off' ? 'AUS' : v === 'run' ? 'RUN' : 'STOP'; });
+  setOnce('lamp', st.lamp, v => $('#lampH1').classList.toggle('on', v));
+  setOnce('nh', s.notHalt, v => { $('#btnNH').setAttribute('aria-pressed', v); $('#nhState').textContent = v ? 'gedrückt · chạm để nhả' : 'entriegelt'; });
+  setOnce('q1', s.mainOn, v => { $('#btnQ1').setAttribute('aria-pressed', v); $('#q1State').textContent = v ? '−Q1 · I' : '−Q1 · 0'; });
+  setOnce('lock', s.locked, v => { $('#btnLock').setAttribute('aria-pressed', v); $('#lockState').textContent = v ? 'Abgeschlossen' : 'Schloss offen'; });
+  setOnce('feed', s.autoFeed, v => $('#feedAuto').setAttribute('aria-pressed', v));
+  const mOk = s.bins.metal.filter(x => x === 'metal').length, pOk = s.bins.plastic.filter(x => x === 'plastic').length;
+  const mBad = s.bins.metal.length - mOk, pBad = s.bins.plastic.length - pOk;
+  setOnce('bins', `${mOk}|${mBad}|${pOk}|${pBad}`, () => {
+    const bs = $('#binStats'); bs.textContent = '';
+    bs.append(h('span', {}, 'Metallbehälter ', h('b', { class: 'ok-t', text: `✓${mOk}` }), ' ', h('b', { class: mBad ? 'bad-t' : '', text: `✗${mBad}` })));
+    bs.append(h('span', {}, 'Kunststoffbehälter ', h('b', { class: 'ok-t', text: `✓${pOk}` }), ' ', h('b', { class: pBad ? 'bad-t' : '', text: `✗${pBad}` })));
+  });
+  if (ex && ex.active) {
+    setOnce('timer', fmtT(s.t - ex.t0), v => { $('#exTimer').textContent = v; });
+    setOnce('r1', !s.mainOn, v => $('#rule1').classList.toggle('ok', v));
+    setOnce('r2', s.locked, v => $('#rule2').classList.toggle('ok', v));
+    setOnce('r3', ex.deadOK, v => $('#rule3').classList.toggle('ok', v));
+    setOnce('ftm', ex.fixed && ex.ftM > 0, v => $('#ftMetal').classList.toggle('ok', v));
+    setOnce('ftp', ex.fixed && ex.ftP > 0, v => $('#ftPlastic').classList.toggle('ok', v));
+    if (dmm) $('#dmmVal').textContent = dmm.fixed || reading(dmm.id);
+  }
+}
+
+/* ═══════════ Hauptschleife ═══════════ */
+let last = performance.now(), acc = 0;
+function frame(now) {
+  const el = Math.min(0.1, (now - last) / 1000) * speed; last = now; acc += el;
+  let n = 0;
+  while (acc >= DT && n < 80) { sim.step(DT); acc -= DT; n++; }
+  if (n >= 80) acc = 0;
+  if (!$('#pane-anlage').hidden) draw();
+  updateUI();
+  updateFlow();
+  requestAnimationFrame(frame);
+}
+
+renderLadder();
+syncMode();
+setTab(((location.hash || '').slice(1)) || store.get(K_TAB) || 'anlage');
+requestAnimationFrame(t => { last = t; frame(t); });
+
+window.XuongAo = { Sim, SAMPLE, STARTER, gradeProgram, FAULTS, GENERAL, runFor, tap, get sim() { return sim; }, get ex() { return ex; } };
+})();
+</script>

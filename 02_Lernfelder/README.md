@@ -33,3 +33,5 @@ Bảng dưới đây cho biết mỗi Lernfeld đã có nơi lưu bài vở tron
 | [`SPS_Steuerungstechnik/`](./SPS_Steuerungstechnik/README.md) | LF 7, LF 8, LF 9 | AP1 & AP2 — lập trình PLC |
 | [`Inbetriebnahme_Fehlersuche/`](./Inbetriebnahme_Fehlersuche/README.md) | LF 3, LF 11, LF 12 | AP2 — tìm lỗi (*Fehlersuche*) & an toàn điện |
 | [`Fachgespraech_AP2/`](./Fachgespraech_AP2/README.md) | LF 13 | AP2 — bảo vệ đồ án bằng tiếng Đức |
+
+👉 Luyện tập tương tác cho SPS và Fehlersuche: [Xưởng ảo Mechatronik](../04_Virtuelle_Werkstatt/README.md).

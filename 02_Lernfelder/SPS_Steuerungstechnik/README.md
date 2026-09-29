@@ -3,7 +3,7 @@
 **Phục vụ:** LF 7, LF 8, LF 9 · **Trọng tâm:** AP1 & AP2 — lập trình và vận hành bộ điều khiển
 **Tiêu chuẩn:** Ngôn ngữ lập trình PLC theo IEC 61131-3 · Phần cứng mục tiêu: Siemens LOGO!, S7-1200/1500
 
-👉 Luyện tập tương tác từng bước: [SPS-Übungskoffer S7-1200](../../05_SPS_S7-1200/README.md) (10 bài KOP có chấm tự động).
+👉 Luyện tập tương tác từng bước: [S7-1200 PLC Trainer](../../05_SPS_S7-1200/README.md) (10 bài LAD có chấm tự động).
 
 ---
 

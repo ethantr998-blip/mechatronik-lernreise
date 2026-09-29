@@ -1,11 +1,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SPS-Übungskoffer S7-1200</title>
+<title>S7-1200 PLC Trainer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
 <style>
-/* Layout: Übungskoffer — links das Übungsbrett (Prozessbild, Taster/Schalter, Zeitdiagramm) im dunklen Koffergehäuse, rechts Register (Lektion · KOP · Hilfe); am Handy Register mit Bedienleiste am unteren Rand */
+/* Layout: trainer case — left the trainer board (process view, buttons/switches, signal trace) in a dark case, right the tabs (lesson · LAD · help); on phones tabs with a control dock at the bottom */
 :root {
   --bg: #eceeec;
   --panel: #ffffff;
@@ -67,12 +67,12 @@ table { font: inherit; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 p { margin: 0; }
 code, .mono { font-family: var(--f-mono); font-size: .92em; }
-.de { font-style: italic; }
+.en { font-style: italic; }
 .small { font-size: 13px; color: var(--muted); }
 
 .app { max-width: 1340px; margin: 0 auto; padding-inline: 16px; padding-block: 14px 40px; display: grid; gap: 12px; }
 
-/* ── Kopf ─────────────────────────────── */
+/* ── Header ─────────────────────────────── */
 .masthead { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 6px 16px; }
 .eyebrow { margin: 0; font: 500 12px/1.2 var(--f-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 h1 { margin: 2px 0 0; font: 700 clamp(28px, 6vw, 42px)/1 var(--f-display); letter-spacing: .01em; text-transform: uppercase; text-wrap: balance; }
@@ -91,7 +91,7 @@ h3 { font-size: 16px; line-height: 1.15; }
 .lchip .mark.ok { color: var(--flow); }
 .lchip .mark.seen { color: var(--warn); }
 
-/* ── CPU-Leiste (Gehäuse) ─────────────── */
+/* ── CPU strip (housing) ─────────────── */
 .cpu { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 8px 12px; background: var(--case); color: var(--case-ink);
   border: 1px solid var(--case-line); border-radius: 6px; box-shadow: 0 6px 16px -12px var(--shadow); }
 @media (min-width: 700px) { .cpu { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; } }
@@ -112,7 +112,7 @@ h3 { font-size: 16px; line-height: 1.15; }
 .led.on i { background: var(--led-g); box-shadow: 0 0 7px var(--led-g); }
 .led.used { color: var(--case-ink); }
 
-/* ── Register ─────────────────────────── */
+/* ── Tabs ─────────────────────────── */
 .tabs { display: flex; gap: 2px; overflow-x: auto; border-bottom: 1px solid var(--line); scrollbar-width: none; }
 .tab { flex: none; border: 0; background: none; padding: 10px 12px 8px; cursor: pointer; font: 600 16px/1 var(--f-display); letter-spacing: .05em;
   text-transform: uppercase; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -1px; }
@@ -129,7 +129,7 @@ h3 { font-size: 16px; line-height: 1.15; }
 .prose { display: grid; gap: 10px; max-width: 70ch; }
 .prose ul, .prose ol { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
 
-/* ── Übungsbrett ──────────────────────── */
+/* ── Trainer board ──────────────────────── */
 .scene { background: var(--scene); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 .scene canvas { display: block; width: 100%; height: auto; aspect-ratio: 640 / 250; max-width: 100%; }
 .kb { background: var(--case); color: var(--case-ink); border: 1px solid var(--case-line); border-radius: 6px; padding: 12px; display: grid; gap: 12px; }
@@ -179,7 +179,7 @@ button.kw { cursor: pointer; }
 .row.end { align-items: end; }
 .row > .field { flex: 1 1 140px; }
 
-/* ── Lektion ──────────────────────────── */
+/* ── Lesson ──────────────────────────── */
 .lhead { display: grid; gap: 4px; }
 details.theory { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; }
 details.theory > summary { cursor: pointer; padding: 12px 14px; font: 700 16px/1.2 var(--f-display); letter-spacing: .04em; text-transform: uppercase; }
@@ -198,7 +198,7 @@ svg.td .td-p { fill: none; stroke: var(--ink); stroke-width: 1.8; }
 svg.td .td-p.q { stroke: var(--accent); }
 svg.td .td-g { stroke: var(--line); stroke-dasharray: 3 3; }
 
-/* ── KOP ──────────────────────────────── */
+/* ── LAD ──────────────────────────────── */
 .btn { border: 1px solid var(--line); background: var(--panel); border-radius: 6px; padding: 8px 12px; cursor: pointer; font: 500 14px/1.2 var(--f-body); }
 .btn:hover { border-color: var(--muted); }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 600; }
@@ -265,7 +265,7 @@ button.link:hover .v.off { opacity: .6; }
 .ladder.live .link .on { background: var(--flow) !important; }
 .ladder.live .coil.qon .glyph.box { background: color-mix(in srgb, var(--flow) 18%, transparent); }
 
-/* ── Bedienleiste (Handy) ─────────────── */
+/* ── Control dock (phone) ─────────────── */
 .dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: var(--case); color: var(--case-ink); border-top: 1px solid var(--case-line);
   padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px)); display: flex; gap: 8px; overflow-x: auto; align-items: stretch; }
 .dock .kw { min-width: 64px; padding: 6px 6px 4px; }
@@ -275,7 +275,7 @@ button.link:hover .v.off { opacity: .6; }
 .dlamp { display: grid; justify-items: center; align-content: center; gap: 4px; min-width: 44px; font: 600 11px/1 var(--f-mono); }
 .dlamp i { width: 18px; height: 18px; border-radius: 50%; background: var(--led-off); }
 
-/* ── Dialoge ──────────────────────────── */
+/* ── Dialogs ──────────────────────────── */
 dialog.sheet { border: 1px solid var(--line); border-radius: 10px; padding: 0; width: min(460px, calc(100vw - 32px)); background: var(--panel); color: var(--ink); box-shadow: 0 20px 50px -20px var(--shadow); }
 dialog.sheet::backdrop { background: rgba(10, 14, 16, .45); }
 .sheet-body { padding: 16px; display: grid; gap: 12px; max-height: 86vh; overflow: auto; }
@@ -305,17 +305,17 @@ select, input[type="number"] { width: 100%; min-width: 0; padding: 8px 10px; bor
 <div class="app">
   <header class="masthead">
     <div>
-      <p class="eyebrow">CPU 1214C · KOP / LAD · 10 Lektionen</p>
-      <h1>SPS-Übungskoffer S7-1200</h1>
+      <p class="eyebrow">CPU 1214C · LAD · 10 lessons</p>
+      <h1>S7-1200 PLC Trainer</h1>
     </div>
     <p class="small" id="progressText"></p>
   </header>
 
-  <nav class="lessons" id="lessonNav" aria-label="Lektionen"></nav>
+  <nav class="lessons" id="lessonNav" aria-label="Lessons"></nav>
 
-  <div class="cpu" id="cpu" aria-label="CPU 1214C Zustand">
+  <div class="cpu" id="cpu" aria-label="CPU 1214C status">
     <div class="cpu-id"><b>CPU 1214C</b><span>DC/DC/DC</span></div>
-    <div class="cpu-mode" role="group" aria-label="Betriebszustand">
+    <div class="cpu-mode" role="group" aria-label="Operating mode">
       <button type="button" id="btnRun" aria-pressed="true">▶ RUN</button>
       <button type="button" id="btnStop" aria-pressed="false">■ STOP</button>
     </div>
@@ -328,27 +328,27 @@ select, input[type="number"] { width: 100%; min-width: 0; padding: 8px 10px; bor
     <div class="cpu-io" id="ledsQ"><span class="io-l">DQ</span></div>
   </div>
 
-  <nav class="tabs" role="tablist" aria-label="Bereiche">
+  <nav class="tabs" role="tablist" aria-label="Sections">
     <button class="tab" role="tab" data-tab="lesson" type="button">Bài học</button>
     <button class="tab only-narrow" role="tab" data-tab="board" type="button">Bàn tập</button>
-    <button class="tab" role="tab" data-tab="kop" type="button">KOP</button>
+    <button class="tab" role="tab" data-tab="kop" type="button">LAD</button>
     <button class="tab" role="tab" data-tab="help" type="button">Hướng dẫn</button>
   </nav>
 
   <main class="bench">
-    <!-- ════════ ÜBUNGSBRETT ════════ -->
-    <section class="pane pane-board" id="pane-board" aria-label="Übungsbrett">
-      <div class="scene"><canvas id="scene" width="640" height="250" role="img" aria-label="Prozessbild der Lektion"></canvas></div>
+    <!-- ════════ TRAINER BOARD ════════ -->
+    <section class="pane pane-board" id="pane-board" aria-label="Trainer board">
+      <div class="scene"><canvas id="scene" width="640" height="250" role="img" aria-label="Process view of the lesson"></canvas></div>
       <div class="kb">
-        <p class="grp">Eingänge · Đầu vào</p>
+        <p class="grp">Inputs · Đầu vào</p>
         <div class="kb-row" id="kbIn"></div>
         <div class="kb-row" id="kbAct"></div>
         <p class="note" id="kbNote"></p>
       </div>
       <div class="box" id="truthBox" hidden></div>
       <div class="trace-wrap">
-        <p class="grp">Zeitdiagramm · 10 s gần nhất</p>
-        <canvas id="trace" role="img" aria-label="Zeitdiagramm der Ein- und Ausgänge"></canvas>
+        <p class="grp">Signal trace · 10 s gần nhất</p>
+        <canvas id="trace" role="img" aria-label="Signal trace of inputs and outputs"></canvas>
       </div>
       <div class="row">
         <span class="small">Tốc độ mô phỏng</span>
@@ -360,19 +360,19 @@ select, input[type="number"] { width: 100%; min-width: 0; padding: 8px 10px; bor
       </div>
     </section>
 
-    <!-- ════════ LEKTION ════════ -->
-    <section class="pane" id="pane-lesson" aria-label="Lektion" hidden></section>
+    <!-- ════════ LESSON ════════ -->
+    <section class="pane" id="pane-lesson" aria-label="Lesson" hidden></section>
 
-    <!-- ════════ KOP ════════ -->
-    <section class="pane" id="pane-kop" aria-label="KOP-Editor" hidden>
+    <!-- ════════ LAD ════════ -->
+    <section class="pane" id="pane-kop" aria-label="LAD editor" hidden>
       <div class="row" style="justify-content:space-between">
-        <h2 id="kopTitle">OB1 „Main“</h2>
-        <button class="btn" id="btnMonitor" type="button" aria-pressed="true">Beobachten</button>
+        <h2 id="kopTitle">OB1 "Main"</h2>
+        <button class="btn" id="btnMonitor" type="button" aria-pressed="true">Monitor</button>
       </div>
       <div class="toolbar">
-        <button class="btn primary" id="btnGrade" type="button">Prüfen · Chấm bài</button>
+        <button class="btn primary" id="btnGrade" type="button">Check · Chấm bài</button>
         <button class="btn" id="btnHint" type="button">Gợi ý</button>
-        <button class="btn" id="btnSample" type="button">Lösung · Lời giải</button>
+        <button class="btn" id="btnSample" type="button">Solution · Lời giải</button>
         <button class="btn" id="btnReset" type="button">Xóa, làm lại</button>
       </div>
       <div class="confirm" id="confirmBox" hidden>
@@ -383,73 +383,73 @@ select, input[type="number"] { width: 100%; min-width: 0; padding: 8px 10px; bor
       <div class="box" id="gradeBox" hidden></div>
       <div class="legend">
         <span><i class="sw"></i>có dòng tín hiệu</span>
-        <span><i class="sw idle"></i>không có dòng — giống TIA Portal khi „Beobachten“</span>
+        <span><i class="sw idle"></i>không có dòng — giống TIA Portal khi bật Monitoring</span>
       </div>
       <div class="ladder" id="ladder"></div>
-      <div class="toolbar"><button class="btn" id="btnAddRung" type="button">+ Netzwerk</button></div>
+      <div class="toolbar"><button class="btn" id="btnAddRung" type="button">+ Network</button></div>
       <p class="small">Chạm một ô để chọn tiếp điểm; chạm khe nhỏ giữa hai ô để nối nhánh song song; chạm cuộn dây cuối mạng để chọn lệnh ( ), (S), (R), SR, TON, CTU… Thay đổi được nạp ngay vào CPU.</p>
     </section>
 
-    <!-- ════════ HILFE ════════ -->
+    <!-- ════════ HELP ════════ -->
     <section class="pane" id="pane-help" aria-label="Hướng dẫn" hidden>
       <div class="box prose">
         <h2>Cách dùng</h2>
         <ul>
-          <li>Chọn bài ở hàng trên cùng. Đọc <b>Bài học</b>, rồi tự viết chương trình ở thẻ <b>KOP</b>.</li>
-          <li>Thử chương trình bằng các nút và công tắc trên <b>Bàn tập</b>. Trên điện thoại, thẻ KOP có thanh điều khiển ở cạnh dưới để vừa bấm nút vừa xem dòng tín hiệu.</li>
-          <li><b>Prüfen</b> chạy chương trình của bạn qua các tình huống thử trên một CPU ảo riêng rồi báo từng tiêu chí đạt hay chưa.</li>
-          <li>Bí thì bấm <b>Gợi ý</b> (nhiều mức). <b>Lösung</b> chỉ nên xem sau khi đã tự thử; bài giải bằng lời giải mẫu được đánh dấu ◐ thay vì ✓.</li>
-          <li><b>STOP → RUN</b> là khởi động lại (<span class="de">Neustart</span>): Merker, bộ định thời, bộ đếm và đầu ra đều về 0.</li>
+          <li>Chọn bài ở hàng trên cùng. Đọc <b>Bài học</b>, rồi tự viết chương trình ở thẻ <b>LAD</b> (ladder diagram, sơ đồ bậc thang).</li>
+          <li>Thử chương trình bằng các nút và công tắc trên <b>Bàn tập</b>. Trên điện thoại, thẻ LAD có thanh điều khiển ở cạnh dưới để vừa bấm nút vừa xem dòng tín hiệu.</li>
+          <li><b>Check</b> chạy chương trình của bạn qua các tình huống thử trên một CPU ảo riêng rồi báo từng tiêu chí đạt hay chưa.</li>
+          <li>Bí thì bấm <b>Gợi ý</b> (nhiều mức). <b>Solution</b> chỉ nên xem sau khi đã tự thử; bài giải bằng lời giải mẫu được đánh dấu ◐ thay vì ✓.</li>
+          <li><b>STOP → RUN</b> là khởi động lại (<span class="en">warm restart</span>): bit nhớ M, bộ định thời, bộ đếm và đầu ra đều về 0.</li>
         </ul>
       </div>
       <div class="box">
-        <h2>Ký hiệu KOP · Anweisungen</h2>
-        <div class="tablewrap"><table class="tags" id="symTable"><thead><tr><th>Ký hiệu</th><th>Tên trong TIA</th><th>Ý nghĩa</th></tr></thead><tbody></tbody></table></div>
+        <h2>Ký hiệu LAD · Instructions</h2>
+        <div class="tablewrap"><table class="tags" id="symTable"><thead><tr><th>Ký hiệu</th><th>Tên trong TIA (English)</th><th>Ý nghĩa</th></tr></thead><tbody></tbody></table></div>
       </div>
       <div class="box prose">
         <h2>Làm lại bài trong TIA Portal</h2>
         <ol>
-          <li>Tạo project, <span class="de">Neues Gerät hinzufügen</span> → Controller → S7-1200 → CPU 1214C DC/DC/DC (chọn đúng mã hàng của CPU ở trường).</li>
-          <li><span class="de">PLC-Variablen → Standard-Variablentabelle</span>: nhập Name, kiểu <code>Bool</code> và địa chỉ theo <span class="de">Variablentabelle</span> của bài.</li>
-          <li><span class="de">Programmbausteine → Main [OB1]</span>: kéo lệnh từ thẻ <span class="de">Anweisungen → Einfache Anweisungen</span> (<span class="de">Bitverknüpfungen, Zeiten, Zähler</span>) vào các Netzwerk. Bộ định thời và bộ đếm sẽ hỏi tạo <span class="de">Instanz-DB</span>: chọn OK.</li>
-          <li><span class="de">Übersetzen</span> rồi <span class="de">Laden in Gerät</span>. Không có CPU thật thì dùng <span class="de">Simulation starten</span> (S7-PLCSIM) và đặt giá trị đầu vào trong bảng SIM của PLCSIM.</li>
-          <li>Bật <span class="de">Beobachten ein/aus</span> (biểu tượng kính) để xem dòng tín hiệu xanh lá / xanh dương nét đứt như ở trang này.</li>
+          <li>Tạo project, <span class="en">Add new device</span> → Controllers → SIMATIC S7-1200 → CPU 1214C DC/DC/DC (chọn đúng mã hàng của CPU ở trường).</li>
+          <li><span class="en">PLC tags → Default tag table</span>: nhập Name, kiểu <code>Bool</code> và địa chỉ theo <span class="en">tag table</span> của bài.</li>
+          <li><span class="en">Program blocks → Main [OB1]</span>: kéo lệnh từ thẻ <span class="en">Instructions → Basic instructions</span> (<span class="en">Bit logic operations, Timer operations, Counter operations</span>) vào các Network. Timer và counter sẽ hỏi tạo <span class="en">instance DB</span>: chọn OK.</li>
+          <li><span class="en">Compile</span> rồi <span class="en">Download to device</span>. Không có CPU thật thì dùng <span class="en">Start simulation</span> (S7-PLCSIM) và đặt giá trị đầu vào trong SIM table của PLCSIM.</li>
+          <li>Bật <span class="en">Monitoring on/off</span> (biểu tượng kính) để xem dòng tín hiệu xanh lá / xanh dương nét đứt như ở trang này.</li>
         </ol>
-        <p class="small">TIA Portal chỉ chạy trên Windows. Trên MacBook Intel cần Windows (Boot Camp); máy 8 GB RAM sẽ khá chậm, nên ưu tiên máy tính ở phòng thực hành.</p>
+        <p class="small">Máy ở trường để giao diện tiếng Đức thì đổi sang tiếng Anh ở <span class="en">Options → Settings → General → User interface language</span>. TIA Portal chỉ chạy trên Windows; trên MacBook Intel cần Windows (Boot Camp), máy 8 GB RAM sẽ khá chậm, nên ưu tiên máy tính ở phòng thực hành.</p>
       </div>
       <p class="foot">Trang mô phỏng phục vụ học tập, không phải phần mềm của Siemens. Tên S7-1200 và TIA Portal chỉ dùng để đối chiếu với thiết bị thật.</p>
     </section>
   </main>
 </div>
 
-<div class="dock" id="dock" hidden aria-label="Bedienleiste"></div>
+<div class="dock" id="dock" hidden aria-label="Control dock"></div>
 
 <dialog class="sheet" id="dlgCell">
   <form method="dialog" class="sheet-body">
-    <h3>Kontakt · Tiếp điểm</h3>
-    <div class="typegrid" id="cellTypes" role="radiogroup" aria-label="Elementtyp"></div>
+    <h3>Contact · Tiếp điểm</h3>
+    <div class="typegrid" id="cellTypes" role="radiogroup" aria-label="Element type"></div>
     <div class="field" id="cellAddrField"><label for="cellAddr">Operand</label><select id="cellAddr"></select></div>
     <p class="small" id="cellHelp"></p>
-    <div class="sheet-actions"><button class="btn" value="cancel" type="submit">Hủy</button><button class="btn primary" value="ok" type="submit">Übernehmen</button></div>
+    <div class="sheet-actions"><button class="btn" value="cancel" type="submit">Hủy</button><button class="btn primary" value="ok" type="submit">OK</button></div>
   </form>
 </dialog>
 
 <dialog class="sheet" id="dlgCoil">
   <form method="dialog" class="sheet-body">
-    <h3>Spule / Box · Cuộn dây / Hộp lệnh</h3>
-    <div class="typegrid three" id="coilTypes" role="radiogroup" aria-label="Anweisung"></div>
+    <h3>Coil / Box · Cuộn dây / Hộp lệnh</h3>
+    <div class="typegrid three" id="coilTypes" role="radiogroup" aria-label="Instruction"></div>
     <div class="field" id="fOp"><label for="kOp">Operand</label><select id="kOp"></select></div>
     <div class="field" id="fIn2"><label for="kIn2" id="kIn2Label">R1</label>
-      <div class="row"><select id="kIn2" style="flex:1 1 160px"></select><label class="chk"><input type="checkbox" id="kInv2"> negiert (┤/├)</label></div></div>
-    <div class="row end" id="fTim"><div class="field"><label for="kTInst">Instanz</label><select id="kTInst"></select></div>
-      <div class="field"><label for="kPt">PT (Sekunden)</label><input type="number" id="kPt" min="0.1" max="600" step="0.1"></div></div>
-    <div class="row end" id="fCnt"><div class="field"><label for="kCInst">Instanz</label><select id="kCInst"></select></div>
+      <div class="row"><select id="kIn2" style="flex:1 1 160px"></select><label class="chk"><input type="checkbox" id="kInv2"> negated (┤/├)</label></div></div>
+    <div class="row end" id="fTim"><div class="field"><label for="kTInst">Instance</label><select id="kTInst"></select></div>
+      <div class="field"><label for="kPt">PT (seconds)</label><input type="number" id="kPt" min="0.1" max="600" step="0.1"></div></div>
+    <div class="row end" id="fCnt"><div class="field"><label for="kCInst">Instance</label><select id="kCInst"></select></div>
       <div class="field"><label for="kPv">PV</label><input type="number" id="kPv" min="0" max="999" step="1"></div></div>
     <div class="field" id="fCD"><label for="kCD">CD · đếm xuống</label><select id="kCD"></select></div>
     <div class="field" id="fR"><label for="kR">R · đặt CV = 0</label><select id="kR"></select></div>
     <div class="field" id="fLD"><label for="kLD">LD · nạp CV = PV</label><select id="kLD"></select></div>
     <p class="small" id="coilHelp"></p>
-    <div class="sheet-actions"><button class="btn" value="cancel" type="submit">Hủy</button><button class="btn primary" value="ok" type="submit">Übernehmen</button></div>
+    <div class="sheet-actions"><button class="btn" value="cancel" type="submit">Hủy</button><button class="btn primary" value="ok" type="submit">OK</button></div>
   </form>
 </dialog>
 
@@ -461,7 +461,7 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const TAU = Math.PI * 2;
 const COLS = 4, MAX_ROWS = 4, DT = 0.01, TRACE_DT = 0.05, TRACE_N = 200;
 
-/* ═══════════ Operanden ═══════════ */
+/* ═══════════ Operands ═══════════ */
 const ADDR = {
   I: range(8).map(i => 'I0.' + i),
   Q: range(8).map(i => 'Q0.' + i),
@@ -491,7 +491,7 @@ function rd(s, a) {
 }
 function wr(s, a, v) { const p = parse(a); if (p.area === 'Q' || p.area === 'M') s.img[p.area][p.idx] = !!v; }
 
-/* ═══════════ KOP-Programm ═══════════ */
+/* ═══════════ LAD program ═══════════ */
 const CELL_T = ['empty', 'wire', 'no', 'nc', 'pos', 'neg', 'not'];
 const COIL_T = ['coil', 'ncoil', 'set', 'reset', 'sr', 'rs', 'ton', 'tof', 'tp', 'ctu', 'ctd', 'ctud'];
 const TIMERS = ['ton', 'tof', 'tp'], COUNTERS = ['ctu', 'ctd', 'ctud'], BITCOILS = ['coil', 'ncoil', 'set', 'reset'];
@@ -500,7 +500,7 @@ const emptyRow = () => range(COLS).map(() => ({ t: 'empty', a: 'I0.0' }));
 const emptyLinks = () => new Array(COLS + 1).fill(false);
 const newRung = () => ({ rows: 1, cells: [emptyRow()], links: [], coil: coilDefaults() });
 
-// Kurzschrift: 'I0.5' Schließer, '/I0.6' Öffner, 'P:I0.0' / 'N:I0.0' Flanke, '!' NOT, '-' Leitung, '.' leer
+// Shorthand: 'I0.5' NO contact, '/I0.6' NC contact, 'P:I0.0' / 'N:I0.0' edge, '!' NOT, '-' wire, '.' empty
 function cellOf(s) {
   if (s === '-') return { t: 'wire', a: 'I0.0' };
   if (s === '.') return { t: 'empty', a: 'I0.0' };
@@ -620,7 +620,7 @@ function execProgram(prog, s, dt, wantFlow) {
   return flows;
 }
 
-/* ═══════════ CPU + Prozessmodell ═══════════ */
+/* ═══════════ CPU + process model ═══════════ */
 class Sim {
   constructor(lesson, program) {
     this.L = lesson; this.prog = program;
@@ -686,10 +686,10 @@ const SPIN = out => ({
   step(P, s, dt) { const d = out(s); P.ang += d * dt * 9; },
 });
 
-/* ═══════════ Lektionen ═══════════ */
+/* ═══════════ Lessons ═══════════ */
 function tdSvg() {
   const x = t => 64 + t * 24, lanes = [['IN', [[1, 6]]], ['TON Q', [[3, 6]]], ['TOF Q', [[1, 8]]], ['TP Q', [[1, 3]]]];
-  let s = `<svg class="td" viewBox="0 0 320 ${lanes.length * 30 + 26}" role="img" aria-label="Zeitdiagramm TON, TOF und TP mit PT = 2">`;
+  let s = `<svg class="td" viewBox="0 0 320 ${lanes.length * 30 + 26}" role="img" aria-label="Timing diagram of TON, TOF and TP with PT = 2">`;
   for (const t of [1, 3, 6, 8]) s += `<line class="td-g" x1="${x(t)}" y1="6" x2="${x(t)}" y2="${lanes.length * 30 + 6}"/>`;
   lanes.forEach(([name, segs], i) => {
     const y0 = 26 + i * 30, y1 = y0 - 14;
@@ -705,22 +705,22 @@ function tdSvg() {
 
 const LESSONS = [
   {
-    id: 'L1', no: 1, short: 'Zuweisung',
-    name: 'Zuweisung – das erste Netzwerk', vi: 'Lệnh gán – chương trình đầu tiên',
-    inputs: [{ a: 'I0.0', sym: 'S1', kind: 'btn', cap: 'n', de: 'Taster „Licht“ (Schließer)', vi: 'Nút nhấn thường mở' }],
-    outputs: [{ a: 'Q0.0', sym: 'P1', color: 'y', de: 'Meldeleuchte gelb', vi: 'Đèn báo màu vàng' }],
-    scene: 'lamp', sceneTitle: 'Meldeleuchte −P1',
-    theory: `<p>PLC (<span class="de">SPS – speicherprogrammierbare Steuerung</span>) chạy theo <b>chu kỳ</b> (<span class="de">Zyklus</span>), mỗi vòng chỉ vài mili giây:</p>
-      <ol><li>Đọc mọi đầu vào vào <span class="de">Prozessabbild der Eingänge</span> (PAE).</li>
-      <li>Chạy chương trình trong khối <b>OB1 „Main“</b>, từ Netzwerk 1 xuống dưới.</li>
-      <li>Ghi <span class="de">Prozessabbild der Ausgänge</span> (PAA) ra các cọc ra.</li></ol>
-      <p>Đó là nguyên tắc <b>EVA</b>: <span class="de">Eingabe – Verarbeitung – Ausgabe</span>.</p>
-      <p><code>%I0.0</code> = đầu vào (<span class="de">Eingang</span>) byte 0, bit 0. <code>%Q0.0</code> = đầu ra (<span class="de">Ausgang</span>) byte 0, bit 0. CPU 1214C có 14 đầu vào số (DI) và 10 đầu ra số (DQ).</p>
-      <p>Tiếp điểm thường mở <code>┤ ├</code> (<span class="de">Schließer</span>) hỏi „bit có bằng 1 không?“. Cuộn dây <code>( )</code> (<span class="de">Zuweisung</span>) ghi kết quả của cả mạng vào một bit.</p>`,
-    task: [['−P1 leuchtet, solange −S1 gedrückt ist.', 'Đèn P1 sáng khi đang nhấn S1, nhả ra thì tắt.']],
-    tia: 'Bitverknüpfungen: <b>Schließer</b>, <b>Zuweisung</b>.',
-    hints: ['Chỉ cần 1 Netzwerk: một tiếp điểm và một cuộn dây.',
-      'Chạm ô đầu tiên → chọn <b>Schließer</b> → Operand <code>%I0.0 S1</code>. Ô trống làm đứt mạch, nên các ô còn lại chọn <b>Leitung</b>.'],
+    id: 'L1', no: 1, short: 'Assignment',
+    name: 'Assignment – your first network', vi: 'Lệnh gán – chương trình đầu tiên',
+    inputs: [{ a: 'I0.0', sym: 'S1', kind: 'btn', cap: 'n', de: 'Pushbutton "light" (NO)', vi: 'Nút nhấn thường mở' }],
+    outputs: [{ a: 'Q0.0', sym: 'P1', color: 'y', de: 'Yellow indicator lamp', vi: 'Đèn báo màu vàng' }],
+    scene: 'lamp', sceneTitle: 'Indicator lamp −P1',
+    theory: `<p>PLC (<span class="en">programmable logic controller</span>) chạy theo <b>chu kỳ quét</b> (<span class="en">scan cycle</span>), mỗi vòng chỉ vài mili giây:</p>
+      <ol><li>Đọc mọi đầu vào vào <span class="en">process image input</span> (PII).</li>
+      <li>Chạy chương trình trong khối <b>OB1 "Main"</b>, từ Network 1 xuống dưới.</li>
+      <li>Ghi <span class="en">process image output</span> (PIQ) ra các cọc ra.</li></ol>
+      <p>Đó là nguyên tắc <b>IPO</b>: <span class="en">Input – Processing – Output</span>.</p>
+      <p><code>%I0.0</code> = đầu vào (<span class="en">input</span>) byte 0, bit 0. <code>%Q0.0</code> = đầu ra (<span class="en">output</span>) byte 0, bit 0. CPU 1214C có 14 đầu vào số (DI) và 10 đầu ra số (DQ).</p>
+      <p>Tiếp điểm thường mở <code>┤ ├</code> (<span class="en">normally open contact</span>, viết tắt NO) hỏi "bit có bằng 1 không?". Cuộn dây <code>( )</code> (<span class="en">assignment</span>) ghi kết quả của cả mạng vào một bit.</p>`,
+    task: [['−P1 lights up while −S1 is pressed.', 'Đèn P1 sáng khi đang nhấn S1, nhả ra thì tắt.']],
+    tia: 'Bit logic operations: <b>Normally open contact</b>, <b>Assignment</b>.',
+    hints: ['Chỉ cần 1 Network: một tiếp điểm và một cuộn dây.',
+      'Chạm ô đầu tiên → chọn <b>NO contact</b> → Operand <code>%I0.0 S1</code>. Ô trống làm đứt mạch, nên các ô còn lại chọn <b>Wire</b>.'],
     starter: () => [net([['.', '.', '.', '.']], [], coilOf('=', 'Q0.0'))],
     sample: () => [net([['I0.0', '-', '-', '-']], [], coilOf('=', 'Q0.0'))],
     tests(h) {
@@ -728,32 +728,32 @@ const LESSONS = [
       h.set('S1', true); h.run(0.3); const on = h.q('P1');
       h.set('S1', false); h.run(0.3); const off1 = !h.q('P1');
       return [
-        { ok: on, de: '−S1 gedrückt → −P1 EIN', vi: 'Nhấn S1 → đèn P1 sáng' },
-        { ok: off0 && off1, de: '−S1 nicht gedrückt → −P1 AUS', vi: 'Không nhấn S1 → đèn P1 tắt' },
+        { ok: on, de: '−S1 pressed → −P1 ON', vi: 'Nhấn S1 → đèn P1 sáng' },
+        { ok: off0 && off1, de: '−S1 not pressed → −P1 OFF', vi: 'Không nhấn S1 → đèn P1 tắt' },
       ];
     },
   },
   {
-    id: 'L2', no: 2, short: 'UND / ODER',
-    name: 'UND und ODER – Reihen- und Parallelschaltung', vi: 'Phép VÀ, phép HOẶC',
+    id: 'L2', no: 2, short: 'AND / OR',
+    name: 'AND and OR – series and parallel', vi: 'Phép VÀ, phép HOẶC',
     inputs: [
-      { a: 'I0.0', sym: 'S1', kind: 'sw', de: 'Schalter S1', vi: 'Công tắc S1' },
-      { a: 'I0.1', sym: 'S2', kind: 'sw', de: 'Schalter S2', vi: 'Công tắc S2' },
+      { a: 'I0.0', sym: 'S1', kind: 'sw', de: 'Switch S1', vi: 'Công tắc S1' },
+      { a: 'I0.1', sym: 'S2', kind: 'sw', de: 'Switch S2', vi: 'Công tắc S2' },
     ],
     outputs: [
-      { a: 'Q0.0', sym: 'P1', color: 'g', de: 'Leuchte UND', vi: 'Đèn phép VÀ' },
-      { a: 'Q0.1', sym: 'P2', color: 'y', de: 'Leuchte ODER', vi: 'Đèn phép HOẶC' },
+      { a: 'Q0.0', sym: 'P1', color: 'g', de: 'AND lamp', vi: 'Đèn phép VÀ' },
+      { a: 'Q0.1', sym: 'P2', color: 'y', de: 'OR lamp', vi: 'Đèn phép HOẶC' },
     ],
     scene: 'logic', truth: true,
-    theory: `<p><b>Nối tiếp</b> hai tiếp điểm = <b>UND</b> (AND): dòng chỉ đi qua khi <i>cả hai</i> bằng 1. <b>Song song</b> = <b>ODER</b> (OR): chỉ cần <i>ít nhất một</i> bằng 1.</p>
-      <p>Trong ngôn ngữ FUP (<span class="de">Funktionsplan</span>), UND là hộp <code>&amp;</code>, ODER là hộp <code>≥1</code>. KOP và FUP chỉ là hai cách vẽ cùng một logic; hình trên bàn tập vẽ theo FUP.</p>
-      <p>Bảng chân trị (<span class="de">Wahrheitstabelle</span>) liệt kê mọi tổ hợp đầu vào: 2 đầu vào có 2² = 4 dòng.</p>
-      <p>Nhánh song song trong KOP: bấm <b>+ nhánh</b> để có hàng thứ hai, đặt tiếp điểm ở hàng dưới, rồi chạm khe giữa các ô để nối dây dọc.</p>`,
-    task: [['−P1 leuchtet, wenn S1 UND S2 eingeschaltet sind.', 'P1 sáng khi S1 VÀ S2 cùng bật.'],
-      ['−P2 leuchtet, wenn S1 ODER S2 (oder beide) eingeschaltet ist.', 'P2 sáng khi S1 HOẶC S2 (hoặc cả hai) bật.']],
-    tia: 'Bitverknüpfungen: <b>Schließer</b> nối tiếp và song song, <b>Zuweisung</b>.',
-    hints: ['Cần 2 Netzwerk, mỗi mạng một cuộn dây: %Q0.0 và %Q0.1.',
-      'Netzwerk 2: bấm <b>+ nhánh</b>, đặt %I0.1 ở hàng dưới, rồi chạm khe ngay sau ô đầu tiên để nối song song với %I0.0.'],
+    theory: `<p><b>Nối tiếp</b> hai tiếp điểm = <b>AND</b> (phép VÀ): dòng chỉ đi qua khi <i>cả hai</i> bằng 1. <b>Song song</b> = <b>OR</b> (phép HOẶC): chỉ cần <i>ít nhất một</i> bằng 1.</p>
+      <p>Trong ngôn ngữ FBD (<span class="en">function block diagram</span>), AND là hộp <code>&amp;</code>, OR là hộp <code>≥1</code>. LAD và FBD chỉ là hai cách vẽ cùng một logic; hình trên bàn tập vẽ theo FBD.</p>
+      <p>Bảng chân trị (<span class="en">truth table</span>) liệt kê mọi tổ hợp đầu vào: 2 đầu vào có 2² = 4 dòng.</p>
+      <p>Nhánh song song trong LAD: bấm <b>+ nhánh</b> để có hàng thứ hai, đặt tiếp điểm ở hàng dưới, rồi chạm khe giữa các ô để nối dây dọc.</p>`,
+    task: [['−P1 lights up when S1 AND S2 are on.', 'P1 sáng khi S1 VÀ S2 cùng bật.'],
+      ['−P2 lights up when S1 OR S2 (or both) is on.', 'P2 sáng khi S1 HOẶC S2 (hoặc cả hai) bật.']],
+    tia: 'Bit logic operations: <b>Normally open contact</b> in series and in parallel, <b>Assignment</b>.',
+    hints: ['Cần 2 Network, mỗi mạng một cuộn dây: %Q0.0 và %Q0.1.',
+      'Network 2: bấm <b>+ nhánh</b>, đặt %I0.1 ở hàng dưới, rồi chạm khe ngay sau ô đầu tiên để nối song song với %I0.0.'],
     starter: () => [net([['.', '.', '.', '.']], [], coilOf('=', 'Q0.0'))],
     sample: () => [
       net([['I0.0', 'I0.1', '-', '-']], [], coilOf('=', 'Q0.0')),
@@ -768,26 +768,26 @@ const LESSONS = [
       }
       const vi = l => (l.length ? `Sai ở tổ hợp S1 S2 = ${l.join(', ')}` : 'Đúng cả 4 dòng bảng chân trị');
       return [
-        { ok: !bad.and.length, de: '−P1 = S1 UND S2', vi: vi(bad.and) },
-        { ok: !bad.or.length, de: '−P2 = S1 ODER S2', vi: vi(bad.or) },
+        { ok: !bad.and.length, de: '−P1 = S1 AND S2', vi: vi(bad.and) },
+        { ok: !bad.or.length, de: '−P2 = S1 OR S2', vi: vi(bad.or) },
       ];
     },
   },
   {
-    id: 'L3', no: 3, short: 'Öffner / NICHT',
-    name: 'Öffner und NICHT – Dämmerungsschalter', vi: 'Tiếp điểm thường đóng và phép phủ định',
+    id: 'L3', no: 3, short: 'NC / NOT',
+    name: 'NC contact and NOT – twilight switch', vi: 'Tiếp điểm thường đóng và phép phủ định',
     inputs: [
-      { a: 'I0.0', sym: 'B1', kind: 'sw', de: 'Bewegungsmelder (1 = Bewegung)', vi: 'Cảm biến chuyển động (1 = có người)' },
-      { a: 'I0.1', sym: 'B2', kind: 'sw', de: 'Dämmerungssensor (1 = hell)', vi: 'Cảm biến ánh sáng (1 = trời sáng)' },
+      { a: 'I0.0', sym: 'B1', kind: 'sw', de: 'Motion detector (1 = motion)', vi: 'Cảm biến chuyển động (1 = có người)' },
+      { a: 'I0.1', sym: 'B2', kind: 'sw', de: 'Light sensor (1 = bright)', vi: 'Cảm biến ánh sáng (1 = trời sáng)' },
     ],
-    outputs: [{ a: 'Q0.0', sym: 'P1', color: 'w', de: 'Außenleuchte', vi: 'Đèn ngoài cửa' }],
+    outputs: [{ a: 'Q0.0', sym: 'P1', color: 'w', de: 'Outdoor light', vi: 'Đèn ngoài cửa' }],
     scene: 'twilight', truth: true,
-    theory: `<p>Tiếp điểm thường đóng <code>┤/├</code> (<span class="de">Öffner</span>, „<span class="de">Abfrage auf 0</span>“) cho dòng đi qua khi bit = <b>0</b>. Nó chính là phép phủ định <b>NICHT</b> (NOT).</p>
-      <p><b>Điều quan trọng:</b> ký hiệu trong chương trình <b>hỏi trạng thái tín hiệu</b>, nó không nói gì về loại nút lắp ngoài thực tế. Cảm biến B2 báo 1 khi trời sáng; muốn điều kiện „trời tối“ thì hỏi B2 = 0, tức là dùng <code>┤/├</code>.</p>
-      <p>Đèn ngoài cửa với cảm biến chuyển động (<span class="de">Bewegungsmelder</span>) và cảm biến chạng vạng (<span class="de">Dämmerungsschalter</span>) là ví dụ điển hình: đèn chỉ bật khi <i>có người</i> VÀ <i>trời tối</i>.</p>`,
-    task: [['−P1 leuchtet, wenn B1 eine Bewegung meldet UND es dunkel ist (B2 = 0).', 'P1 sáng khi có người (B1 = 1) VÀ trời tối (B2 = 0).']],
-    tia: 'Bitverknüpfungen: <b>Schließer</b>, <b>Öffner</b>, <b>Zuweisung</b>.',
-    hints: ['P1 = B1 VÀ KHÔNG B2.', 'Tiếp điểm thứ hai là <b>Öffner</b> ┤/├ với operand %I0.1 B2.'],
+    theory: `<p>Tiếp điểm thường đóng <code>┤/├</code> (<span class="en">normally closed contact</span>, viết tắt NC) cho dòng đi qua khi bit = <b>0</b>. Nó chính là phép phủ định <b>NOT</b>.</p>
+      <p><b>Điều quan trọng:</b> ký hiệu trong chương trình <b>hỏi trạng thái tín hiệu</b>, nó không nói gì về loại nút lắp ngoài thực tế. Cảm biến B2 báo 1 khi trời sáng; muốn điều kiện "trời tối" thì hỏi B2 = 0, tức là dùng <code>┤/├</code>.</p>
+      <p>Đèn ngoài cửa với cảm biến chuyển động (<span class="en">motion detector</span>) và cảm biến chạng vạng (<span class="en">twilight switch</span>) là ví dụ điển hình: đèn chỉ bật khi <i>có người</i> VÀ <i>trời tối</i>.</p>`,
+    task: [['−P1 lights up when B1 detects motion AND it is dark (B2 = 0).', 'P1 sáng khi có người (B1 = 1) VÀ trời tối (B2 = 0).']],
+    tia: 'Bit logic operations: <b>Normally open contact</b>, <b>Normally closed contact</b>, <b>Assignment</b>.',
+    hints: ['P1 = B1 VÀ KHÔNG B2.', 'Tiếp điểm thứ hai là <b>NC contact</b> ┤/├ với operand %I0.1 B2.'],
     starter: () => [net([['.', '.', '.', '.']], [], coilOf('=', 'Q0.0'))],
     sample: () => [net([['I0.0', '/I0.1', '-', '-']], [], coilOf('=', 'Q0.0'))],
     tests(h) {
@@ -796,34 +796,34 @@ const LESSONS = [
         h.set('B1', !!a); h.set('B2', !!b); h.run(0.2);
         if (h.q('P1') !== !!(a && !b)) bad.push(`${a}${b}`);
       }
-      return [{ ok: !bad.length, de: '−P1 = B1 UND NICHT B2', vi: bad.length ? `Sai ở tổ hợp B1 B2 = ${bad.join(', ')}` : 'Đúng cả 4 tổ hợp' }];
+      return [{ ok: !bad.length, de: '−P1 = B1 AND NOT B2', vi: bad.length ? `Sai ở tổ hợp B1 B2 = ${bad.join(', ')}` : 'Đúng cả 4 tổ hợp' }];
     },
   },
   {
-    id: 'L4', no: 4, short: 'Selbsthaltung',
-    name: 'Selbsthaltung – Motor EIN/AUS', vi: 'Mạch tự giữ – bật/tắt động cơ',
+    id: 'L4', no: 4, short: 'Latching',
+    name: 'Latching – motor ON/OFF', vi: 'Mạch tự giữ – bật/tắt động cơ',
     inputs: [
-      { a: 'I0.0', sym: 'S1', kind: 'btn', cap: 'g', de: 'Taster EIN (Schließer)', vi: 'Nút BẬT (thường mở)' },
-      { a: 'I0.1', sym: 'S0', kind: 'btnNC', cap: 'k', de: 'Taster AUS (Öffner)', vi: 'Nút TẮT (thường đóng)' },
+      { a: 'I0.0', sym: 'S1', kind: 'btn', cap: 'g', de: 'Pushbutton ON (NO)', vi: 'Nút BẬT (thường mở)' },
+      { a: 'I0.1', sym: 'S0', kind: 'btnNC', cap: 'k', de: 'Pushbutton OFF (NC)', vi: 'Nút TẮT (thường đóng)' },
     ],
     outputs: [
-      { a: 'Q0.0', sym: 'K1', color: 'g', de: 'Motorschütz −K1 (Motor −M1)', vi: 'Khởi động từ K1 của động cơ M1' },
-      { a: 'Q0.1', sym: 'P1', color: 'g', de: 'Meldeleuchte „Motor läuft“', vi: 'Đèn báo động cơ đang chạy' },
+      { a: 'Q0.0', sym: 'K1', color: 'g', de: 'Motor contactor −K1 (motor −M1)', vi: 'Khởi động từ K1 của động cơ M1' },
+      { a: 'Q0.1', sym: 'P1', color: 'g', de: 'Indicator lamp "motor running"', vi: 'Đèn báo động cơ đang chạy' },
     ],
     scene: 'motor', plant: SPIN(s => (s.out('Q0.0') ? 1 : 0)),
-    actions: [{ id: 'wb', kind: 'toggle', label: 'Drahtbruch −S0', vi: 'Giả lập đứt dây nút S0', get: s => !!s.wire['I0.1'], set: (s, v) => { s.wire['I0.1'] = v; } }],
-    theory: `<p>Nút nhấn chỉ cho tín hiệu khi đang nhấn. Muốn động cơ chạy tiếp sau khi nhả nút, đầu ra phải <b>tự giữ</b>: mắc song song một tiếp điểm của chính đầu ra đó với nút EIN. Đó là <span class="de">Selbsthaltung</span>.</p>
-      <p>Nút AUS mắc <b>nối tiếp</b> phía sau, nên khi nhấn cả hai nút thì AUS thắng: <span class="de">AUS-dominant</span>. Đây là cách làm an toàn.</p>
-      <p>Ngoài thực tế nút AUS luôn là <b>Öffner</b> (thường đóng): khi không nhấn, %I0.1 = 1. Nếu dây bị đứt, SPS nhận 0 giống như đang nhấn AUS, nên máy dừng. Đó là <span class="de">Drahtbruchsicherheit</span>.</p>
-      <p>Vì vậy trong chương trình, nút AUS được hỏi bằng tiếp điểm <b>┤ ├</b> (hỏi 1 = „không nhấn“), không phải ┤/├.</p>`,
-    task: [['−S1 schaltet den Motor ein (Selbsthaltung).', 'S1 bật động cơ, nhả nút động cơ vẫn chạy.'],
-      ['−S0 schaltet aus; AUS hat Vorrang.', 'S0 tắt động cơ; nhấn cả hai thì TẮT thắng.'],
-      ['−P1 zeigt „Motor läuft“.', 'Đèn P1 báo động cơ đang chạy.'],
-      ['Drahtbruch an −S0 → der Motor darf nicht laufen.', 'Đứt dây nút S0 thì động cơ không được chạy.']],
-    tia: 'Bitverknüpfungen: <b>Schließer</b>, <b>Zuweisung</b>. Nhánh song song cho tiếp điểm tự giữ.',
-    hints: ['Netzwerk 1, hàng trên: S1 → S0 → cuộn %Q0.0. Hàng dưới: tiếp điểm %Q0.0 mắc song song với S1 (nối dây dọc sau ô đầu tiên).',
-      'S0 là Öffner ngoài thực tế nhưng trong chương trình dùng ┤ ├. Thử nhấn cả hai nút cùng lúc: động cơ phải tắt.',
-      'Netzwerk 2: %Q0.0 → cuộn %Q0.1.'],
+    actions: [{ id: 'wb', kind: 'toggle', label: 'Wire break −S0', vi: 'Giả lập đứt dây nút S0', get: s => !!s.wire['I0.1'], set: (s, v) => { s.wire['I0.1'] = v; } }],
+    theory: `<p>Nút nhấn chỉ cho tín hiệu khi đang nhấn. Muốn động cơ chạy tiếp sau khi nhả nút, đầu ra phải <b>tự giữ</b>: mắc song song một tiếp điểm của chính đầu ra đó với nút ON. Đó là <span class="en">latching</span> (mạch tự giữ).</p>
+      <p>Nút OFF mắc <b>nối tiếp</b> phía sau, nên khi nhấn cả hai nút thì OFF thắng (<span class="en">stop priority</span>). Đây là cách làm an toàn.</p>
+      <p>Ngoài thực tế nút OFF luôn là nút <b>thường đóng</b> (NC): khi không nhấn, %I0.1 = 1. Nếu dây bị đứt, PLC nhận 0 giống như đang nhấn OFF, nên máy dừng. Đó là an toàn khi đứt dây (<span class="en">wire-break safety</span>).</p>
+      <p>Vì vậy trong chương trình, nút OFF được hỏi bằng tiếp điểm <b>┤ ├</b> (hỏi 1 = "không nhấn"), không phải ┤/├.</p>`,
+    task: [['−S1 starts the motor (latching).', 'S1 bật động cơ, nhả nút động cơ vẫn chạy.'],
+      ['−S0 stops it; OFF has priority.', 'S0 tắt động cơ; nhấn cả hai thì TẮT thắng.'],
+      ['−P1 shows "motor running".', 'Đèn P1 báo động cơ đang chạy.'],
+      ['Wire break at −S0 → the motor must not run.', 'Đứt dây nút S0 thì động cơ không được chạy.']],
+    tia: 'Bit logic operations: <b>Normally open contact</b>, <b>Assignment</b>, with a parallel branch for the latching contact.',
+    hints: ['Network 1, hàng trên: S1 → S0 → cuộn %Q0.0. Hàng dưới: tiếp điểm %Q0.0 mắc song song với S1 (nối dây dọc sau ô đầu tiên).',
+      'S0 là nút thường đóng (NC) ngoài thực tế nhưng trong chương trình dùng ┤ ├ (NO contact). Thử nhấn cả hai nút cùng lúc: động cơ phải tắt.',
+      'Network 2: %Q0.0 → cuộn %Q0.1.'],
     starter: () => [net([['.', '.', '.', '.']], [], coilOf('=', 'Q0.0'))],
     sample: () => [
       net([['I0.0', 'I0.1', '-', '-'], ['Q0.0', '.', '.', '.']], [[0, 1]], coilOf('=', 'Q0.0')),
@@ -838,36 +838,36 @@ const LESSONS = [
       h.press('S1'); h.run(0.3); const run2 = h.q('K1');
       h.s.wire['I0.1'] = true; h.run(0.3); const wb1 = run2 && !h.q('K1'); h.press('S1'); h.run(0.3); const wb2 = !h.q('K1');
       return [
-        { ok: latched, de: '−S1 startet den Motor, er läuft nach dem Loslassen weiter', vi: 'Nhấn rồi nhả S1: động cơ vẫn chạy (tự giữ)' },
-        { ok: stopped && stays, de: '−S0 schaltet den Motor aus', vi: 'Nhấn S0: động cơ tắt và không tự chạy lại' },
-        { ok: dom, de: 'S1 und S0 gleichzeitig → AUS hat Vorrang', vi: 'Nhấn cả hai nút: động cơ phải TẮT' },
-        { ok: lamp, de: '−P1 zeigt „Motor läuft“', vi: 'Đèn P1 sáng khi động cơ chạy' },
-        { ok: wb1 && wb2, de: 'Drahtbruch an −S0: Motor stoppt und startet nicht', vi: 'Đứt dây S0: động cơ dừng và không khởi động được' },
+        { ok: latched, de: '−S1 starts the motor; it keeps running after release', vi: 'Nhấn rồi nhả S1: động cơ vẫn chạy (tự giữ)' },
+        { ok: stopped && stays, de: '−S0 stops the motor', vi: 'Nhấn S0: động cơ tắt và không tự chạy lại' },
+        { ok: dom, de: 'S1 and S0 together → OFF has priority', vi: 'Nhấn cả hai nút: động cơ phải TẮT' },
+        { ok: lamp, de: '−P1 shows "motor running"', vi: 'Đèn P1 sáng khi động cơ chạy' },
+        { ok: wb1 && wb2, de: 'Wire break at −S0: motor stops and cannot start', vi: 'Đứt dây S0: động cơ dừng và không khởi động được' },
       ];
     },
   },
   {
-    id: 'L5', no: 5, short: 'SR / Behälter',
-    name: 'Setzen, Rücksetzen, SR – Behälter füllen', vi: 'Đặt, xóa và hộp SR – bơm đầy bể',
+    id: 'L5', no: 5, short: 'SR / Tank',
+    name: 'Set, reset, SR – filling a tank', vi: 'Đặt, xóa và hộp SR – bơm đầy bể',
     inputs: [
-      { a: 'I0.0', sym: 'B1', kind: 'sensor', de: 'Niveauschalter unten (1 = Wasser erreicht)', vi: 'Cảm biến mức dưới (1 = nước đã tới)' },
-      { a: 'I0.1', sym: 'B2', kind: 'sensor', de: 'Niveauschalter oben (1 = voll)', vi: 'Cảm biến mức trên (1 = đầy)' },
+      { a: 'I0.0', sym: 'B1', kind: 'sensor', de: 'Level switch low (1 = water reached)', vi: 'Cảm biến mức dưới (1 = nước đã tới)' },
+      { a: 'I0.1', sym: 'B2', kind: 'sensor', de: 'Level switch high (1 = full)', vi: 'Cảm biến mức trên (1 = đầy)' },
     ],
-    outputs: [{ a: 'Q0.0', sym: 'M1', color: 'g', de: 'Pumpe', vi: 'Máy bơm' }],
+    outputs: [{ a: 'Q0.0', sym: 'M1', color: 'g', de: 'Pump', vi: 'Máy bơm' }],
     scene: 'tank', plant: TANK,
-    actions: [{ id: 'fB1', kind: 'toggle', label: 'Sensorfehler −B1', vi: 'B1 hỏng: luôn báo 0', get: s => !!s.P.faultB1, set: (s, v) => { s.P.faultB1 = v; } }],
-    theory: `<p>Lệnh <b>Setzen</b> <code>(S)</code> ghi 1 vào bit và giữ nguyên dù điều kiện mất đi. <b>Rücksetzen</b> <code>(R)</code> ghi 0. Đây là bộ nhớ (<span class="de">Speicher</span>) không cần mạch tự giữ.</p>
-      <p>Hộp <b>SR</b> gộp cả hai: đầu vào S (đặt) và R1 (xóa). Chữ số <b>1</b> cho biết đầu vào nào <b>thắng</b> khi cả hai bằng 1: SR thì <span class="de">Rücksetzen dominant</span>, RS thì <span class="de">Setzen dominant</span>.</p>
-      <p>Điều khiển hai điểm (<span class="de">Zweipunktregelung</span>): bơm BẬT khi mực nước dưới B1, TẮT khi chạm B2. Giữa B1 và B2, bơm <b>giữ nguyên trạng thái cũ</b>. Khoảng này là độ trễ (<span class="de">Hysterese</span>), giúp bơm không bật tắt liên tục.</p>
-      <p>Nếu cảm biến báo vô lý (B2 = 1 nhưng B1 = 0 vì B1 hỏng), bơm phải TẮT để nước không tràn, nên chọn <b>Rücksetzen dominant</b>.</p>`,
-    task: [['Pumpe EIN, wenn der Füllstand unter B1 liegt.', 'Bơm BẬT khi mực nước dưới B1.'],
-      ['Pumpe AUS, sobald B2 erreicht ist.', 'Bơm TẮT khi nước chạm B2.'],
-      ['Dazwischen behält die Pumpe ihren Zustand (Hysterese).', 'Giữa B1 và B2 bơm giữ trạng thái cũ.'],
-      ['Bei B1 = 0 und B2 = 1 (Sensorfehler) bleibt die Pumpe AUS.', 'B1 = 0 mà B2 = 1 (cảm biến lỗi): bơm phải TẮT.']],
-    tia: 'Bitverknüpfungen: <b>Setz-/Rücksetz-Flipflop (SR)</b>, hoặc <b>Ausgang setzen</b> / <b>Ausgang rücksetzen</b>.',
+    actions: [{ id: 'fB1', kind: 'toggle', label: 'Sensor fault −B1', vi: 'B1 hỏng: luôn báo 0', get: s => !!s.P.faultB1, set: (s, v) => { s.P.faultB1 = v; } }],
+    theory: `<p>Lệnh <b>Set</b> <code>(S)</code> ghi 1 vào bit và giữ nguyên dù điều kiện mất đi. <b>Reset</b> <code>(R)</code> ghi 0. Đây là bộ nhớ (<span class="en">memory</span>) không cần mạch tự giữ.</p>
+      <p>Hộp <b>SR</b> gộp cả hai: đầu vào S (đặt) và R1 (xóa). Chữ số <b>1</b> cho biết đầu vào nào <b>thắng</b> khi cả hai bằng 1: SR thì xóa thắng (<span class="en">reset priority</span>), RS thì đặt thắng (<span class="en">set priority</span>).</p>
+      <p>Điều khiển hai điểm (<span class="en">two-point control</span>): bơm BẬT khi mực nước dưới B1, TẮT khi chạm B2. Giữa B1 và B2, bơm <b>giữ nguyên trạng thái cũ</b>. Khoảng này là độ trễ (<span class="en">hysteresis</span>), giúp bơm không bật tắt liên tục.</p>
+      <p>Nếu cảm biến báo vô lý (B2 = 1 nhưng B1 = 0 vì B1 hỏng), bơm phải TẮT để nước không tràn, nên chọn <b>xóa thắng</b>.</p>`,
+    task: [['Pump ON when the level is below B1.', 'Bơm BẬT khi mực nước dưới B1.'],
+      ['Pump OFF as soon as B2 is reached.', 'Bơm TẮT khi nước chạm B2.'],
+      ['In between, the pump keeps its state (hysteresis).', 'Giữa B1 và B2 bơm giữ trạng thái cũ.'],
+      ['With B1 = 0 and B2 = 1 (sensor fault) the pump stays OFF.', 'B1 = 0 mà B2 = 1 (cảm biến lỗi): bơm phải TẮT.']],
+    tia: 'Bit logic operations: <b>Set/reset flip-flop (SR)</b>, or <b>Set output</b> / <b>Reset output</b>.',
     hints: ['Điều kiện đặt: B1 = 0, tức tiếp điểm ┤/├ %I0.0. Điều kiện xóa: B2 = 1.',
       'Cách 1: chạm cuộn dây cuối mạng, chọn hộp <b>SR</b>, operand %Q0.0, R1 = %I0.1. Cách 2: hai mạng (S) rồi (R); mạng (R) phải nằm SAU mạng (S).',
-      'Bật „Sensorfehler −B1“ trên bàn tập để xem bơm có dừng ở B2 không.'],
+      'Bật "Sensor fault −B1" trên bàn tập để xem bơm có dừng ở B2 không.'],
     starter: () => [net([['.', '.', '.', '.']], [], coilOf('=', 'Q0.0'))],
     sample: () => [net([['/I0.0', '-', '-', '-']], [], coilOf('SR', 'Q0.0', { a2: 'I0.1' }))],
     tests(h) {
@@ -879,28 +879,28 @@ const LESSONS = [
       h.until(() => P.level < 20 || h.q('M1'), 30); const t5 = h.q('M1') && P.level > 22 && P.level < 26;
       P.level = 92; P.faultB1 = true; h.run(0.5); const t6 = !h.q('M1');
       return [
-        { ok: t1, de: 'Füllstand unter B1 → Pumpe EIN', vi: 'Mực nước dưới B1: bơm bật' },
-        { ok: t2 && t4, de: 'Zwischen B1 und B2 behält die Pumpe ihren Zustand (Hysterese)', vi: 'Giữa B1 và B2 bơm giữ trạng thái cũ, không bật tắt liên tục' },
-        { ok: t3, de: 'B2 erreicht → Pumpe AUS', vi: 'Nước chạm B2: bơm tắt' },
-        { ok: t5, de: 'Unter B1 → Pumpe wieder EIN', vi: 'Nước xuống dưới B1: bơm bật lại' },
-        { ok: t6, de: 'Sensorfehler (B1 = 0, B2 = 1) → Pumpe AUS (Rücksetzen dominant)', vi: 'Cảm biến lỗi: bơm phải tắt, không để tràn' },
+        { ok: t1, de: 'Level below B1 → pump ON', vi: 'Mực nước dưới B1: bơm bật' },
+        { ok: t2 && t4, de: 'Between B1 and B2 the pump keeps its state (hysteresis)', vi: 'Giữa B1 và B2 bơm giữ trạng thái cũ, không bật tắt liên tục' },
+        { ok: t3, de: 'B2 reached → pump OFF', vi: 'Nước chạm B2: bơm tắt' },
+        { ok: t5, de: 'Below B1 → pump ON again', vi: 'Nước xuống dưới B1: bơm bật lại' },
+        { ok: t6, de: 'Sensor fault (B1 = 0, B2 = 1) → pump OFF (reset priority)', vi: 'Cảm biến lỗi: bơm phải tắt, không để tràn' },
       ];
     },
   },
   {
-    id: 'L6', no: 6, short: 'Flanke',
-    name: 'Flanken – Stromstoßschalter', vi: 'Sườn tín hiệu – một nút bật/tắt đèn',
-    inputs: [{ a: 'I0.0', sym: 'S1', kind: 'btn', cap: 'n', de: 'Taster Licht', vi: 'Nút nhấn đèn' }],
-    outputs: [{ a: 'Q0.0', sym: 'P1', color: 'w', de: 'Flurleuchte', vi: 'Đèn hành lang' }],
-    scene: 'lamp', sceneTitle: 'Flurleuchte −P1 (Stromstoßschaltung)',
-    theory: `<p><b>Sườn</b> (<span class="de">Signalflanke</span>) là lúc tín hiệu <b>đổi trạng thái</b>: 0→1 là sườn lên (<span class="de">positive Flanke</span>), 1→0 là sườn xuống (<span class="de">negative Flanke</span>).</p>
+    id: 'L6', no: 6, short: 'Edge',
+    name: 'Edges – one button toggles the light', vi: 'Sườn tín hiệu – một nút bật/tắt đèn',
+    inputs: [{ a: 'I0.0', sym: 'S1', kind: 'btn', cap: 'n', de: 'Light pushbutton', vi: 'Nút nhấn đèn' }],
+    outputs: [{ a: 'Q0.0', sym: 'P1', color: 'w', de: 'Hallway light', vi: 'Đèn hành lang' }],
+    scene: 'lamp', sceneTitle: 'Hallway light −P1 (toggle circuit)',
+    theory: `<p><b>Sườn</b> (<span class="en">signal edge</span>) là lúc tín hiệu <b>đổi trạng thái</b>: 0→1 là sườn lên (<span class="en">positive / rising edge</span>), 1→0 là sườn xuống (<span class="en">negative / falling edge</span>).</p>
       <p>Tiếp điểm <code>┤P├</code> chỉ cho dòng đi qua <b>đúng một chu kỳ</b> ngay khi operand chuyển 0→1. Giữ nút lâu bao nhiêu cũng chỉ có một xung.</p>
-      <p>Vì sao cần? Một lần nhấn nút kéo dài khoảng 0,2 s, trong khi SPS quét hàng trăm vòng. Không dùng sườn thì lệnh „đảo đèn“ chạy ở <i>mỗi</i> vòng và đèn nhấp nháy loạn. Xem Zeitdiagramm để thấy xung sườn.</p>
-      <p>Trong TIA Portal, tiếp điểm P cần thêm một bit nhớ sườn (<span class="de">Flankenmerker</span>), ví dụ %M10.0, và bit này không được dùng vào việc khác. Ở trang này bit nhớ sườn được quản lý tự động.</p>`,
-    task: [['Jeder Druck auf −S1 schaltet −P1 um: aus → ein → aus …', 'Mỗi lần nhấn S1 đèn đổi trạng thái: tắt → sáng → tắt…']],
-    tia: 'Bitverknüpfungen: <b>Positive Signalflanke eines Operanden abfragen</b> (┤P├), <b>Schließer</b>, <b>Öffner</b>, <b>Zuweisung</b>.',
-    hints: ['Netzwerk 1: ┤P├ %I0.0 → cuộn %M0.0. M0.0 bằng 1 đúng một chu kỳ mỗi lần nhấn.',
-      'Netzwerk 2 là phép XOR: (M0.0 VÀ KHÔNG Q0.0) HOẶC (KHÔNG M0.0 VÀ Q0.0) → Q0.0.',
+      <p>Vì sao cần? Một lần nhấn nút kéo dài khoảng 0,2 s, trong khi PLC quét hàng trăm vòng. Không dùng sườn thì lệnh "đảo đèn" chạy ở <i>mỗi</i> vòng và đèn nhấp nháy loạn. Xem Signal trace để thấy xung sườn.</p>
+      <p>Trong TIA Portal, tiếp điểm P cần thêm một bit nhớ sườn (<span class="en">edge memory bit</span>), ví dụ %M10.0, và bit này không được dùng vào việc khác. Ở trang này bit nhớ sườn được quản lý tự động.</p>`,
+    task: [['Each press of −S1 toggles −P1: off → on → off …', 'Mỗi lần nhấn S1 đèn đổi trạng thái: tắt → sáng → tắt…']],
+    tia: 'Bit logic operations: <b>Scan operand for positive signal edge</b> (┤P├), <b>Normally open contact</b>, <b>Normally closed contact</b>, <b>Assignment</b>.',
+    hints: ['Network 1: ┤P├ %I0.0 → cuộn %M0.0. M0.0 bằng 1 đúng một chu kỳ mỗi lần nhấn.',
+      'Network 2 là phép XOR: (M0.0 VÀ KHÔNG Q0.0) HOẶC (KHÔNG M0.0 VÀ Q0.0) → Q0.0.',
       'Bẫy thường gặp: một mạng (S) và một mạng (R) cùng dùng sườn của S1. Trong cùng một chu kỳ, mạng sau xóa ngay cái mạng trước vừa đặt.'],
     starter: () => [net([['.', '.', '.', '.']], [], coilOf('=', 'Q0.0'))],
     sample: () => [
@@ -918,34 +918,34 @@ const LESSONS = [
       h.press('S1', 0.3); h.run(0.5);
       const third = h.q('P1') && toggles === 3;
       return [
-        { ok: first, de: '1. Druck: −P1 EIN, beim Halten ruhig', vi: `Lần nhấn 1: đèn sáng và đứng yên khi giữ nút (đèn đã đổi trạng thái ${c1} lần trong 1 s giữ nút)` },
-        { ok: second, de: '2. Druck: −P1 AUS', vi: 'Lần nhấn 2: đèn tắt' },
-        { ok: third, de: '3. Druck: −P1 wieder EIN', vi: 'Lần nhấn 3: đèn sáng lại' },
+        { ok: first, de: '1st press: −P1 ON and steady while held', vi: `Lần nhấn 1: đèn sáng và đứng yên khi giữ nút (đèn đã đổi trạng thái ${c1} lần trong 1 s giữ nút)` },
+        { ok: second, de: '2nd press: −P1 OFF', vi: 'Lần nhấn 2: đèn tắt' },
+        { ok: third, de: '3rd press: −P1 ON again', vi: 'Lần nhấn 3: đèn sáng lại' },
       ];
     },
   },
   {
-    id: 'L7', no: 7, short: 'Zeiten',
-    name: 'Zeiten – Treppenhausbeleuchtung', vi: 'Bộ định thời – đèn cầu thang',
+    id: 'L7', no: 7, short: 'Timers',
+    name: 'Timers – staircase lighting', vi: 'Bộ định thời – đèn cầu thang',
     inputs: [
-      { a: 'I0.0', sym: 'S1', kind: 'btn', cap: 'n', de: 'Taster Treppenhaus (alle Etagen parallel)', vi: 'Nút đèn cầu thang (các tầng mắc song song)' },
-      { a: 'I0.1', sym: 'S2', kind: 'sw', de: 'Schalter Dauerlicht (Reinigung)', vi: 'Công tắc sáng liên tục (khi lau dọn)' },
+      { a: 'I0.0', sym: 'S1', kind: 'btn', cap: 'n', de: 'Staircase pushbutton (all floors in parallel)', vi: 'Nút đèn cầu thang (các tầng mắc song song)' },
+      { a: 'I0.1', sym: 'S2', kind: 'sw', de: 'Switch "permanent light" (cleaning)', vi: 'Công tắc sáng liên tục (khi lau dọn)' },
     ],
-    outputs: [{ a: 'Q0.0', sym: 'P1', color: 'w', de: 'Treppenhausbeleuchtung', vi: 'Đèn cầu thang' }],
+    outputs: [{ a: 'Q0.0', sym: 'P1', color: 'w', de: 'Staircase lighting', vi: 'Đèn cầu thang' }],
     scene: 'stairs',
     theory: `<p>Bộ định thời IEC trong S7-1200:</p>
-      <ul><li><b>TON</b> (<span class="de">Einschaltverzögerung</span>): Q lên 1 sau khi IN = 1 liên tục đủ thời gian PT.</li>
-      <li><b>TOF</b> (<span class="de">Ausschaltverzögerung</span>): Q = 1 ngay khi IN = 1; khi IN về 0, Q còn giữ thêm PT rồi mới tắt.</li>
-      <li><b>TP</b> (<span class="de">Impuls</span>): sườn lên ở IN tạo một xung dài đúng PT; nhấn lại giữa chừng không kéo dài xung.</li></ul>
+      <ul><li><b>TON</b> (<span class="en">on-delay</span>): Q lên 1 sau khi IN = 1 liên tục đủ thời gian PT.</li>
+      <li><b>TOF</b> (<span class="en">off-delay</span>): Q = 1 ngay khi IN = 1; khi IN về 0, Q còn giữ thêm PT rồi mới tắt.</li>
+      <li><b>TP</b> (<span class="en">pulse</span>): sườn lên ở IN tạo một xung dài đúng PT; nhấn lại giữa chừng không kéo dài xung.</li></ul>
       ${tdSvg()}
       <p class="small">Ví dụ với PT = 2: IN lên 1 lúc t = 1 và về 0 lúc t = 6.</p>
-      <p>PT ghi dạng <code>T#5s</code>. ET (<span class="de">Elapsed Time</span>) là thời gian đã chạy. Mỗi bộ định thời IEC cần một khối dữ liệu riêng (<span class="de">Instanz-DB</span>, ví dụ „IEC_Timer_0_DB“); ở trang này gọi tắt là T0…T7 và đọc đầu ra bằng tiếp điểm <code>T0.Q</code>.</p>`,
-    task: [['Ein kurzer Druck auf −S1 schaltet das Licht für 5 s ein.', 'Nhấn nhanh S1: đèn sáng 5 s.'],
-      ['Ein erneuter Druck während dieser Zeit startet die 5 s neu (nachtriggerbar).', 'Nhấn lại khi đèn đang sáng thì tính lại 5 s.'],
-      ['−S2 = Dauerlicht.', 'Bật S2: đèn sáng liên tục.']],
-    tia: 'Zeiten: <b>TOF</b> (Ausschaltverzögerung erzeugen) · Bitverknüpfungen: <b>Schließer</b>, <b>Zuweisung</b>.',
-    hints: ['TON không hợp ở đây. So sánh TP và TOF: loại nào „bắt đầu đếm lại“ khi nhấn lần nữa?',
-      'Netzwerk 1: %I0.0 → hộp TOF T0 với PT = 5 s. Netzwerk 2: T0.Q HOẶC S2 → %Q0.0.'],
+      <p>PT ghi dạng <code>T#5s</code>. ET (<span class="en">elapsed time</span>) là thời gian đã chạy. Mỗi bộ định thời IEC cần một khối dữ liệu riêng (<span class="en">instance DB</span>, ví dụ "IEC_Timer_0_DB"); ở trang này gọi tắt là T0…T7 và đọc đầu ra bằng tiếp điểm <code>T0.Q</code>.</p>`,
+    task: [['A short press on −S1 switches the light on for 5 s.', 'Nhấn nhanh S1: đèn sáng 5 s.'],
+      ['Pressing again during this time restarts the 5 s (retriggerable).', 'Nhấn lại khi đèn đang sáng thì tính lại 5 s.'],
+      ['−S2 = permanent light.', 'Bật S2: đèn sáng liên tục.']],
+    tia: 'Timer operations: <b>TOF</b> (Generate off-delay) · Bit logic operations: <b>Normally open contact</b>, <b>Assignment</b>.',
+    hints: ['TON không hợp ở đây. So sánh TP và TOF: loại nào "bắt đầu đếm lại" khi nhấn lần nữa?',
+      'Network 1: %I0.0 → hộp TOF T0 với PT = 5 s. Network 2: T0.Q HOẶC S2 → %Q0.0.'],
     starter: () => [net([['.', '.', '.', '.']], [], coilOf('=', 'Q0.0'))],
     sample: () => [
       net([['I0.0', '-', '-', '-']], [], coilOf('TOF', 'T0', { pt: 5 })),
@@ -963,41 +963,41 @@ const LESSONS = [
       h.run(1);
       h.set('S2', true); h.run(0.3); const d1 = h.q('P1'); h.run(10); const d2 = h.q('P1'); h.set('S2', false); h.run(6);
       return [
-        { ok: onNow && on46 && off58, de: 'Kurzer Druck: Licht sofort EIN, nach etwa 5 s AUS', vi: 'Nhấn nhanh S1: đèn sáng ngay, khoảng 5 s sau tắt' },
-        { ok: retrig && offAfter, de: 'Erneuter Druck startet die 5 s neu', vi: 'Nhấn lại khi đèn đang sáng: tính lại 5 s từ lần nhấn sau' },
-        { ok: d1 && d2, de: '−S2 Dauerlicht: Licht bleibt EIN', vi: 'Bật S2: đèn sáng liên tục' },
+        { ok: onNow && on46 && off58, de: 'Short press: light ON at once, OFF after about 5 s', vi: 'Nhấn nhanh S1: đèn sáng ngay, khoảng 5 s sau tắt' },
+        { ok: retrig && offAfter, de: 'Pressing again restarts the 5 s', vi: 'Nhấn lại khi đèn đang sáng: tính lại 5 s từ lần nhấn sau' },
+        { ok: d1 && d2, de: '−S2 permanent light: light stays ON', vi: 'Bật S2: đèn sáng liên tục' },
       ];
     },
   },
   {
-    id: 'L8', no: 8, short: 'Zähler',
-    name: 'Zähler – Parkhaus mit 5 Plätzen', vi: 'Bộ đếm – bãi đỗ xe 5 chỗ',
+    id: 'L8', no: 8, short: 'Counters',
+    name: 'Counters – car park with 5 spaces', vi: 'Bộ đếm – bãi đỗ xe 5 chỗ',
     inputs: [
-      { a: 'I0.0', sym: 'B1', kind: 'sensor', de: 'Lichtschranke Einfahrt', vi: 'Cảm biến quang cổng vào' },
-      { a: 'I0.1', sym: 'B2', kind: 'sensor', de: 'Lichtschranke Ausfahrt', vi: 'Cảm biến quang cổng ra' },
-      { a: 'I0.2', sym: 'S1', kind: 'btn', cap: 'y', de: 'Taster Zähler zurücksetzen', vi: 'Nút đặt lại bộ đếm' },
+      { a: 'I0.0', sym: 'B1', kind: 'sensor', de: 'Light barrier entry', vi: 'Cảm biến quang cổng vào' },
+      { a: 'I0.1', sym: 'B2', kind: 'sensor', de: 'Light barrier exit', vi: 'Cảm biến quang cổng ra' },
+      { a: 'I0.2', sym: 'S1', kind: 'btn', cap: 'y', de: 'Pushbutton reset counter', vi: 'Nút đặt lại bộ đếm' },
     ],
     outputs: [
-      { a: 'Q0.0', sym: 'P1', color: 'r', de: 'Anzeige BESETZT', vi: 'Biển HẾT CHỖ' },
-      { a: 'Q0.1', sym: 'P2', color: 'g', de: 'Anzeige FREI', vi: 'Biển CÒN CHỖ' },
+      { a: 'Q0.0', sym: 'P1', color: 'r', de: 'Sign FULL', vi: 'Biển HẾT CHỖ' },
+      { a: 'Q0.1', sym: 'P2', color: 'g', de: 'Sign FREE', vi: 'Biển CÒN CHỖ' },
     ],
     scene: 'parking', plant: PARK,
     actions: [
-      { id: 'in', kind: 'event', label: 'Auto fährt ein', vi: 'Một xe đi vào', icon: '→', fire: s => PARK.car(s.P, 'in') },
-      { id: 'out', kind: 'event', label: 'Auto fährt aus', vi: 'Một xe đi ra', icon: '←', fire: s => PARK.car(s.P, 'out') },
+      { id: 'in', kind: 'event', label: 'Car drives in', vi: 'Một xe đi vào', icon: '→', fire: s => PARK.car(s.P, 'in') },
+      { id: 'out', kind: 'event', label: 'Car drives out', vi: 'Một xe đi ra', icon: '←', fire: s => PARK.car(s.P, 'out') },
     ],
     theory: `<p>Bộ đếm IEC đếm <b>sườn lên</b> ở đầu vào đếm:</p>
-      <ul><li><b>CTU</b> (<span class="de">Vorwärtszähler</span>): mỗi sườn lên ở CU thì CV + 1. Q = 1 khi CV ≥ PV.</li>
-      <li><b>CTD</b> (<span class="de">Rückwärtszähler</span>): sườn ở CD thì CV − 1. Q = 1 khi CV ≤ 0. LD nạp CV = PV.</li>
-      <li><b>CTUD</b> (<span class="de">Vor- und Rückwärtszähler</span>): có cả CU và CD. QU = CV ≥ PV, QD = CV ≤ 0.</li></ul>
-      <p>CV (<span class="de">aktueller Zählwert</span>) là giá trị đang đếm, PV (<span class="de">Vorgabewert</span>) là giá trị đặt. R đặt CV về 0. Giống bộ định thời, mỗi bộ đếm cần một <span class="de">Instanz-DB</span>; ở trang này gọi tắt là C0…C3.</p>
+      <ul><li><b>CTU</b> (<span class="en">count up</span>): mỗi sườn lên ở CU thì CV + 1. Q = 1 khi CV ≥ PV.</li>
+      <li><b>CTD</b> (<span class="en">count down</span>): sườn ở CD thì CV − 1. Q = 1 khi CV ≤ 0. LD nạp CV = PV.</li>
+      <li><b>CTUD</b> (<span class="en">count up and down</span>): có cả CU và CD. QU = CV ≥ PV, QD = CV ≤ 0.</li></ul>
+      <p>CV (<span class="en">current value</span>) là giá trị đang đếm, PV (<span class="en">preset value</span>) là giá trị đặt. R đặt CV về 0. Giống bộ định thời, mỗi bộ đếm cần một <span class="en">instance DB</span>; ở trang này gọi tắt là C0…C3.</p>
       <p>Ở trang này, dòng tín hiệu của mạng đi vào đầu vào đếm thứ nhất (CU của CTU và CTUD, CD của CTD); các đầu vào còn lại chọn bằng operand trong hộp thoại.</p>`,
-    task: [['Das Parkhaus hat 5 Plätze. Zählen Sie ein- und ausfahrende Autos.', 'Bãi có 5 chỗ. Đếm xe vào và xe ra.'],
-      ['−P1 BESETZT leuchtet bei 5 Autos, sonst leuchtet −P2 FREI.', 'Đủ 5 xe thì sáng biển HẾT CHỖ, còn lại sáng biển CÒN CHỖ.'],
-      ['−S1 setzt den Zähler auf 0.', 'S1 đặt bộ đếm về 0.']],
-    tia: 'Zähler: <b>CTUD</b> (Vorwärts und rückwärts zählen) · Bitverknüpfungen: <b>Schließer</b>, <b>Öffner</b>, <b>Zuweisung</b>.',
+    task: [['The car park has 5 spaces. Count cars driving in and out.', 'Bãi có 5 chỗ. Đếm xe vào và xe ra.'],
+      ['−P1 FULL lights up with 5 cars; otherwise −P2 FREE lights up.', 'Đủ 5 xe thì sáng biển HẾT CHỖ, còn lại sáng biển CÒN CHỖ.'],
+      ['−S1 resets the counter to 0.', 'S1 đặt bộ đếm về 0.']],
+    tia: 'Counter operations: <b>CTUD</b> (Count up and down) · Bit logic operations: <b>Normally open contact</b>, <b>Normally closed contact</b>, <b>Assignment</b>.',
     hints: ['Dùng một hộp CTUD: CU = B1 (dòng của mạng), CD = %I0.1, R = %I0.2, PV = 5.',
-      'BESETZT = C0.QU. FREI = KHÔNG C0.QU, tức tiếp điểm ┤/├ C0.QU.'],
+      'FULL = C0.QU. FREE = KHÔNG C0.QU, tức tiếp điểm ┤/├ C0.QU.'],
     starter: () => [net([['.', '.', '.', '.']], [], coilOf('=', 'Q0.0'))],
     sample: () => [
       net([['I0.0', '-', '-', '-']], [], coilOf('CTUD', 'C0', { pv: 5, cd: 'I0.1', r: 'I0.2' })),
@@ -1016,35 +1016,35 @@ const LESSONS = [
       const r2 = h.q('P2') && !h.q('P1');
       car('in'); const r3 = h.q('P1') && !h.q('P2');
       return [
-        { ok: four && five, de: 'Nach 4 Autos FREI, nach 5 Autos BESETZT', vi: '4 xe: còn chỗ; xe thứ 5 vào: hết chỗ' },
-        { ok: leave, de: 'Ein Auto fährt aus → wieder FREI', vi: 'Một xe ra: lại còn chỗ' },
-        { ok: r1 && r2 && r3, de: '−S1 setzt den Zähler zurück, danach wird neu gezählt', vi: 'S1 đặt bộ đếm về 0, sau đó đếm lại từ đầu' },
+        { ok: four && five, de: 'After 4 cars FREE, after 5 cars FULL', vi: '4 xe: còn chỗ; xe thứ 5 vào: hết chỗ' },
+        { ok: leave, de: 'One car leaves → FREE again', vi: 'Một xe ra: lại còn chỗ' },
+        { ok: r1 && r2 && r3, de: '−S1 resets the counter, then counting starts again', vi: 'S1 đặt bộ đếm về 0, sau đó đếm lại từ đầu' },
       ];
     },
   },
   {
-    id: 'L9', no: 9, short: 'Wendeschütz',
-    name: 'Wendeschützschaltung – Rechts- und Linkslauf', vi: 'Đảo chiều động cơ với khóa chéo',
+    id: 'L9', no: 9, short: 'Reversing',
+    name: 'Reversing contactor circuit – right and left rotation', vi: 'Đảo chiều động cơ với khóa chéo',
     inputs: [
-      { a: 'I0.0', sym: 'S0', kind: 'btnNC', cap: 'k', de: 'Taster AUS (Öffner)', vi: 'Nút TẮT (thường đóng)' },
-      { a: 'I0.1', sym: 'S1', kind: 'btn', cap: 'g', de: 'Taster RECHTS', vi: 'Nút quay PHẢI' },
-      { a: 'I0.2', sym: 'S2', kind: 'btn', cap: 'g', de: 'Taster LINKS', vi: 'Nút quay TRÁI' },
+      { a: 'I0.0', sym: 'S0', kind: 'btnNC', cap: 'k', de: 'Pushbutton OFF (NC)', vi: 'Nút TẮT (thường đóng)' },
+      { a: 'I0.1', sym: 'S1', kind: 'btn', cap: 'g', de: 'Pushbutton RIGHT', vi: 'Nút quay PHẢI' },
+      { a: 'I0.2', sym: 'S2', kind: 'btn', cap: 'g', de: 'Pushbutton LEFT', vi: 'Nút quay TRÁI' },
     ],
     outputs: [
-      { a: 'Q0.0', sym: 'K1', color: 'g', de: 'Schütz Rechtslauf', vi: 'Khởi động từ quay phải' },
-      { a: 'Q0.1', sym: 'K2', color: 'y', de: 'Schütz Linkslauf', vi: 'Khởi động từ quay trái' },
+      { a: 'Q0.0', sym: 'K1', color: 'g', de: 'Contactor right-hand rotation', vi: 'Khởi động từ quay phải' },
+      { a: 'Q0.1', sym: 'K2', color: 'y', de: 'Contactor left-hand rotation', vi: 'Khởi động từ quay trái' },
     ],
     scene: 'reversing', plant: SPIN(s => { const r = s.out('Q0.0'), l = s.out('Q0.1'); return r && !l ? 1 : l && !r ? -1 : 0; }),
-    actions: [{ id: 'wb', kind: 'toggle', label: 'Drahtbruch −S0', vi: 'Giả lập đứt dây nút S0', get: s => !!s.wire['I0.0'], set: (s, v) => { s.wire['I0.0'] = v; } }],
-    theory: `<p>Muốn đảo chiều động cơ ba pha, đổi chỗ hai pha. Mạch dùng hai khởi động từ: K1 (quay phải) và K2 (quay trái). Đó là <span class="de">Wendeschützschaltung</span>.</p>
-      <p>Nếu K1 và K2 đóng <b>cùng lúc</b>, hai pha bị nối tắt và gây <b>ngắn mạch</b> (<span class="de">Kurzschluss</span>). Vì vậy phải có <b>khóa chéo</b> (<span class="de">Verriegelung</span>): K1 chỉ được đóng khi K2 đang mở, và ngược lại.</p>
-      <p>Trong tủ điện thật, ngoài khóa chéo trong chương trình, người ta còn khóa bằng tiếp điểm phụ (<span class="de">Hilfskontakte</span>) ngay trong mạch cuộn hút của contactor, vì không được chỉ dựa vào phần mềm.</p>
-      <p>Bài này dùng cách <span class="de">„Umschalten nur über AUS“</span>: muốn đổi chiều thì phải nhấn AUS trước.</p>`,
-    task: [['−S1 → Rechtslauf (K1), −S2 → Linkslauf (K2), jeweils mit Selbsthaltung.', 'S1 quay phải, S2 quay trái, mỗi chiều tự giữ.'],
-      ['−S0 (Öffner) schaltet aus.', 'S0 (thường đóng) tắt động cơ.'],
-      ['K1 und K2 dürfen nie gleichzeitig EIN sein.', 'K1 và K2 không bao giờ được cùng đóng.'],
-      ['Drehrichtungswechsel nur über AUS.', 'Đổi chiều phải qua TẮT.']],
-    tia: 'Bitverknüpfungen: <b>Schließer</b>, <b>Öffner</b>, <b>Zuweisung</b> (hai mạch tự giữ có khóa chéo).',
+    actions: [{ id: 'wb', kind: 'toggle', label: 'Wire break −S0', vi: 'Giả lập đứt dây nút S0', get: s => !!s.wire['I0.0'], set: (s, v) => { s.wire['I0.0'] = v; } }],
+    theory: `<p>Muốn đảo chiều động cơ ba pha, đổi chỗ hai pha. Mạch dùng hai khởi động từ: K1 (quay phải) và K2 (quay trái). Đó là mạch đảo chiều (<span class="en">reversing contactor circuit</span>).</p>
+      <p>Nếu K1 và K2 đóng <b>cùng lúc</b>, hai pha bị nối tắt và gây <b>ngắn mạch</b> (<span class="en">short circuit</span>). Vì vậy phải có <b>khóa chéo</b> (<span class="en">interlock</span>): K1 chỉ được đóng khi K2 đang mở, và ngược lại.</p>
+      <p>Trong tủ điện thật, ngoài khóa chéo trong chương trình, người ta còn khóa bằng tiếp điểm phụ (<span class="en">auxiliary contacts</span>) ngay trong mạch cuộn hút của contactor, vì không được chỉ dựa vào phần mềm.</p>
+      <p>Bài này dùng cách "đổi chiều qua OFF" (<span class="en">reversing via stop</span>): muốn đổi chiều thì phải nhấn OFF trước.</p>`,
+    task: [['−S1 → right-hand rotation (K1), −S2 → left-hand rotation (K2), each latching.', 'S1 quay phải, S2 quay trái, mỗi chiều tự giữ.'],
+      ['−S0 (NC) switches off.', 'S0 (thường đóng) tắt động cơ.'],
+      ['K1 and K2 must never be ON at the same time.', 'K1 và K2 không bao giờ được cùng đóng.'],
+      ['Change of direction only via OFF.', 'Đổi chiều phải qua TẮT.']],
+    tia: 'Bit logic operations: <b>Normally open contact</b>, <b>Normally closed contact</b>, <b>Assignment</b> (two interlocked latching circuits).',
     hints: ['Mỗi chiều là một mạch tự giữ như bài 4. Nút S0 nằm ở %I0.0.',
       'Khóa chéo: trong mạng của K1 thêm tiếp điểm ┤/├ %Q0.1 (K2); trong mạng của K2 thêm ┤/├ %Q0.0 (K1).'],
     starter: () => [net([['.', '.', '.', '.']], [], coilOf('=', 'Q0.0'))],
@@ -1066,40 +1066,40 @@ const LESSONS = [
       h.press('S0'); h.run(0.3);
       h.s.wire['I0.0'] = true; h.press('S1'); h.run(0.3); const wb = !h.q('K1') && !h.q('K2');
       return [
-        { ok: r1 && l1, de: '−S1 → Rechtslauf, −S2 → Linkslauf, mit Selbsthaltung', vi: 'S1 quay phải, S2 quay trái, nhả nút vẫn chạy' },
-        { ok: stop1 && stop2, de: '−S0 schaltet in beiden Richtungen aus', vi: 'S0 tắt được ở cả hai chiều' },
-        { ok: lockA && lockB, de: 'Umschalten nur über AUS: die Gegenrichtung ist verriegelt', vi: 'Đang chạy một chiều thì nút chiều kia không có tác dụng' },
-        { ok: !both, de: 'K1 und K2 nie gleichzeitig EIN', vi: both ? 'K1 và K2 đã đóng cùng lúc: ngắn mạch!' : 'K1 và K2 không bao giờ cùng đóng' },
-        { ok: wb, de: 'Drahtbruch an −S0: kein Anlauf', vi: 'Đứt dây S0: động cơ không khởi động được' },
+        { ok: r1 && l1, de: '−S1 → right, −S2 → left, with latching', vi: 'S1 quay phải, S2 quay trái, nhả nút vẫn chạy' },
+        { ok: stop1 && stop2, de: '−S0 switches off in both directions', vi: 'S0 tắt được ở cả hai chiều' },
+        { ok: lockA && lockB, de: 'Direction change only via OFF: the other direction is interlocked', vi: 'Đang chạy một chiều thì nút chiều kia không có tác dụng' },
+        { ok: !both, de: 'K1 and K2 never ON together', vi: both ? 'K1 và K2 đã đóng cùng lúc: ngắn mạch!' : 'K1 và K2 không bao giờ cùng đóng' },
+        { ok: wb, de: 'Wire break at −S0: no start', vi: 'Đứt dây S0: động cơ không khởi động được' },
       ];
     },
   },
   {
-    id: 'L10', no: 10, short: 'Ampel',
-    name: 'Ablauf mit Zeiten – Fußgängerampel', vi: 'Trình tự theo thời gian – đèn cho người đi bộ',
-    inputs: [{ a: 'I0.0', sym: 'S1', kind: 'btn', cap: 'y', de: 'Anforderungstaster Fußgänger', vi: 'Nút xin qua đường' }],
+    id: 'L10', no: 10, short: 'Traffic light',
+    name: 'Sequence with timers – pedestrian crossing light', vi: 'Trình tự theo thời gian – đèn cho người đi bộ',
+    inputs: [{ a: 'I0.0', sym: 'S1', kind: 'btn', cap: 'y', de: 'Pedestrian request button', vi: 'Nút xin qua đường' }],
     outputs: [
-      { a: 'Q0.0', sym: 'H1', color: 'r', de: 'Auto ROT', vi: 'Ô tô ĐỎ' },
-      { a: 'Q0.1', sym: 'H2', color: 'y', de: 'Auto GELB', vi: 'Ô tô VÀNG' },
-      { a: 'Q0.2', sym: 'H3', color: 'g', de: 'Auto GRÜN', vi: 'Ô tô XANH' },
-      { a: 'Q0.3', sym: 'H4', color: 'r', de: 'Fußgänger ROT', vi: 'Người đi bộ ĐỎ' },
-      { a: 'Q0.4', sym: 'H5', color: 'g', de: 'Fußgänger GRÜN', vi: 'Người đi bộ XANH' },
+      { a: 'Q0.0', sym: 'H1', color: 'r', de: 'Cars RED', vi: 'Ô tô ĐỎ' },
+      { a: 'Q0.1', sym: 'H2', color: 'y', de: 'Cars AMBER', vi: 'Ô tô VÀNG' },
+      { a: 'Q0.2', sym: 'H3', color: 'g', de: 'Cars GREEN', vi: 'Ô tô XANH' },
+      { a: 'Q0.3', sym: 'H4', color: 'r', de: 'Pedestrians RED', vi: 'Người đi bộ ĐỎ' },
+      { a: 'Q0.4', sym: 'H5', color: 'g', de: 'Pedestrians GREEN', vi: 'Người đi bộ XANH' },
     ],
     scene: 'traffic',
-    theory: `<p>Đèn giao thông ở Đức đổi theo thứ tự <b>Grün → Gelb → Rot → Rot-Gelb → Grün</b>. Pha đỏ-vàng báo sắp chuyển xanh.</p>
-      <p>Đây là <b>điều khiển tuần tự theo thời gian</b> (<span class="de">zeitgeführte Ablaufsteuerung</span>). Cách dễ cho người mới: một bit nhớ „đang có yêu cầu“ khởi động <b>nhiều bộ TON cùng lúc</b> với các PT khác nhau. Mỗi T.Q đánh dấu một mốc thời gian, rồi từng đèn được tính bằng UND/ODER từ các mốc đó.</p>
+    theory: `<p>Đèn giao thông ở Đức đổi theo thứ tự <b>Green → Amber → Red → Red + Amber → Green</b>. Pha đỏ-vàng báo sắp chuyển xanh.</p>
+      <p>Đây là <b>điều khiển tuần tự theo thời gian</b> (<span class="en">time-driven sequence control</span>). Cách dễ cho người mới: một bit nhớ "đang có yêu cầu" khởi động <b>nhiều bộ TON cùng lúc</b> với các PT khác nhau. Mỗi T.Q đánh dấu một mốc thời gian, rồi từng đèn được tính bằng AND/OR từ các mốc đó.</p>
       <p>An toàn trên hết: người đi bộ chỉ được xanh khi đèn ô tô <b>đỏ</b>.</p>`,
-    task: [['Grundstellung: Auto GRÜN, Fußgänger ROT.', 'Trạng thái chờ: ô tô XANH, người đi bộ ĐỎ.'],
-      ['Nach Druck auf −S1 läuft der Ablauf aus der Tabelle, danach wieder Grundstellung.', 'Nhấn S1: chạy theo bảng dưới rồi quay về trạng thái chờ.']],
-    taskHtml: `<div class="tablewrap"><table class="tags"><thead><tr><th>Zeit nach S1</th><th>Auto</th><th>Fußgänger</th></tr></thead><tbody>
-      <tr><td>vorher</td><td>GRÜN</td><td>ROT</td></tr><tr><td>0 – 2 s</td><td>GELB</td><td>ROT</td></tr>
-      <tr><td>2 – 3 s</td><td>ROT</td><td>ROT</td></tr><tr><td>3 – 8 s</td><td>ROT</td><td>GRÜN</td></tr>
-      <tr><td>8 – 9 s</td><td>ROT</td><td>ROT</td></tr><tr><td>9 – 10 s</td><td>ROT + GELB</td><td>ROT</td></tr>
-      <tr><td>ab 10 s</td><td>GRÜN</td><td>ROT</td></tr></tbody></table></div>`,
-    tia: 'Zeiten: <b>TON</b> · Bitverknüpfungen: <b>Ausgang setzen</b>, <b>Ausgang rücksetzen</b>, <b>Schließer</b>, <b>Öffner</b>, <b>Zuweisung</b>.',
-    hints: ['Mạng đầu: S1 → (S) %M1.0 „Anforderung“. Hết chu trình (10 s) thì (R) %M1.0.',
+    task: [['Idle state: cars GREEN, pedestrians RED.', 'Trạng thái chờ: ô tô XANH, người đi bộ ĐỎ.'],
+      ['After pressing −S1 the sequence in the table runs, then back to idle.', 'Nhấn S1: chạy theo bảng dưới rồi quay về trạng thái chờ.']],
+    taskHtml: `<div class="tablewrap"><table class="tags"><thead><tr><th>Time after S1</th><th>Cars</th><th>Pedestrians</th></tr></thead><tbody>
+      <tr><td>before</td><td>GREEN</td><td>RED</td></tr><tr><td>0 – 2 s</td><td>AMBER</td><td>RED</td></tr>
+      <tr><td>2 – 3 s</td><td>RED</td><td>RED</td></tr><tr><td>3 – 8 s</td><td>RED</td><td>GREEN</td></tr>
+      <tr><td>8 – 9 s</td><td>RED</td><td>RED</td></tr><tr><td>9 – 10 s</td><td>RED + AMBER</td><td>RED</td></tr>
+      <tr><td>from 10 s</td><td>GREEN</td><td>RED</td></tr></tbody></table></div>`,
+    tia: 'Timer operations: <b>TON</b> · Bit logic operations: <b>Set output</b>, <b>Reset output</b>, <b>Normally open contact</b>, <b>Normally closed contact</b>, <b>Assignment</b>.',
+    hints: ['Mạng đầu: S1 → (S) %M1.0 "request". Hết chu trình (10 s) thì (R) %M1.0.',
       'Năm mạng TON cùng dùng M1.0 làm IN: T1 = 2 s, T2 = 3 s, T3 = 8 s, T4 = 9 s, T5 = 10 s.',
-      'Ví dụ: Auto ROT = T1.Q VÀ KHÔNG T5.Q. Fußgänger GRÜN = T2.Q VÀ KHÔNG T3.Q. Auto GRÜN = KHÔNG M1.0.'],
+      'Ví dụ: Cars RED = T1.Q VÀ KHÔNG T5.Q. Pedestrians GREEN = T2.Q VÀ KHÔNG T3.Q. Cars GREEN = KHÔNG M1.0.'],
     starter: () => [net([['.', '.', '.', '.']], [], coilOf('=', 'Q0.0'))],
     sample: () => [
       net([['I0.0', '-', '-', '-']], [], coilOf('S', 'M1.0')),
@@ -1130,29 +1130,29 @@ const LESSONS = [
       h.run(12); const base2 = st() === 'G|r';
       const n = ok.filter(Boolean).length;
       return [
-        { ok: base1 && base2, de: 'Grundstellung: Auto GRÜN, Fußgänger ROT – ohne Anforderung bleibt es so', vi: 'Khi chờ: ô tô xanh, người đi bộ đỏ, không tự đổi' },
-        { ok: n === checks.length, de: 'Ablauf nach Anforderung stimmt mit der Tabelle überein', vi: `Đúng ${n}/${checks.length} mốc thời gian trong bảng` },
-        { ok: !unsafe, de: 'Sicherheit: Fußgänger GRÜN nur, wenn die Autos ROT haben', vi: unsafe ? 'Có lúc người đi bộ xanh mà ô tô chưa đỏ!' : 'Người đi bộ chỉ xanh khi ô tô đỏ' },
+        { ok: base1 && base2, de: 'Idle: cars GREEN, pedestrians RED – stays so without a request', vi: 'Khi chờ: ô tô xanh, người đi bộ đỏ, không tự đổi' },
+        { ok: n === checks.length, de: 'Sequence after a request matches the table', vi: `Đúng ${n}/${checks.length} mốc thời gian trong bảng` },
+        { ok: !unsafe, de: 'Safety: pedestrians GREEN only while cars have RED', vi: unsafe ? 'Có lúc người đi bộ xanh mà ô tô chưa đỏ!' : 'Người đi bộ chỉ xanh khi ô tô đỏ' },
       ];
     },
   },
   {
-    id: 'FREI', no: null, short: 'Freies Üben',
-    name: 'Freies Üben', vi: 'Tập tự do trên bàn tập 8 vào / 8 ra',
+    id: 'FREI', no: null, short: 'Free practice',
+    name: 'Free practice', vi: 'Tập tự do trên bàn tập 8 vào / 8 ra',
     inputs: [
-      ...range(4).map(i => ({ a: 'I0.' + i, sym: 'S' + (i + 1), kind: 'btn', cap: 'n', de: 'Taster', vi: 'Nút nhấn' })),
-      ...range(4).map(i => ({ a: 'I0.' + (i + 4), sym: 'S' + (i + 5), kind: 'sw', de: 'Schalter', vi: 'Công tắc' })),
+      ...range(4).map(i => ({ a: 'I0.' + i, sym: 'S' + (i + 1), kind: 'btn', cap: 'n', de: 'Pushbutton', vi: 'Nút nhấn' })),
+      ...range(4).map(i => ({ a: 'I0.' + (i + 4), sym: 'S' + (i + 5), kind: 'sw', de: 'Switch', vi: 'Công tắc' })),
     ],
-    outputs: range(8).map(i => ({ a: 'Q0.' + i, sym: 'P' + (i + 1), color: ['r', 'y', 'g', 'w', 'b', 'r', 'y', 'g'][i], de: 'Leuchte', vi: 'Đèn' })),
+    outputs: range(8).map(i => ({ a: 'Q0.' + i, sym: 'P' + (i + 1), color: ['r', 'y', 'g', 'w', 'b', 'r', 'y', 'g'][i], de: 'Lamp', vi: 'Đèn' })),
     scene: 'sandbox',
-    theory: `<p>Bàn tập giống vali thực hành ở trường: %I0.0–%I0.3 là nút nhấn, %I0.4–%I0.7 là công tắc, %Q0.0–%Q0.7 là 8 đèn. Không có chấm bài: tự đặt bài toán cho mình, ví dụ đèn chạy (<span class="de">Lauflicht</span>) bằng TON, hay mạch đếm số lần nhấn.</p>`,
-    task: [], tia: 'Mọi lệnh trong Bitverknüpfungen, Zeiten, Zähler.', hints: [],
+    theory: `<p>Bàn tập giống vali thực hành ở trường: %I0.0–%I0.3 là nút nhấn, %I0.4–%I0.7 là công tắc, %Q0.0–%Q0.7 là 8 đèn. Không có chấm bài: tự đặt bài toán cho mình, ví dụ đèn chạy (<span class="en">running light</span>) bằng TON, hay mạch đếm số lần nhấn.</p>`,
+    task: [], tia: 'mọi lệnh trong Bit logic, Timer và Counter operations.', hints: [],
     starter: () => [net([['.', '.', '.', '.']], [], coilOf('=', 'Q0.0'))],
   },
 ];
 const byId = Object.fromEntries(LESSONS.map(L => [L.id, L]));
 
-/* ═══════════ Prüfumgebung ═══════════ */
+/* ═══════════ Test harness ═══════════ */
 function harness(L, prog) {
   const s = new Sim(L, prog), monitors = [];
   const addrOf = sym => (L.inputs.find(d => d.sym === sym) || L.outputs.find(d => d.sym === sym)).a;
@@ -1173,7 +1173,7 @@ function harness(L, prog) {
 const clone = p => JSON.parse(JSON.stringify(p));
 const grade = (L, prog) => L.tests(harness(L, clone(prog)));
 
-/* ═══════════ Speicher ═══════════ */
+/* ═══════════ Storage ═══════════ */
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); } catch { /* không lưu được thì thôi */ } },
@@ -1200,7 +1200,7 @@ function progFor(L) {
 }
 let done = (() => { try { const d = JSON.parse(store.get(K.done)); return d && typeof d === 'object' ? d : {}; } catch { return {}; } })();
 
-/* ═══════════ Helfer ═══════════ */
+/* ═══════════ Helpers ═══════════ */
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 function h(tag, attrs = {}, ...kids) {
@@ -1222,7 +1222,7 @@ let sim = null, tab = 'lesson', speed = 1, hintsShown = 0, usedSample = false, m
 const tagOf = a => [...cur.inputs, ...cur.outputs].find(d => d.a === a);
 const symOf = a => { const d = tagOf(a); return d ? d.sym : ''; };
 
-/* ═══════════ Farben ═══════════ */
+/* ═══════════ Colours ═══════════ */
 const COL = {};
 function readColors() {
   const cs = getComputedStyle(document.documentElement);
@@ -1233,7 +1233,7 @@ readColors();
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readColors);
 new MutationObserver(readColors).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-/* ═══════════ Prozessbild ═══════════ */
+/* ═══════════ Process view ═══════════ */
 const SW = 640, SH = 250;
 const cv = $('#scene'), ctx = cv.getContext('2d');
 let cvW = 0;
@@ -1277,10 +1277,10 @@ const SCENES = {
     lamp(320, 116, 44, q('Q0.0'), cur.outputs[0].color);
     text('−' + cur.outputs[0].sym + '  %Q0.0', 320, 186, { c: COL.ink, s: 12, w: 700 });
     const s1 = iv('I0.0');
-    text(s1 ? '−S1 gedrückt · %I0.0 = 1' : '−S1 nicht gedrückt · %I0.0 = 0', 320, 222, { c: s1 ? COL.flow : COL.muted, s: 11 });
+    text(s1 ? '−S1 pressed · %I0.0 = 1' : '−S1 not pressed · %I0.0 = 0', 320, 222, { c: s1 ? COL.flow : COL.muted, s: 11 });
   },
   logic() {
-    text('FUP-Darstellung', 16, 18, { a: 'left', s: 11 });
+    text('FBD view', 16, 18, { a: 'left', s: 11 });
     const a = iv('I0.0'), b = iv('I0.1');
     const gate = (y, sym, out, color, name) => {
       [[a, y - 16, 'S1'], [b, y + 16, 'S2']].forEach(([v, yy, n]) => {
@@ -1293,8 +1293,8 @@ const SCENES = {
       lamp(354, y, 22, out, color);
       text(name, 392, y, { a: 'left', c: COL.ink, s: 12, w: 600 });
     };
-    gate(76, '&', q('Q0.0'), 'g', '−P1  UND');
-    gate(184, '≥1', q('Q0.1'), 'y', '−P2  ODER');
+    gate(76, '&', q('Q0.0'), 'g', '−P1  AND');
+    gate(184, '≥1', q('Q0.1'), 'y', '−P2  OR');
   },
   twilight() {
     const day = iv('I0.1'), motion = iv('I0.0'), on = q('Q0.0');
@@ -1324,14 +1324,14 @@ const SCENES = {
       line(392, 174, 382, 184, ctx.strokeStyle, 3); line(392, 174, 402, 182, ctx.strokeStyle, 3);
     }
     const ink = day ? '#1b2a36' : '#e8edf4';
-    text(day ? 'Tag · −B2 meldet hell (1)' : 'Nacht · −B2 meldet dunkel (0)', 16, 18, { a: 'left', c: ink, s: 12, w: 700 });
-    text(motion ? 'Bewegung · −B1 = 1' : 'keine Bewegung · −B1 = 0', 16, 38, { a: 'left', c: ink, s: 11 });
-    text('−P1 Außenleuchte', 320, 232, { c: day ? '#1b2a36' : '#e8edf4', s: 11 });
+    text(day ? 'Day · −B2 reports bright (1)' : 'Night · −B2 reports dark (0)', 16, 18, { a: 'left', c: ink, s: 12, w: 700 });
+    text(motion ? 'Motion · −B1 = 1' : 'No motion · −B1 = 0', 16, 38, { a: 'left', c: ink, s: 11 });
+    text('−P1 outdoor light', 320, 232, { c: ink, s: 11 });
   },
   motor() {
     const on = q('Q0.0'), P = sim.P;
     rrect(440, 36, 150, 58, 6); ctx.fillStyle = COL.panel; ctx.fill(); ctx.strokeStyle = COL.line; ctx.lineWidth = 1.5; ctx.stroke();
-    text('−K1', 456, 56, { a: 'left', c: COL.ink, s: 13, w: 700 }); text('Motorschütz', 456, 78, { a: 'left', s: 10 });
+    text('−K1', 456, 56, { a: 'left', c: COL.ink, s: 13, w: 700 }); text('Motor contactor', 456, 78, { a: 'left', s: 10 });
     ledDot(570, 56, on);
     line(440, 66, 350, 100, on ? COL.flow : COL.line, 3);
     rrect(150, 64, 200, 124, 12); ctx.fillStyle = COL['scene-2']; ctx.fill(); ctx.strokeStyle = COL.line; ctx.stroke();
@@ -1344,9 +1344,9 @@ const SCENES = {
     }
     ctx.beginPath(); ctx.arc(270, 126, 6, 0, TAU); ctx.fillStyle = COL.ink; ctx.fill();
     text('−M1', 250, 206, { c: COL.ink, s: 12, w: 700 });
-    text(on ? 'läuft' : 'steht', 250, 226, { c: on ? COL.flow : COL.muted, s: 11 });
+    text(on ? 'running' : 'stopped', 250, 226, { c: on ? COL.flow : COL.muted, s: 11 });
     lamp(515, 170, 20, q('Q0.1'), 'g');
-    text('−P1 „Motor läuft“', 515, 214, { s: 11 });
+    text('−P1 "motor running"', 515, 214, { s: 11 });
   },
   tank() {
     const P = sim.P, pump = q('Q0.0'), top = 30, bot = 214, hgt = bot - top, lx = 270, rx = 400;
@@ -1366,13 +1366,13 @@ const SCENES = {
     ctx.save(); ctx.translate(160, 210); ctx.rotate(sim.t * (pump ? 8 : 0));
     for (let i = 0; i < 4; i++) { ctx.rotate(TAU / 4); line(0, 0, 14, 0, pump ? COL.flow : COL.muted, 3); }
     ctx.restore();
-    text('−M1 Pumpe', 110, 238, { a: 'left', c: COL.ink, s: 11 });
+    text('−M1 pump', 110, 238, { a: 'left', c: COL.ink, s: 11 });
     line(rx, 204, 520, 204, COL.water, 5);
     ctx.fillStyle = COL.ink; ctx.beginPath(); ctx.moveTo(470, 196); ctx.lineTo(486, 204); ctx.lineTo(470, 212); ctx.closePath(); ctx.fill();
     ctx.beginPath(); ctx.moveTo(502, 196); ctx.lineTo(486, 204); ctx.lineTo(502, 212); ctx.closePath(); ctx.fill();
-    text('Verbraucher →', 520, 226, { a: 'left', s: 10 });
-    text(`Füllstand ${Math.round(P.level)} %`, 335, 238, { c: COL.ink, s: 12, w: 700 });
-    if (P.level >= 99.5) banner('ÜBERLAUF!', COL.danger);
+    text('Consumer →', 520, 226, { a: 'left', s: 10 });
+    text(`Level ${Math.round(P.level)} %`, 335, 238, { c: COL.ink, s: 12, w: 700 });
+    if (P.level >= 99.5) banner('OVERFLOW!', COL.danger);
   },
   stairs() {
     const on = q('Q0.0'), slabs = [220, 150, 80];
@@ -1390,16 +1390,16 @@ const SCENES = {
       rrect(166, y - 36, 14, 14, 3); ctx.fillStyle = iv('I0.0') ? COL.flow : COL.ink; ctx.fill();
       text('S1', 190, y - 29, { a: 'left', s: 10 });
     });
-    text('Treppenhaus · 3 Etagen', 16, 18, { a: 'left', c: COL.ink, s: 12, w: 700 });
-    text(iv('I0.1') ? '−S2 Dauerlicht EIN' : '−S2 Dauerlicht AUS', 16, 38, { a: 'left', c: iv('I0.1') ? COL.flow : COL.muted, s: 11 });
-    text(on ? 'Licht EIN' : 'Licht AUS', 580, 120, { c: on ? COL.flow : COL.muted, s: 12, w: 700 });
+    text('Staircase · 3 floors', 16, 18, { a: 'left', c: COL.ink, s: 12, w: 700 });
+    text(iv('I0.1') ? '−S2 permanent light ON' : '−S2 permanent light OFF', 16, 38, { a: 'left', c: iv('I0.1') ? COL.flow : COL.muted, s: 11 });
+    text(on ? 'Light ON' : 'Light OFF', 580, 120, { c: on ? COL.flow : COL.muted, s: 12, w: 700 });
   },
   parking() {
     const P = sim.P;
     rrect(24, 40, 150, 120, 8); ctx.fillStyle = COL.case; ctx.fill();
-    lamp(58, 76, 13, q('Q0.1'), 'g'); text('FREI', 84, 76, { a: 'left', c: COL['case-ink'], s: 13, w: 700 });
-    lamp(58, 122, 13, q('Q0.0'), 'r'); text('BESETZT', 84, 122, { a: 'left', c: COL['case-ink'], s: 13, w: 700 });
-    text('Anzeige am Eingang', 99, 176, { s: 10 });
+    lamp(58, 76, 13, q('Q0.1'), 'g'); text('FREE', 84, 76, { a: 'left', c: COL['case-ink'], s: 13, w: 700 });
+    lamp(58, 122, 13, q('Q0.0'), 'r'); text('FULL', 84, 122, { a: 'left', c: COL['case-ink'], s: 13, w: 700 });
+    text('Sign at the entrance', 99, 176, { s: 10 });
     ctx.strokeStyle = COL.line; ctx.lineWidth = 2; ctx.strokeRect(220, 40, 390, 140);
     const colors = ['#3b82f6', '#e5484d', '#2fb45a', '#f5b400', '#8b5cf6'];
     for (let i = 0; i < 5; i++) {
@@ -1407,16 +1407,16 @@ const SCENES = {
       if (i) line(220 + i * 78, 40, 220 + i * 78, 180, COL.line, 1.5);
       if (i < P.cars) { rrect(x + 8, 62, 56, 96, 12); ctx.fillStyle = colors[i]; ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(x + 16, 76, 40, 16); }
     }
-    if (P.cars > 5) text(`+${P.cars - 5} über Kapazität`, 415, 196, { c: COL.danger, s: 11 });
-    ledDot(210, 206, iv('I0.0')); text('−B1 Einfahrt', 222, 206, { a: 'left', s: 10 });
-    ledDot(470, 206, iv('I0.1')); text('−B2 Ausfahrt', 482, 206, { a: 'left', s: 10 });
-    text(`Autos im Parkhaus: ${P.cars}`, 415, 232, { c: COL.ink, s: 12, w: 700 });
+    if (P.cars > 5) text(`+${P.cars - 5} over capacity`, 415, 196, { c: COL.danger, s: 11 });
+    ledDot(210, 206, iv('I0.0')); text('−B1 entry', 222, 206, { a: 'left', s: 10 });
+    ledDot(470, 206, iv('I0.1')); text('−B2 exit', 482, 206, { a: 'left', s: 10 });
+    text(`Cars in the car park: ${P.cars}`, 415, 232, { c: COL.ink, s: 12, w: 700 });
     const c0 = sim.C[0];
-    text(`Zähler C0 · CV = ${c0.cv}`, 99, 232, { s: 11 });
+    text(`Counter C0 · CV = ${c0.cv}`, 99, 232, { s: 11 });
   },
   reversing() {
     const k1 = q('Q0.0'), k2 = q('Q0.1'), P = sim.P;
-    for (const [y, name, on, lab] of [[40, '−K1', k1, 'Rechtslauf'], [110, '−K2', k2, 'Linkslauf']]) {
+    for (const [y, name, on, lab] of [[40, '−K1', k1, 'Right-hand rotation'], [110, '−K2', k2, 'Left-hand rotation']]) {
       rrect(440, y, 160, 54, 6); ctx.fillStyle = COL.panel; ctx.fill(); ctx.strokeStyle = COL.line; ctx.lineWidth = 1.5; ctx.stroke();
       text(name, 456, y + 18, { a: 'left', c: COL.ink, s: 13, w: 700 }); text(lab, 456, y + 38, { a: 'left', s: 10 });
       ledDot(580, y + 18, on);
@@ -1432,8 +1432,8 @@ const SCENES = {
       ctx.beginPath(); ctx.arc(ex, ey, 6, 0, TAU); ctx.fillStyle = COL.flow; ctx.fill();
     }
     text('−M1  3~', 250, 206, { c: COL.ink, s: 12, w: 700 });
-    text(k1 && k2 ? '' : dir > 0 ? 'Rechtslauf ↻' : dir < 0 ? 'Linkslauf ↺' : 'Stillstand', 250, 228, { c: dir ? COL.flow : COL.muted, s: 11 });
-    if (k1 && k2) banner('KURZSCHLUSS! K1 und K2 gleichzeitig EIN', COL.danger);
+    text(k1 && k2 ? '' : dir > 0 ? 'Right-hand ↻' : dir < 0 ? 'Left-hand ↺' : 'Stopped', 250, 228, { c: dir ? COL.flow : COL.muted, s: 11 });
+    if (k1 && k2) banner('SHORT CIRCUIT! K1 and K2 both ON', COL.danger);
   },
   traffic() {
     const r = q('Q0.0'), y = q('Q0.1'), g = q('Q0.2'), pr = q('Q0.3'), pg = q('Q0.4');
@@ -1444,11 +1444,11 @@ const SCENES = {
     line(345, 150, 345, 118, COL.muted, 4);
     rrect(330, 28, 30, 90, 6); ctx.fillStyle = '#1c2023'; ctx.fill();
     lamp(345, 46, 9, r, 'r'); lamp(345, 73, 9, y, 'y'); lamp(345, 100, 9, g, 'g');
-    text('Auto', 312, 60, { a: 'right', s: 10 });
+    text('Cars', 312, 60, { a: 'right', s: 10 });
     line(490, 150, 490, 116, COL.muted, 4);
     rrect(476, 52, 28, 64, 6); ctx.fillStyle = '#1c2023'; ctx.fill();
     lamp(490, 70, 9, pr, 'r'); lamp(490, 98, 9, pg, 'g');
-    text('Fußgänger', 512, 60, { a: 'left', s: 10 });
+    text('Pedestrians', 512, 60, { a: 'left', s: 10 });
     rrect(482, 124, 16, 16, 3); ctx.fillStyle = '#f5b400'; ctx.fill();
     ledDot(490, 132, iv('I0.0'));
     text('−S1', 506, 132, { a: 'left', s: 10 });
@@ -1456,10 +1456,10 @@ const SCENES = {
     ctx.strokeStyle = pc; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.arc(px, py - 22, 6, 0, TAU); ctx.stroke();
     line(px, py - 16, px, py + 4, pc, 3); line(px, py + 4, px - 7, py + 18, pc, 3); line(px, py + 4, px + 7, py + 18, pc, 3);
-    text('Fußgängerüberweg', 16, 18, { a: 'left', c: COL.ink, s: 12, w: 700 });
+    text('Pedestrian crossing', 16, 18, { a: 'left', c: COL.ink, s: 12, w: 700 });
   },
   sandbox() {
-    text('Übungsbrett · 8 Leuchten an %Q0.0 – %Q0.7', 16, 18, { a: 'left', c: COL.ink, s: 12, w: 700 });
+    text('Trainer board · 8 lamps on %Q0.0 – %Q0.7', 16, 18, { a: 'left', c: COL.ink, s: 12, w: 700 });
     cur.outputs.forEach((o, i) => {
       const x = 56 + i * 75;
       lamp(x, 112, 22, q(o.a), o.color);
@@ -1477,7 +1477,7 @@ function drawScene() {
   SCENES[cur.scene]();
 }
 
-/* ═══════════ Zeitdiagramm ═══════════ */
+/* ═══════════ Signal trace ═══════════ */
 const tr = $('#trace'), tctx = tr.getContext('2d');
 let traceRows = [];
 const ROW_H = 22;
@@ -1502,7 +1502,7 @@ function drawTrace() {
   for (let s = 0; s <= 10; s++) { const x = x0 + span * s / 10; tctx.beginPath(); tctx.moveTo(x, 2); tctx.lineTo(x, hh - 14); tctx.stroke(); }
   tctx.font = '500 10px "IBM Plex Mono", monospace'; tctx.textBaseline = 'middle';
   tctx.fillStyle = '#8fa1a8'; tctx.textAlign = 'center';
-  tctx.fillText('−10 s', x0 + 12, hh - 6); tctx.fillText('jetzt', x1 - 14, hh - 6);
+  tctx.fillText('−10 s', x0 + 12, hh - 6); tctx.fillText('now', x1 - 12, hh - 6);
   const data = sim.trace, n = data.length;
   traceRows.forEach((row, i) => {
     const yb = 18 + i * ROW_H, yt = yb - 11;
@@ -1527,14 +1527,14 @@ range(8).forEach(i => { const e = h('span', { class: 'led', title: '%Q0.' + i },
 $('#btnRun').addEventListener('click', () => { sim.runSw = true; });
 $('#btnStop').addEventListener('click', () => { sim.runSw = false; });
 
-/* ═══════════ Lektionen: Navigation & Inhalt ═══════════ */
+/* ═══════════ Lessons: navigation & content ═══════════ */
 function renderNav() {
   const nav = $('#lessonNav'); nav.textContent = '';
   for (const L of LESSONS) {
     const st = done[L.id];
     const b = h('button', { class: 'lchip', type: 'button', 'aria-current': L === cur ? 'true' : 'false', onclick: () => { setLesson(L.id); setTab('lesson'); } },
       h('b', { text: L.no ?? '∞' }), h('span', { text: L.short }),
-      st ? h('span', { class: 'mark ' + st, text: st === 'ok' ? '✓' : '◐', title: st === 'ok' ? 'bestanden' : 'mit Lösung' }) : null);
+      st ? h('span', { class: 'mark ' + st, text: st === 'ok' ? '✓' : '◐', title: st === 'ok' ? 'passed' : 'solved with the solution' }) : null);
     nav.append(b);
     if (L === cur) requestAnimationFrame(() => b.scrollIntoView({ block: 'nearest', inline: 'nearest' }));
   }
@@ -1544,26 +1544,26 @@ function renderNav() {
 function renderLesson() {
   const L = cur, p = $('#pane-lesson'); p.textContent = '';
   p.append(h('div', { class: 'lhead' },
-    h('p', { class: 'eyebrow', text: L.no ? `Lektion ${L.no} von 10` : 'Freies Üben' }),
+    h('p', { class: 'eyebrow', text: L.no ? `Lesson ${L.no} of 10` : 'Free practice' }),
     h('h2', { text: L.name }), h('p', { class: 'small', text: L.vi })));
-  p.append(h('details', { class: 'theory', open: true }, h('summary', { text: 'Lý thuyết · Theorie' }), h('div', { class: 'theory-body prose', html: L.theory })));
+  p.append(h('details', { class: 'theory', open: true }, h('summary', { text: 'Lý thuyết · Theory' }), h('div', { class: 'theory-body prose', html: L.theory })));
   if (L.task.length) {
-    const box = h('div', { class: 'box' }, h('h3', { text: 'Aufgabe · Bài tập' }),
-      h('ol', { class: 'tasklist' }, ...L.task.map(([de, vi]) => h('li', {}, h('span', { class: 'de', text: de }), h('span', { class: 'vi', text: vi })))));
+    const box = h('div', { class: 'box' }, h('h3', { text: 'Task · Bài tập' }),
+      h('ol', { class: 'tasklist' }, ...L.task.map(([de, vi]) => h('li', {}, h('span', { class: 'en', text: de }), h('span', { class: 'vi', text: vi })))));
     if (L.taskHtml) box.append(h('div', { html: L.taskHtml }));
     p.append(box);
   }
   const rows = [...L.inputs, ...L.outputs];
-  p.append(h('div', { class: 'box' }, h('h3', { text: 'Variablentabelle · Bảng biến' }),
+  p.append(h('div', { class: 'box' }, h('h3', { text: 'Tag table · Bảng biến' }),
     h('div', { class: 'tablewrap' }, h('table', { class: 'tags' },
-      h('thead', {}, h('tr', {}, ...['Name', 'Adresse', 'Typ', 'Kommentar', 'Ghi chú'].map(t => h('th', { text: t })))),
+      h('thead', {}, h('tr', {}, ...['Name', 'Address', 'Type', 'Comment', 'Ghi chú'].map(t => h('th', { text: t })))),
       h('tbody', {}, ...rows.map(d => h('tr', {}, h('td', { text: d.sym }), h('td', { text: '%' + d.a }), h('td', { text: 'Bool' }),
-        h('td', { class: 'de', text: d.de + (d.kind === 'btnNC' ? ' – nicht gedrückt = 1' : '') }), h('td', { text: d.vi }))))))));
-  p.append(h('div', { class: 'box tia' }, h('h3', { text: 'Trong TIA Portal' }), h('p', { html: 'Anweisungen → Einfache Anweisungen → ' + L.tia })));
-  p.append(h('div', { class: 'toolbar' }, h('button', { class: 'btn primary', type: 'button', text: 'Viết chương trình ở thẻ KOP →', onclick: () => setTab('kop') })));
+        h('td', { class: 'en', text: d.de + (d.kind === 'btnNC' ? ' – not pressed = 1' : '') }), h('td', { text: d.vi }))))))));
+  p.append(h('div', { class: 'box tia' }, h('h3', { text: 'Trong TIA Portal' }), h('p', { html: 'Instructions → Basic instructions → ' + L.tia })));
+  p.append(h('div', { class: 'toolbar' }, h('button', { class: 'btn primary', type: 'button', text: 'Viết chương trình ở thẻ LAD →', onclick: () => setTab('kop') })));
 }
 
-/* ═══════════ Übungsbrett & Bedienleiste ═══════════ */
+/* ═══════════ Trainer board & control dock ═══════════ */
 let widgets = [];
 function bindMomentary(el, a) {
   const down = e => { e.preventDefault(); sim.press(a); try { el.setPointerCapture(e.pointerId); } catch { /* không hỗ trợ */ } };
@@ -1586,7 +1586,7 @@ function inputWidget(d, compact) {
   } else if (d.kind === 'sensor') {
     el = h('div', { class: 'kw ksens', title: d.de }, h('span', { class: 'probe', text: 'SENS' }), ...labels);
   } else {
-    el = h('button', { class: `kw kbtn cap-${d.cap || 'n'}`, type: 'button', 'aria-label': `${d.sym} ${d.de} (gedrückt halten)` }, h('span', { class: 'cap' }), ...labels);
+    el = h('button', { class: `kw kbtn cap-${d.cap || 'n'}`, type: 'button', 'aria-label': `${d.sym} ${d.de} (hold to press)` }, h('span', { class: 'cap' }), ...labels);
     bindMomentary(el, d.a);
   }
   el.append(led);
@@ -1609,7 +1609,7 @@ function renderBoard() {
   kact.hidden = !(cur.actions || []).length;
   const notes = [];
   if (cur.inputs.some(d => d.kind === 'btn' || d.kind === 'btnNC')) notes.push('Nút nhấn: giữ để nhấn, nhả để thả.');
-  if (cur.inputs.some(d => d.kind === 'btnNC')) notes.push('Nút Öffner: không nhấn thì đầu vào = 1.');
+  if (cur.inputs.some(d => d.kind === 'btnNC')) notes.push('Nút thường đóng (NC): không nhấn thì đầu vào = 1.');
   if (cur.inputs.some(d => d.kind === 'sensor')) notes.push('Cảm biến (SENS) do mô hình quá trình điều khiển.');
   $('#kbNote').textContent = notes.join(' ');
   renderTruth();
@@ -1640,13 +1640,13 @@ function renderTruth() {
     tbody.append(h('tr', { 'data-k': `${x}${y}` }, h('td', { text: x }), h('td', { text: y }),
       ...expect.map(f => h('td', { text: f(x, y) ? 1 : 0 })), h('td', { class: 'act', text: '' })));
   }
-  box.append(h('h3', { text: 'Wahrheitstabelle · Bảng chân trị' }),
+  box.append(h('h3', { text: 'Truth table · Bảng chân trị' }),
     h('div', { class: 'tablewrap' }, h('table', { class: 'truth' },
-      h('thead', {}, h('tr', {}, h('th', { text: a.sym }), h('th', { text: b.sym }), ...outs.map(o => h('th', { text: o.sym + ' soll' })), h('th', { text: 'SPS' }))), tbody)),
-    h('p', { class: 'small', text: 'Hàng đang tô sáng là tổ hợp hiện tại của công tắc; cột SPS là giá trị CPU đang xuất.' }));
+      h('thead', {}, h('tr', {}, h('th', { text: a.sym }), h('th', { text: b.sym }), ...outs.map(o => h('th', { text: o.sym + ' expected' })), h('th', { text: 'PLC' }))), tbody)),
+    h('p', { class: 'small', text: 'Hàng đang tô sáng là tổ hợp hiện tại của công tắc; cột PLC là giá trị CPU đang xuất.' }));
 }
 
-/* ═══════════ KOP-Editor ═══════════ */
+/* ═══════════ LAD editor ═══════════ */
 const GL = {
   empty: '<svg viewBox="0 0 60 26" preserveAspectRatio="none" aria-hidden="true"><path d="M26 13H34M30 9V17"/></svg>',
   wire: '<svg viewBox="0 0 60 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 13H60"/></svg>',
@@ -1655,14 +1655,14 @@ const GL = {
   not: '<svg viewBox="0 0 60 26" preserveAspectRatio="none" aria-hidden="true"><path d="M0 13H60"/></svg>',
 };
 GL.pos = GL.no; GL.neg = GL.no;
-const CELL_TYPES = [['empty', '·', 'Leer'], ['wire', '──', 'Leitung'], ['no', '┤ ├', 'Schließer'], ['nc', '┤/├', 'Öffner'],
-  ['pos', '┤P├', 'Flanke 0→1'], ['neg', '┤N├', 'Flanke 1→0'], ['not', 'NOT', 'VKE invertieren']];
-const COIL_TYPES = [['coil', '( )', 'Zuweisung'], ['ncoil', '(/)', 'Negiert'], ['set', '(S)', 'Setzen'], ['reset', '(R)', 'Rücksetzen'],
-  ['sr', 'SR', 'Flipflop R1'], ['rs', 'RS', 'Flipflop S1'], ['ton', 'TON', 'Einschaltverz.'], ['tof', 'TOF', 'Ausschaltverz.'],
-  ['tp', 'TP', 'Impuls'], ['ctu', 'CTU', 'Vorwärts'], ['ctd', 'CTD', 'Rückwärts'], ['ctud', 'CTUD', 'Vor/Rück']];
+const CELL_TYPES = [['empty', '·', 'Empty'], ['wire', '──', 'Wire'], ['no', '┤ ├', 'NO contact'], ['nc', '┤/├', 'NC contact'],
+  ['pos', '┤P├', 'Edge 0→1'], ['neg', '┤N├', 'Edge 1→0'], ['not', 'NOT', 'Invert RLO']];
+const COIL_TYPES = [['coil', '( )', 'Assignment'], ['ncoil', '(/)', 'Negated'], ['set', '(S)', 'Set'], ['reset', '(R)', 'Reset'],
+  ['sr', 'SR', 'Flip-flop R1'], ['rs', 'RS', 'Flip-flop S1'], ['ton', 'TON', 'On-delay'], ['tof', 'TOF', 'Off-delay'],
+  ['tp', 'TP', 'Pulse'], ['ctu', 'CTU', 'Count up'], ['ctd', 'CTD', 'Count down'], ['ctud', 'CTUD', 'Up/down']];
 const CELL_HELP = {
   empty: 'Ô trống làm đứt mạch.', wire: 'Dây nối thẳng, cho dòng đi qua.',
-  no: 'Schließer: dẫn khi operand = 1.', nc: 'Öffner: dẫn khi operand = 0.',
+  no: 'NO contact: dẫn khi operand = 1.', nc: 'NC contact: dẫn khi operand = 0.',
   pos: 'Dẫn đúng một chu kỳ khi operand đổi 0 → 1 (sườn lên).', neg: 'Dẫn đúng một chu kỳ khi operand đổi 1 → 0 (sườn xuống).',
   not: 'Đảo kết quả logic (VKE) tại điểm này: có dòng thành không dòng và ngược lại.',
 };
@@ -1686,7 +1686,7 @@ function opTop(a) {
 function opBot(a) {
   const p = parse(a);
   if (p.area === 'T') return 'Timer';
-  if (p.area === 'C') return 'Zähler';
+  if (p.area === 'C') return 'Counter';
   return symOf(a) ? '%' + a : '';
 }
 const shortOp = (a, inv) => (a ? (inv ? '/' : '') + (symOf(a) || a) : '—');
@@ -1713,7 +1713,7 @@ function renderLadder() {
       h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Bỏ nhánh cuối', disabled: R <= 1, onclick: () => { rung.rows--; rung.cells.pop(); rung.links.pop(); changed(); } }, '− nhánh'),
       h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Chuyển lên', disabled: i === 0, onclick: () => { prog.splice(i - 1, 0, prog.splice(i, 1)[0]); changed(); } }, '↑'),
       h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Chuyển xuống', disabled: i === prog.length - 1, onclick: () => { prog.splice(i + 1, 0, prog.splice(i, 1)[0]); changed(); } }, '↓'),
-      h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Xóa Netzwerk', onclick: () => { prog.splice(i, 1); changed(); } }, '✕'));
+      h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Xóa Network', onclick: () => { prog.splice(i, 1); changed(); } }, '✕'));
     const grid = h('div', { class: 'rung-grid' });
     grid.append(h('div', { class: 'rail', style: `grid-row: 1 / span ${R}` }));
     const rr = { cells: [], links: [], coil: null, bot: null };
@@ -1725,7 +1725,7 @@ function renderLadder() {
         if (cell.t === 'pos' || cell.t === 'neg') glyph.append(h('b', { class: 'gl-t', text: cell.t === 'pos' ? 'P' : 'N' }));
         if (cell.t === 'not') glyph.append(h('b', { class: 'gl-t box', text: 'NOT' }));
         const btn = h('button', { class: 'cell t-' + cell.t, type: 'button', style: `grid-row:${r + 1};grid-column:${2 + c * 2}`,
-          'aria-label': `Netzwerk ${i + 1}, Zeile ${r + 1}, Spalte ${c + 1}: ${CELL_TYPES.find(t => t[0] === cell.t)[2]}${hasOp ? ' ' + cell.a : ''}`,
+          'aria-label': `Network ${i + 1}, row ${r + 1}, column ${c + 1}: ${CELL_TYPES.find(t => t[0] === cell.t)[2]}${hasOp ? ' ' + cell.a : ''}`,
           onclick: () => openCell(i, r, c) },
           h('span', { class: 'top', text: hasOp ? opTop(cell.a) : '' }), glyph, h('span', { class: 'bot', text: hasOp ? opBot(cell.a) : '' }));
         grid.append(btn); rr.cells[r][c] = btn;
@@ -1738,14 +1738,14 @@ function renderLadder() {
         const v = r < R - 1 ? h('span', { class: 'v' + (hasLink ? '' : ' off') }) : null;
         const props = { class: 'link', style: `grid-row:${r + 1};grid-column:${1 + 2 * b}` };
         const node = r < R - 1
-          ? h('button', { ...props, type: 'button', 'aria-pressed': String(!!hasLink), 'aria-label': `Senkrechte Verbindung Zeile ${r + 1}–${r + 2} nach Spalte ${b}`,
+          ? h('button', { ...props, type: 'button', 'aria-pressed': String(!!hasLink), 'aria-label': `Vertical link row ${r + 1}–${r + 2} after column ${b}`,
             onclick: () => { rung.links[r][b] = !rung.links[r][b]; changed(); } }, hl, hr, v)
           : h('div', props, hl, hr);
         grid.append(node); rr.links[r][b] = { hl, hr, v: hasLink ? v : null };
       }
       if (r === 0) {
         const k = rung.coil, bot = h('span', { class: 'bot', text: coilBot(k) });
-        const coil = h('button', { class: 'coil', type: 'button', style: `grid-row:1;grid-column:${2 + COLS * 2}`, 'aria-label': `Anweisung Netzwerk ${i + 1}: ${coilSummary(k)}`, onclick: () => openCoil(i) },
+        const coil = h('button', { class: 'coil', type: 'button', style: `grid-row:1;grid-column:${2 + COLS * 2}`, 'aria-label': `Instruction network ${i + 1}: ${coilSummary(k)}`, onclick: () => openCoil(i) },
           h('span', { class: 'top', text: coilTop(k) }),
           h('span', { class: 'glyph' + (isBox(k) ? ' box' : ''), text: isBox(k) ? k.t.toUpperCase() : { coil: '( )', ncoil: '(/)', set: '(S)', reset: '(R)' }[k.t] }),
           bot);
@@ -1754,10 +1754,10 @@ function renderLadder() {
     }
     refs.push(rr);
     host.append(h('div', { class: 'rung' },
-      h('div', { class: 'rung-head' }, h('span', { class: 'nw', text: 'Netzwerk ' + (i + 1) }), h('span', { class: 'nw-desc', text: '→ ' + coilSummary(rung.coil) }), tools),
+      h('div', { class: 'rung-head' }, h('span', { class: 'nw', text: 'Network ' + (i + 1) }), h('span', { class: 'nw-desc', text: '→ ' + coilSummary(rung.coil) }), tools),
       h('div', { class: 'rung-scroll' }, h('div', {}, grid))));
   });
-  if (!prog.length) host.append(h('p', { class: 'small', text: 'OB1 đang trống. Bấm „+ Netzwerk“ để thêm mạng đầu tiên.' }));
+  if (!prog.length) host.append(h('p', { class: 'small', text: 'OB1 đang trống. Bấm "+ Network" để thêm mạng đầu tiên.' }));
 }
 function changed() {
   store.set(K.prog(cur.id), JSON.stringify(progFor(cur)));
@@ -1800,12 +1800,12 @@ function resetBoxLabels() {
 function opOptions(sel, areas, value, none) {
   sel.textContent = '';
   if (none) sel.append(h('option', { value: '', text: '— (không dùng)' }));
-  const names = { I: 'Eingänge %I', Q: 'Ausgänge %Q', M: 'Merker %M', T: 'Timer-Ausgang', C: 'Zähler-Ausgang' };
+  const names = { I: 'Inputs %I', Q: 'Outputs %Q', M: 'Memory bits %M', T: 'Timer output', C: 'Counter output' };
   for (const ar of areas) {
     const og = h('optgroup', { label: names[ar] });
     for (const a of ADDR[ar]) {
       const d = tagOf(a), p = parse(a);
-      const txt = p.area === 'T' || p.area === 'C' ? a : `%${a}` + (d ? `  ${d.sym} – ${d.de}` : p.area === 'M' ? '' : '  (nicht belegt)');
+      const txt = p.area === 'T' || p.area === 'C' ? a : `%${a}` + (d ? `  ${d.sym} – ${d.de}` : p.area === 'M' ? '' : '  (not wired)');
       og.append(h('option', { value: a, text: txt }));
     }
     sel.append(og);
@@ -1897,7 +1897,7 @@ $('#btnMonitor').addEventListener('click', e => {
   if (!monitorOn) { $$('#ladder .on, #ladder .qon').forEach(x => x.classList.remove('on', 'qon')); resetBoxLabels(); }
 });
 
-/* ═══════════ Prüfen, Hinweise, Lösung ═══════════ */
+/* ═══════════ Check, hints, solution ═══════════ */
 let confirmAction = null;
 function askConfirm(msg, yes, action) {
   $('#confirmText').textContent = msg; $('#confirmYes').textContent = yes; confirmAction = action; $('#confirmBox').hidden = false;
@@ -1921,9 +1921,9 @@ $('#btnGrade').addEventListener('click', () => {
   const res = grade(cur, progFor(cur)), n = res.filter(r => r.ok).length, all = n === res.length, box = $('#gradeBox');
   box.textContent = '';
   box.className = 'box' + (all ? ' passed' : '');
-  box.append(h('h3', { text: all ? `Bestanden · Đạt ${n}/${res.length} tiêu chí` : `Chưa đạt · ${n}/${res.length} tiêu chí` }));
+  box.append(h('h3', { text: all ? `Passed · Đạt ${n}/${res.length} tiêu chí` : `Chưa đạt · ${n}/${res.length} tiêu chí` }));
   box.append(h('ul', { class: 'results' }, ...res.map(r => h('li', {},
-    h('span', { class: 'chip ' + (r.ok ? 'ok' : 'bad'), text: r.ok ? '✓' : '✗' }), h('span', { class: 'de', text: r.de }), h('span', { class: 'vi', text: r.vi })))));
+    h('span', { class: 'chip ' + (r.ok ? 'ok' : 'bad'), text: r.ok ? '✓' : '✗' }), h('span', { class: 'en', text: r.de }), h('span', { class: 'vi', text: r.vi })))));
   if (all) {
     const was = done[cur.id];
     done[cur.id] = usedSample ? (was === 'ok' ? 'ok' : 'seen') : 'ok';
@@ -1932,12 +1932,12 @@ $('#btnGrade').addEventListener('click', () => {
     const next = LESSONS[LESSONS.indexOf(cur) + 1];
     if (next && next.tests) box.append(h('div', { class: 'toolbar' }, h('button', { class: 'btn primary', type: 'button', text: `Bài tiếp: ${next.short} →`, onclick: () => { setLesson(next.id); setTab('lesson'); window.scrollTo(0, 0); } })));
   } else {
-    box.append(h('p', { class: 'small', text: 'Máy chấm chạy chương trình của bạn trên một CPU ảo riêng với các tình huống thử. Sửa tiêu chí ✗ rồi bấm Prüfen lại.' }));
+    box.append(h('p', { class: 'small', text: 'Máy chấm chạy chương trình của bạn trên một CPU ảo riêng với các tình huống thử. Sửa tiêu chí ✗ rồi bấm Check lại.' }));
   }
   box.hidden = false;
 });
 
-/* ═══════════ Register & Lektionswechsel ═══════════ */
+/* ═══════════ Tabs & lesson switching ═══════════ */
 const mqWide = matchMedia('(min-width: 980px)');
 function setTab(t) {
   if (!['lesson', 'board', 'kop', 'help'].includes(t)) t = 'lesson';
@@ -1965,13 +1965,13 @@ function setLesson(id) {
   $('#gradeBox').hidden = true; $('#confirmBox').hidden = true;
   const practice = !!cur.tests;
   $('#btnGrade').hidden = !practice; $('#btnHint').hidden = !practice; $('#btnSample').hidden = !practice;
-  $('#kopTitle').textContent = `OB1 „Main“ · ${cur.no ? 'Lektion ' + cur.no : 'Freies Üben'}`;
+  $('#kopTitle').textContent = `OB1 "Main" · ${cur.no ? 'Lesson ' + cur.no : 'Free practice'}`;
   ledEls.I.forEach((e, i) => e.classList.toggle('used', cur.inputs.some(d => d.a === 'I0.' + i)));
   ledEls.Q.forEach((e, i) => e.classList.toggle('used', cur.outputs.some(d => d.a === 'Q0.' + i)));
   renderNav(); renderLesson(); renderBoard(); renderDock(); renderLadder(); renderHints();
 }
 
-/* ═══════════ Anzeige-Aktualisierung ═══════════ */
+/* ═══════════ Display update ═══════════ */
 let prev = {};
 function setOnce(key, val, fn) { if (prev[key] !== val) { prev[key] = val; fn(val); } }
 function updateUI() {
@@ -2006,7 +2006,7 @@ function updateUI() {
   }
 }
 
-/* ═══════════ Hauptschleife ═══════════ */
+/* ═══════════ Main loop ═══════════ */
 let last = performance.now(), acc = 0;
 function frame(now) {
   const el = Math.min(0.1, (now - last) / 1000) * speed; last = now; acc += el;
@@ -2020,15 +2020,15 @@ function frame(now) {
 }
 
 (function buildSymbolTable() {
-  const rows = [['┤ ├', 'Schließer', 'Dẫn khi operand = 1'], ['┤/├', 'Öffner', 'Dẫn khi operand = 0'],
-    ['┤P├', 'Positive Signalflanke eines Operanden abfragen', 'Một chu kỳ khi 0 → 1'], ['┤N├', 'Negative Signalflanke eines Operanden abfragen', 'Một chu kỳ khi 1 → 0'],
-    ['NOT', 'VKE invertieren', 'Đảo kết quả logic'], ['( )', 'Zuweisung', 'Ghi kết quả vào bit'], ['(/)', 'Negierte Zuweisung', 'Ghi kết quả đảo'],
-    ['(S)', 'Ausgang setzen', 'Đặt bit = 1, giữ nguyên'], ['(R)', 'Ausgang rücksetzen', 'Đặt bit = 0, giữ nguyên'],
-    ['SR', 'Setz-/Rücksetz-Flipflop', 'Bộ nhớ, xóa thắng'], ['RS', 'Rücksetz-/Setz-Flipflop', 'Bộ nhớ, đặt thắng'],
-    ['TON', 'Einschaltverzögerung erzeugen', 'Trễ khi bật'], ['TOF', 'Ausschaltverzögerung erzeugen', 'Trễ khi tắt'], ['TP', 'Impuls erzeugen', 'Tạo xung'],
-    ['CTU', 'Vorwärts zählen', 'Đếm lên'], ['CTD', 'Rückwärts zählen', 'Đếm xuống'], ['CTUD', 'Vorwärts und rückwärts zählen', 'Đếm lên và xuống']];
+  const rows = [['┤ ├', 'Normally open contact', 'Dẫn khi operand = 1'], ['┤/├', 'Normally closed contact', 'Dẫn khi operand = 0'],
+    ['┤P├', 'Scan operand for positive signal edge', 'Một chu kỳ khi 0 → 1'], ['┤N├', 'Scan operand for negative signal edge', 'Một chu kỳ khi 1 → 0'],
+    ['NOT', 'Invert RLO', 'Đảo kết quả logic'], ['( )', 'Assignment', 'Ghi kết quả vào bit'], ['(/)', 'Negate assignment', 'Ghi kết quả đảo'],
+    ['(S)', 'Set output', 'Đặt bit = 1, giữ nguyên'], ['(R)', 'Reset output', 'Đặt bit = 0, giữ nguyên'],
+    ['SR', 'Set/reset flip-flop', 'Bộ nhớ, xóa thắng'], ['RS', 'Reset/set flip-flop', 'Bộ nhớ, đặt thắng'],
+    ['TON', 'Generate on-delay', 'Trễ khi bật'], ['TOF', 'Generate off-delay', 'Trễ khi tắt'], ['TP', 'Generate pulse', 'Tạo xung'],
+    ['CTU', 'Count up', 'Đếm lên'], ['CTD', 'Count down', 'Đếm xuống'], ['CTUD', 'Count up and down', 'Đếm lên và xuống']];
   const tb = $('#symTable tbody');
-  for (const [a, b, c] of rows) tb.append(h('tr', {}, h('td', { text: a }), h('td', { class: 'de', text: b }), h('td', { text: c })));
+  for (const [a, b, c] of rows) tb.append(h('tr', {}, h('td', { text: a }), h('td', { class: 'en', text: b }), h('td', { text: c })));
 })();
 
 const hash = (location.hash || '').slice(1);

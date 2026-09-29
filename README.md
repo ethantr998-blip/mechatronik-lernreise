@@ -85,6 +85,7 @@ mechatronik-lernreise/
 ├── 02_Lernfelder/                 # Bản đồ 13 Lernfelder + Pneumatik, SPS, Fehlersuche, Fachgespräch
 ├── 03_Mechatronics_Knowledge_Base/# Kiến thức chuyên sâu 6 phân hệ + labs mô phỏng
 ├── 04_Virtuelle_Werkstatt/        # Xưởng ảo: trạm phân loại, lập trình KOP, tìm lỗi AP2
+├── 05_SPS_S7-1200/                # Bàn tập PLC S7-1200: 10 bài KOP có chấm tự động
 │
 ├── Cơ khí cơ bản/                 # Module M01: Gia công cơ khí & Đo lường kiểm tra
 ├── Kỹ thuật điện/                  # Module M02: Mạch điện DC/AC, Định luật Ohm & Kirchhoff

@@ -128,6 +128,12 @@ code, .mono { font-family: var(--f-mono); font-size: .92em; }
 /* ── Anlage ───────────────────────────── */
 .plant { background: var(--plate); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
 .plant canvas { display: block; width: 100%; height: auto; aspect-ratio: 640 / 300; max-width: 100%; }
+.plantstate { display: flex; align-items: flex-start; gap: 8px; padding: 8px 12px; border-top: 1px solid var(--line); font: 500 13.5px/1.4 var(--f-body); }
+.plantstate i { flex: none; width: 9px; height: 9px; margin-top: 5px; border-radius: 50%; background: var(--led-off); }
+.plantstate[data-s="run"] i { background: var(--flow); }
+.plantstate[data-s="ready"] i { background: var(--accent); }
+.plantstate[data-s="warn"] i, .plantstate[data-s="stop"] i { background: var(--warn); }
+.plantstate[data-s="nh"] i { background: var(--danger); }
 .binstats { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 8px 12px; border-top: 1px solid var(--line); font: 500 13px/1.3 var(--f-mono); font-variant-numeric: tabular-nums; }
 .binstats b { font-weight: 600; }
 .ok-t { color: var(--flow); }
@@ -339,6 +345,7 @@ dialog.sheet::backdrop { background: rgba(10, 14, 16, .45); }
     <section class="pane pane-anlage" id="pane-anlage" aria-label="Anlage">
       <div class="plant">
         <canvas id="plant" width="640" height="300" aria-label="Draufsicht der Sortierstation: Förderband, Sensoren B1 bis B3, Zylinder 1A1, Behälter"></canvas>
+        <p class="plantstate" id="plantState" data-s="ready"><i></i><span>Bereit · Giữ nút −S1 START để khởi động trạm.</span></p>
         <div class="binstats" id="binStats"></div>
       </div>
       <div class="console">
@@ -399,7 +406,7 @@ dialog.sheet::backdrop { background: rgba(10, 14, 16, .45); }
               <li><p class="de">−H1 leuchtet, solange die Anlage eingeschaltet ist.</p><p class="small">Đèn H1 sáng khi trạm đang bật.</p></li>
               <li><p class="de">Metallteile (erkannt von −B2) werden an −B3 angehalten und vom Zylinder 1A1 in den Metallbehälter geschoben: ausfahren bis −1B2, dann zurück. Kunststoffteile laufen durch.</p><p class="small">Chi tiết kim loại dừng tại B3, xi lanh đẩy vào thùng kim loại (ra tới 1B2 rồi lùi). Chi tiết nhựa chạy thẳng tới thùng cuối băng.</p></li>
             </ol>
-            <p class="small">NW 1–2 là ví dụ khởi đầu, chưa đủ yêu cầu. Bảng gán địa chỉ (<span class="de">Zuordnungsliste</span>) nằm ở thẻ Hướng dẫn.</p>
+            <p class="small">NW 1–3 là ví dụ khởi đầu: trạm bật/tắt được và băng tải đã chạy, nhưng chưa phân loại kim loại và chưa có Not-Halt. Bảng gán địa chỉ (<span class="de">Zuordnungsliste</span>) nằm ở thẻ Hướng dẫn.</p>
           </div>
         </details>
 
@@ -639,6 +646,7 @@ const SAMPLE = () => [
 const STARTER = () => [
   mkRung([['I0.5', 'I0.6', '-', '-'], ['M0.1', '.', '.', '.']], [[0, 1]], '= M0.1'),
   mkRung([['M0.1', '-', '-', '-']], [], '= Q0.2'),
+  mkRung([['M0.1', '-', '-', '-']], [], '= Q0.0'),
 ];
 
 function execProgram(prog, img, timers, dt, wantFlow) {
@@ -687,7 +695,7 @@ class Sim {
     this.prog = program;
     this.t = 0; this.parts = []; this.pid = 1; this.cyl = 0; this.beltPos = 0;
     this.mainOn = true; this.locked = false; this.notHalt = false; this.runSw = true; this.wasRunning = false;
-    this.btn = { S1: false, S0: false }; this.hold = { S1: 0, S0: 0 }; this.relReq = { S1: false, S0: false };
+    this.btn = { S1: false, S0: false }; this.hold = { S1: 0, S0: 0 }; this.relReq = { S1: false, S0: false }; this.startTried = false;
     this.faults = new Set(); this.s0Break = false;
     this.img = { I: new Array(8).fill(false), Q: new Array(4).fill(false), M: new Array(8).fill(false), T: new Array(4).fill(false) };
     this.timers = [0, 1, 2, 3].map(() => ({ et: 0 }));
@@ -719,7 +727,7 @@ class Sim {
     const qT = [run && Q[0] && actPow, run && Q[1] && actPow, run && Q[2], run && Q[3]];
     this.st = { on, sup, raw, out, inT, actPow, qT, motor: qT[0] && !this.has('WIREM1'), valve: qT[1] && !this.has('COIL'), lamp: qT[2] };
   }
-  press(n) { this.btn[n] = true; this.hold[n] = 0; this.relReq[n] = false; }
+  press(n) { this.btn[n] = true; this.hold[n] = 0; this.relReq[n] = false; if (n === 'S1') this.startTried = true; if (n === 'S0') this.startTried = false; }
   release(n) { this.relReq[n] = true; }
   step(dt) {
     for (const n of ['S1', 'S0']) {
@@ -731,6 +739,7 @@ class Sim {
     const run = this.plcRunning;
     if (run && !this.wasRunning) {
       this.img.M.fill(false); this.img.Q.fill(false); this.img.T.fill(false); this.timers.forEach(t => { t.et = 0; });
+      this.startTried = false;
     }
     this.wasRunning = run;
     for (let i = 0; i < 8; i++) this.img.I[i] = this.mainOn && this.st.inT[i];
@@ -988,7 +997,15 @@ function validProgram(p) {
     && Array.isArray(r.links) && r.links.length === r.rows - 1 && r.links.every(l => Array.isArray(l) && l.length === COLS + 1)
     && r.coil && ['coil', 'set', 'reset', 'ton'].includes(r.coil.t) && okAddr(r.coil.a) && typeof r.coil.pt === 'number');
 }
-let program = (() => { try { const p = JSON.parse(store.get(K_PROG)); if (validProgram(p)) return p; } catch { /* dùng chương trình khởi đầu */ } return STARTER(); })();
+let program = (() => {
+  try {
+    const p = JSON.parse(store.get(K_PROG));
+    // Bản đầu tiên lưu chương trình khởi đầu thiếu mạch Q0.0, khiến băng tải không bao giờ chạy
+    const oldStarter = JSON.stringify(p) === JSON.stringify(STARTER().slice(0, 2));
+    if (validProgram(p) && !oldStarter) return p;
+  } catch { /* dùng chương trình khởi đầu */ }
+  return STARTER();
+})();
 const saveProgram = () => store.set(K_PROG, JSON.stringify(program));
 
 let mode = 'program';
@@ -1148,6 +1165,7 @@ bindMomentary($('#btnS0'), 'S0');
 
 $('#btnNH').addEventListener('click', () => {
   sim.notHalt = !sim.notHalt;
+  if (sim.notHalt) sim.startTried = false;
   exLog(sim.notHalt ? 'NOT-HALT betätigt' : 'NOT-HALT entriegelt');
 });
 $('#btnQ1').addEventListener('click', () => {
@@ -1554,8 +1572,24 @@ function renderResult() {
 /* ═══════════ Anzeige-Aktualisierung ═══════════ */
 let prev = {};
 function setOnce(key, val, fn) { if (prev[key] !== val) { prev[key] = val; fn(val); } }
+function plantState() {
+  const s = sim;
+  if (!s.mainOn) return ['off', s.locked
+    ? '−Q1 auf 0, abgeschlossen · Trạm mất điện. Mở khóa rồi xoay công tắc chính về I.'
+    : '−Q1 auf 0 · Trạm mất điện. Xoay công tắc chính về I.'];
+  if (s.notHalt) return ['nh', 'NOT-HALT betätigt · Chạm nút đỏ lần nữa để nhả, rồi giữ −S1 để chạy lại.'];
+  if (!s.runSw) return ['stop', 'SPS in STOP · Chạm nút RUN/STOP trên thanh SPS để chạy chương trình.'];
+  if (s.st.motor) return ['run', 'Band läuft · Băng tải đang chạy.'];
+  if (!s.startTried) return ['ready', 'Bereit · Giữ nút −S1 START để khởi động trạm.'];
+  if (mode === 'fault') return ['idle', 'Band steht · Băng tải đang đứng.'];
+  if (!program.some(r => r.coil.a === 'Q0.0' && (r.coil.t === 'coil' || r.coil.t === 'set')))
+    return ['warn', 'Band steht · Chương trình chưa có mạch nào bật Q0.0 (động cơ −M1). Thêm mạch trong thẻ Chương trình KOP.'];
+  return ['idle', 'Band steht · Chương trình đang cho Q0.0 = 0 nên động cơ −M1 đứng.'];
+}
 function updateUI() {
   const s = sim, st = s.st;
+  const [ps, pText] = plantState();
+  setOnce('ps', ps + pText, () => { const e = $('#plantState'); e.dataset.s = ps; e.lastChild.textContent = pText; });
   ADDR.I.forEach((_, i) => setOnce('I' + i, s.mainOn && st.inT[i], v => ledEls.I[i].classList.toggle('on', v)));
   ADDR.Q.forEach((_, i) => setOnce('Q' + i, s.plcRunning && s.img.Q[i], v => ledEls.Q[i].classList.toggle('on', v)));
   const rs = !s.mainOn ? 'off' : s.runSw ? 'run' : 'stop';
